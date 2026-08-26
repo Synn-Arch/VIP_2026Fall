@@ -37,21 +37,15 @@
       <li><a href="#html">Write the HTML</a></li>
       <li><a href="#css">Style it with flexbox</a></li>
       <li><a href="#broken">When it breaks</a></li>
-      <li><a href="#submit">Hand it in</a></li>
     </ol>
   </nav>
 
   <main class="content">
 
     <div class="page-head">
-      <p class="eyebrow">Week 1 · Jan 20 – Jan 27</p>
+      <p class="eyebrow">Week 2 · Aug 30 – Sep 5</p>
       <h1>Environment and application shell</h1>
       <p class="dek">Install the tools everyone in this class will use, then build the static three-panel layout that the rest of the semester fills in.</p>
-      <div class="meta">
-        <span class="chip">≈2 hours</span>
-        <span class="chip">Half setup, half layout</span>
-        <span class="chip">No Mapbox account needed yet</span>
-      </div>
     </div>
 
     <div class="goals">
@@ -167,13 +161,14 @@
       <p>Sign in at <a href="https://github.com" target="_blank" rel="noopener">github.com</a>, creating an account if you need one. Click <strong>New repository</strong> and set it up like this:</p>
       <ul>
         <li>Name: <code>spatial-app</code></li>
-        <li>Visibility: <strong>Public</strong> — your instructor and classmates need to open it</li>
+        <li>Visibility: <strong>Public or Private</strong> - choose based on your preference</li>
         <li>Tick <strong>Add a README file</strong></li>
       </ul>
       <p>Create it, then click the pencil icon on <code>README.md</code> and put your name on the first line. Commit that change.</p>
 
       <h3>Bring it onto your computer</h3>
       <p>On the repository page, click the green <strong>Code</strong> button and copy the HTTPS address. Back in the VS Code terminal:</p>
+      <p>This is quite a traditional way! You may already know how to use <strong>github desktop</strong> or <strong>GitKraken</strong>. If you do not, then I'd recommend to see <strong>GitKraken</strong> Download it and explore it.</p>
 
       <figure class="code term" data-file="terminal">
 <pre><code><span class="cm"># move to a sensible place first — Documents is fine</span>
@@ -356,22 +351,6 @@ h2 {
 
       <p>Reload the page. You should now see a light panel on the left, a large gray area in the middle, and a white strip along the bottom.</p>
 
-      <h3>Now work through the four TODOs</h3>
-      <p>Each one is a deliberate experiment, not a puzzle. Change the value, save, reload, look. Then decide what you actually want and leave it there. <strong>TODO 1 is the important one</strong> — deleting <code>display: flex</code> and watching the palette and map stack vertically is the fastest way to understand what flexbox is doing for you.</p>
-
-      <div class="warn">
-        <span class="lbl">The borders are on purpose</span>
-        <p>Those visible borders exist so you can see exactly where each region ends. Keep them for now. From Week 4 onward, elements start appearing and disappearing on their own, and being able to see the boundaries turns a confusing bug into an obvious one. You can make it pretty in Week 13.</p>
-      </div>
-
-      <h3>Check it survives being squeezed</h3>
-      <p>Drag your browser window narrower, down to about the width of a small laptop. The three regions should still be recognisable — the palette may get tight, but nothing should overlap or vanish. If it collapses, adjust your TODO 2 width.</p>
-
-      <div class="note">
-        <span class="lbl">Where to stop</span>
-        <p>If you find yourself reading about CSS specificity, gradients, animation, or grid, stop. None of it is needed in this course, and the time is better spent making sure your installation is solid.</p>
-      </div>
-
       <h3>Save your work</h3>
       <figure class="code term" data-file="terminal">
 <pre><code><span class="pr">$</span> git add .
@@ -439,26 +418,6 @@ h2 {
             <p>The file was not saved. VS Code shows a filled dot instead of an × on the tab of any file with unsaved changes. Press <strong>Ctrl+S</strong> (<strong>Cmd+S</strong> on a Mac). If it still looks stale, hold Shift while clicking reload to bypass the browser cache.</p>
           </div>
         </details>
-      </div>
-    </section>
-
-    <!-- ============================================ -->
-    <section id="submit" class="submit">
-      <h2>Hand it in</h2>
-      <hr class="h2-rule">
-      <p>Everything below is checkable by someone who is not you. Tick each item off before you finish.</p>
-      <ul class="check">
-        <li><label><input type="checkbox"> A screenshot of your terminal showing <code>node -v</code>, <code>python --version</code>, and <code>git --version</code> — all three answers visible in one image</label></li>
-        <li><label><input type="checkbox"> The link to your <code>spatial-app</code> repository on GitHub, public, with your name in <code>README.md</code></label></li>
-        <li><label><input type="checkbox"> <code>index.html</code> and <code>style.css</code> committed and visible on GitHub</label></li>
-        <li><label><input type="checkbox"> A screenshot of the rendered page with all three regions clearly distinguishable</label></li>
-        <li><label><input type="checkbox"> The layout still holds together when the browser window is about 1000px wide</label></li>
-        <li><label><input type="checkbox"> All four TODOs in <code>style.css</code> resolved to values you chose on purpose</label></li>
-      </ul>
-
-      <div class="note" style="margin-bottom:0">
-        <span class="lbl">If installation took the whole session</span>
-        <p>Hand in the first two items and note that the layout is coming. Finish it at the start of Week 2. You are not behind — this is the expected fallback and it costs you nothing.</p>
       </div>
     </section>
 

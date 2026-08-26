@@ -137,7 +137,7 @@ h1 {
 .dek {
   font-size: 1.12rem;
   color: var(--ink-2);
-  max-width: 62ch;
+  max-width: 80ch;
   margin: 0;
 }
 .meta {
@@ -254,8 +254,8 @@ h3 {
   margin: 30px 0 8px;
 }
 
-p { margin: 0 0 16px; max-width: 68ch; }
-.content ul, .content ol { max-width: 66ch; padding-left: 22px; margin: 0 0 16px; }
+p { margin: 0 0 16px; max-width: 80ch; }
+.content ul, .content ol { max-width: 80ch; padding-left: 22px; margin: 0 0 16px; }
 .content li { margin-bottom: 7px; }
 
 a { color: var(--accent-deep); text-underline-offset: 3px; }
@@ -531,7 +531,7 @@ figure.code.term .pr { color: #4FA8A0; }
 /* ---------- index page ------------------------------- */
 
 .hero { padding: 74px 0 46px; }
-.hero h1 { font-size: clamp(2.3rem, 5.6vw, 3.6rem); max-width: 17ch; }
+.hero h1 { font-size: clamp(2.3rem, 5.6vw, 3.6rem); max-width: 20ch; }
 .hero .dek { font-size: 1.18rem; max-width: 56ch; }
 
 .pipeline {
