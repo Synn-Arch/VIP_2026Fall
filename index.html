@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Spatial App — Course Tutorials</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">Spatial App · Tutorials</a>
+    <span class="ticks-label">14 weeks</span>
+  </div>
+</header>
+
+<div class="shell">
+
+  <div class="hero">
+    <p class="eyebrow">Fall 2026</p>
+    <h1>Build a map that thinks.</h1>
+    <p class="dek">You will place components on a map, send them to a Python program, and see the analysis come back — a complete web application, built one small piece at a time. No prior web development experience needed.</p>
+
+  </div>
+
+  <section>
+    <h2>How to use these tutorials</h2>
+    <hr class="h2-rule">
+    <p>Each week is one page, and each page is written to be worked through in a single sitting of roughly two hours. Follow the steps in order — later steps assume the earlier ones actually ran.</p>
+    <p>Every code block has a <strong>Copy</strong> button. Copying is fine and expected; you are learning to assemble a working system, not to type from memory. What matters is that you can explain what each piece does afterwards.</p>
+    <p>When something breaks, open the <strong>When it breaks</strong> section at the bottom of the page before searching elsewhere. The listed problems are the ones that actually happen in this stack, and the answers are specific to it.</p>
+
+    <div class="note">
+      <span class="lbl">Falling behind is survivable</span>
+      <p>Every week ships with a finished reference version of the previous week. If a week defeats you, take the finished copy, and rejoin. One bad week never locks you out of the course.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>The fourteen weeks</h2>
+    <hr class="h2-rule">
+    <ul class="weeks">
+      <li><a href="week01.html">
+        <span class="wk">W1</span>
+        <span class="ttl">Environment and application shell<span class="sub">Install your tools, then build the static three-panel layout</span></span>
+        <span class="tag">Available</span>
+      </a></li>
+      <li><a href="week02.html">
+        <span class="wk">W2</span>
+        <span class="ttl">JavaScript: four essential patterns<span class="sub">Arrays of objects, immutable updates, events, and fetch</span></span>
+        <span class="tag">Available</span>
+      </a></li>
+      <li><a href="week03.html">
+        <span class="wk">W3</span>
+        <span class="ttl">React: components and props<span class="sub">Rebuild the layout as three React components</span></span>
+        <span class="tag">Available</span>
+      </a></li>
+      <li><a href="week04.html">
+        <span class="wk">W4</span>
+        <span class="ttl">React state and list rendering<span class="sub">Select a component type, add it to a list, delete it</span></span>
+        <span class="tag">Available</span>
+      </a></li>
+      <li><a href="week05.html">
+        <span class="wk">W5</span>
+        <span class="ttl">Rendering a Mapbox map<span class="sub">Get a token, put a real interactive map on the page</span></span>
+        <span class="tag ms">Milestone 1</span>
+      </a></li>
+      <li><span class="locked">
+        <span class="wk">W6</span>
+        <span class="ttl">Placing components on the map<span class="sub">Click to place, drag to move, click to delete</span></span>
+        <span class="tag">Soon</span>
+      </span></li>
+      <li><span class="locked">
+        <span class="wk">W7</span>
+        <span class="ttl">A Python backend with FastAPI<span class="sub">Your first endpoint, tested without any frontend</span></span>
+        <span class="tag">Soon</span>
+      </span></li>
+      <li><span class="locked">
+        <span class="wk">W8</span>
+        <span class="ttl">The first round trip<span class="sub">CORS, two servers, one hard-coded request</span></span>
+        <span class="tag">Soon</span>
+      </span></li>
+      <li><span class="locked">
+        <span class="wk">W9</span>
+        <span class="ttl">Real data and failure handling<span class="sub">Send live placements; handle loading and errors</span></span>
+        <span class="tag ms">Milestone 2</span>
+      </span></li>
+      <li><span class="locked">
+        <span class="wk">W10</span>
+        <span class="ttl">Implementing the analysis<span class="sub">Distances, buffers, and GeoJSON output</span></span>
+        <span class="tag">Soon</span>
+      </span></li>
+      <li><span class="locked">
+        <span class="wk">W11</span>
+        <span class="ttl">Visualizing results on the map<span class="sub">Draw the analysis back as a styled layer</span></span>
+        <span class="tag">Soon</span>
+      </span></li>
+      <li><span class="locked">
+        <span class="wk">W12</span>
+        <span class="ttl">Deployment<span class="sub">Public URLs, environment variables, token security</span></span>
+        <span class="tag ms">Milestone 3</span>
+      </span></li>
+      <li><span class="locked">
+        <span class="wk">W13</span>
+        <span class="ttl">Refinement and documentation<span class="sub">Fix, document, rehearse — and catch up if needed</span></span>
+        <span class="tag">Soon</span>
+      </span></li>
+      <li><span class="locked">
+        <span class="wk">W14</span>
+        <span class="ttl">Final presentation<span class="sub">Demonstrate the live application and defend your code</span></span>
+        <span class="tag">Soon</span>
+      </span></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>What you will be using</h2>
+    <hr class="h2-rule">
+    <p>The stack is fixed for everyone in the class. Every tutorial, starter file, and troubleshooting note assumes this exact set, so substituting a piece means you are on your own.</p>
+    <ul>
+      <li><strong>React with Vite</strong> — the interface you click on, written in JavaScript</li>
+      <li><strong>Mapbox GL JS</strong> via <code>react-map-gl</code> — the map itself</li>
+      <li><strong>Python with FastAPI</strong> — the program that receives your placements and analyzes them</li>
+      <li><strong>geopy and shapely</strong> — distance and geometry calculations</li>
+      <li><strong>Vercel and Render</strong> — free hosting, so your application has a public address</li>
+      <li><strong>Git and GitHub</strong> — how you save work and how you hand it in</li>
+    </ul>
+  </section>
+
+  <p class="foot">Course tutorials · Weeks 6 to 14 are published as the semester progresses.</p>
+
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Week 3 — React: Components and Props</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">Spatial App · Tutorials</a>
+    <div class="ticks">
+      <span class="tick done"></span><span class="tick done"></span><span class="tick now"></span><span class="tick"></span>
+      <span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
+      <span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
+      <span class="tick"></span><span class="tick"></span>
+    </div>
+    <span class="ticks-label">Week 3 of 14</span>
+  </div>
+</header>
+
+<div class="shell">
+<div class="layout">
+
+  <nav class="spine" aria-label="On this page">
+    <p class="spine-title">This week</p>
+    <ol>
+      <li><a href="#why">Why React at all</a></li>
+      <li><a href="#create">Create the project</a></li>
+      <li><a href="#tour">What the folders are</a></li>
+      <li><a href="#jsx">Four JSX rules</a></li>
+      <li><a href="#components">Build three components</a></li>
+      <li><a href="#props">Pass data with props</a></li>
+      <li><a href="#broken">When it breaks</a></li>
+      <li><a href="#submit">Hand it in</a></li>
+    </ol>
+  </nav>
+
+  <main class="content">
+
+    <div class="page-head">
+      <p class="eyebrow">Week 3 · Feb 3 – Feb 10</p>
+      <h1>React: components and props</h1>
+      <p class="dek">Rebuild Week 1's layout as three independent pieces, each in its own file, and learn the one mechanism that moves data between them.</p>
+      <div class="meta">
+        <span class="chip">≈2 hours</span>
+        <span class="chip">Your first real project folder</span>
+        <span class="chip">No state yet — that is next week</span>
+      </div>
+    </div>
+
+    <div class="goals">
+      <h2>By the end of this week you will</h2>
+      <ul>
+        <li>Have a running React project created with Vite</li>
+        <li>Know what a component is and why the page is split into three of them</li>
+        <li>Read and write JSX without fighting it</li>
+        <li>Pass a value from a parent component into a child</li>
+      </ul>
+    </div>
+
+    <!-- ============================================ -->
+    <section id="why">
+      <h2><span class="n">01</span> Why React at all</h2>
+      <hr class="h2-rule">
+      <p>Your Week 1 page is fixed. Nothing on it ever changes. The application you are building is the opposite: markers appear when clicked, a list grows and shrinks, results arrive from a server and get drawn.</p>
+      <p>You could do all of that by hand — find an element, create another one, insert it, remember to remove it later. That works for ten lines and becomes unmanageable at a hundred, because you end up tracking what is currently on screen as well as what should be.</p>
+      <p>React removes the second job. <strong>You describe what the page should look like for the current data, and React works out what to change on screen.</strong> Add an item to a list and the list redraws itself. You never touch the page directly again.</p>
+      <p>A <strong>component</strong> is one reusable piece of that description: a function that returns some markup. Your page becomes three of them, and each can be opened, understood, and fixed on its own.</p>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="create">
+      <h2><span class="n">02</span> Create the project</h2>
+      <hr class="h2-rule">
+      <p>In the terminal, from inside your <code>spatial-app</code> folder:</p>
+
+      <figure class="code term" data-file="terminal">
+<pre><code><span class="pr">$</span> npm create vite@latest frontend -- --template react
+<span class="pr">$</span> cd frontend
+<span class="pr">$</span> npm install
+<span class="pr">$</span> npm run dev</code></pre>
+      </figure>
+
+      <p>The first line creates a folder called <code>frontend</code> holding a ready-made React project. The second moves into it, the third downloads everything the project depends on, and the fourth starts a development server.</p>
+      <p>You should see a line offering a local address, usually <code>http://localhost:5173</code>. Open it. The default Vite welcome page appears — a spinning logo and a counter button.</p>
+
+      <div class="note">
+        <span class="lbl">Leave it running</span>
+        <p><code>npm run dev</code> does not finish. It keeps running and watches your files, so every time you save, the browser updates by itself. Leave that terminal alone and open a second one when you need to type other commands. Press <strong>Ctrl+C</strong> in it when you want to stop the server.</p>
+      </div>
+
+      <p>Your Week 1 <code>index.html</code> and <code>style.css</code> stay where they are, at the top of <code>spatial-app</code>. They are your reference for the rest of this week — you are about to rebuild them, not delete them.</p>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="tour">
+      <h2><span class="n">03</span> What the folders are</h2>
+      <hr class="h2-rule">
+      <p>Vite generated more files than you need to care about. Here is the short version:</p>
+
+      <figure class="code" data-file="spatial-app/frontend">
+<pre><code>frontend/
+├── node_modules/     <span class="cm">every downloaded library — never edit, never commit</span>
+├── public/           <span class="cm">images and files served as-is</span>
+├── src/              <span class="cm">← everything you write lives here</span>
+│   ├── App.jsx       <span class="cm">the top-level component</span>
+│   ├── App.css       <span class="cm">default styles — you will delete this</span>
+│   ├── main.jsx      <span class="cm">boots React onto the page — touch once, then never</span>
+│   └── index.css     <span class="cm">your styles go here</span>
+├── index.html        <span class="cm">a nearly empty shell — React fills it in</span>
+└── package.json      <span class="cm">the project's name and its dependencies</span></code></pre>
+      </figure>
+
+      <p><strong>You work inside <code>src/</code>.</strong> That is the useful sentence in this section. The rest is scaffolding that runs itself.</p>
+
+      <div class="warn">
+        <span class="lbl">Never commit <code>node_modules</code></span>
+        <p>It contains tens of thousands of files. Vite already created a <code>.gitignore</code> that excludes it — check that <code>node_modules</code> appears in <code>frontend/.gitignore</code> before your first commit. If you accidentally push it, your repository becomes enormous and slow to clone.</p>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="jsx">
+      <h2><span class="n">04</span> Four JSX rules</h2>
+      <hr class="h2-rule">
+      <p>React components return something that looks like HTML but is written inside JavaScript. It is called JSX, and it follows four rules that catch everyone once.</p>
+
+      <h3>1 · <code>class</code> becomes <code>className</code></h3>
+      <p><code>class</code> is a reserved word in JavaScript, so JSX uses a different name for the same thing. This is the single most common JSX mistake, and the most annoying, because nothing breaks — your styles simply do not apply.</p>
+      <figure class="code" data-file="jsx">
+<pre><code>&lt;aside class="palette"&gt;      <span class="cm">// wrong — silently ignored</span>
+&lt;aside className="palette"&gt;  <span class="cm">// right</span></code></pre>
+      </figure>
+
+      <h3>2 · Every tag closes</h3>
+      <p>HTML tolerates <code>&lt;br&gt;</code> and <code>&lt;img&gt;</code> left open. JSX does not.</p>
+      <figure class="code" data-file="jsx">
+<pre><code>&lt;br /&gt;   &lt;img src="x.png" /&gt;   &lt;input type="text" /&gt;</code></pre>
+      </figure>
+
+      <h3>3 · One outer element</h3>
+      <p>A component returns exactly one thing. If you need two side by side, wrap them — either in a real element or in an empty pair of brackets when you do not want an extra <code>div</code>.</p>
+      <figure class="code" data-file="jsx">
+<pre><code><span class="cm">// wrong — two things returned</span>
+return (
+  &lt;h2&gt;Results&lt;/h2&gt;
+  &lt;p&gt;Nothing yet.&lt;/p&gt;
+);
+
+<span class="cm">// right</span>
+return (
+  &lt;section&gt;
+    &lt;h2&gt;Results&lt;/h2&gt;
+    &lt;p&gt;Nothing yet.&lt;/p&gt;
+  &lt;/section&gt;
+);</code></pre>
+      </figure>
+
+      <h3>4 · Curly braces escape back into JavaScript</h3>
+      <p>Inside JSX, <code>{ }</code> means "stop writing markup, evaluate this expression, and put the result here".</p>
+      <figure class="code" data-file="jsx">
+<pre><code>const name = "Station";
+
+&lt;h2&gt;{name}&lt;/h2&gt;              <span class="cm">// → Station</span>
+&lt;h2&gt;{2 + 2}&lt;/h2&gt;             <span class="cm">// → 4</span>
+&lt;h2&gt;name&lt;/h2&gt;                <span class="cm">// → the literal word "name"</span></code></pre>
+      </figure>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="components">
+      <h2><span class="n">05</span> Build three components</h2>
+      <hr class="h2-rule">
+      <p>Make a folder <code>src/components/</code> and create three files inside it. Each is a function that returns one region of your Week 1 layout.</p>
+
+      <figure class="code" data-file="src/components/Sidebar.jsx">
+<pre><code>export default function Sidebar() {
+  return (
+    &lt;aside className="palette"&gt;
+      &lt;h2&gt;Components&lt;/h2&gt;
+      &lt;button className="item"&gt;Station&lt;/button&gt;
+      &lt;button className="item"&gt;Park&lt;/button&gt;
+      &lt;button className="item"&gt;Shop&lt;/button&gt;
+    &lt;/aside&gt;
+  );
+}</code></pre>
+      </figure>
+
+      <figure class="code" data-file="src/components/MapArea.jsx">
+<pre><code>export default function MapArea() {
+  return (
+    &lt;main className="map-area"&gt;
+      &lt;p className="placeholder"&gt;Map goes here — Week 5&lt;/p&gt;
+    &lt;/main&gt;
+  );
+}</code></pre>
+      </figure>
+
+      <figure class="code" data-file="src/components/ResultPanel.jsx">
+<pre><code>export default function ResultPanel() {
+  return (
+    &lt;section className="results"&gt;
+      &lt;h2&gt;Results&lt;/h2&gt;
+      &lt;p&gt;Nothing analyzed yet.&lt;/p&gt;
+    &lt;/section&gt;
+  );
+}</code></pre>
+      </figure>
+
+      <p><code>export default</code> makes the function available to other files. Component names start with a capital letter — this is not style, it is how React tells your components apart from ordinary HTML tags.</p>
+
+      <h3>Assemble them</h3>
+      <p>Replace everything in <code>src/App.jsx</code> with this:</p>
+
+      <figure class="code" data-file="src/App.jsx">
+<pre><code>import Sidebar from "./components/Sidebar";
+import MapArea from "./components/MapArea";
+import ResultPanel from "./components/ResultPanel";
+
+export default function App() {
+  return (
+    &lt;div className="app"&gt;
+      &lt;div className="top"&gt;
+        &lt;Sidebar /&gt;
+        &lt;MapArea /&gt;
+      &lt;/div&gt;
+      &lt;ResultPanel /&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+      </figure>
+
+      <p>Compare this with your Week 1 <code>index.html</code>. It is the same structure, with each region replaced by its name. That readability is the point of splitting things up — you can see the shape of the whole page in eight lines.</p>
+
+      <h3>Bring your styles across</h3>
+      <p>Replace everything in <code>src/index.css</code> with your Week 1 <code>style.css</code>, plus the three lines at the top below. Then delete the <code>import "./App.css"</code> line from <code>App.jsx</code> if it is still there.</p>
+
+      <figure class="code" data-file="src/index.css">
+<pre><code><span class="cm">/* React mounts inside #root, so it needs a height too */</span>
+html, body, #root {
+  height: 100%;
+}
+
+<span class="cm">/* ...then everything from your Week 1 style.css ... */</span></code></pre>
+      </figure>
+
+      <div class="warn">
+        <span class="lbl">Without those three lines your layout collapses</span>
+        <p><code>.app</code> asks for <code>height: 100vh</code>, but it now sits inside a <code>#root</code> element that has no height of its own. React inserts that element, so it did not exist in Week 1 and this problem could not happen then. If your page renders as a thin strip at the top, this is why.</p>
+      </div>
+
+      <p>Save and look at the browser. It should be indistinguishable from your Week 1 page — same three regions, same colors. Nothing new is visible, and that is the correct result: you rebuilt the same thing on a foundation that can now change.</p>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="props">
+      <h2><span class="n">06</span> Pass data with props</h2>
+      <hr class="h2-rule">
+      <p>Right now <code>Sidebar</code> has the word "Components" baked into it. A parent should be able to decide that instead. Values passed from a parent to a child are called <strong>props</strong>, and they are written like HTML attributes.</p>
+
+      <p>In <code>App.jsx</code>, give the sidebar a title:</p>
+      <figure class="code" data-file="src/App.jsx">
+<pre><code>&lt;Sidebar title="Components" /&gt;</code></pre>
+      </figure>
+
+      <p>And in <code>Sidebar.jsx</code>, receive it:</p>
+      <figure class="code" data-file="src/components/Sidebar.jsx">
+<pre><code>export default function Sidebar({ title }) {
+  return (
+    &lt;aside className="palette"&gt;
+      &lt;h2&gt;{title}&lt;/h2&gt;
+      &lt;button className="item"&gt;Station&lt;/button&gt;
+      &lt;button className="item"&gt;Park&lt;/button&gt;
+      &lt;button className="item"&gt;Shop&lt;/button&gt;
+    &lt;/aside&gt;
+  );
+}</code></pre>
+      </figure>
+
+      <p>Change the string in <code>App.jsx</code> to something else and watch the heading follow. That is all props are.</p>
+
+      <div class="note">
+        <span class="lbl">Why bother, for one word?</span>
+        <p>Because this is the only mechanism by which data reaches a component, and everything from here runs on it. Next week the list of placements travels down this way, and the function for adding one travels down beside it. Props always flow from parent to child — a child can never reach up and change its parent's data directly, which is exactly what makes a React application possible to reason about.</p>
+      </div>
+
+      <h3>Save your work</h3>
+      <figure class="code term" data-file="terminal">
+<pre><code><span class="pr">$</span> git add .
+<span class="pr">$</span> git commit -m "Week 3: React components and props"
+<span class="pr">$</span> git push</code></pre>
+      </figure>
+      <p>Check the repository page on GitHub afterwards. You should see the <code>frontend</code> folder, and you should <em>not</em> see <code>node_modules</code>.</p>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="broken">
+      <h2><span class="n">07</span> When it breaks</h2>
+      <hr class="h2-rule">
+
+      <div class="trouble">
+        <details>
+          <summary>The page is completely blank and white</summary>
+          <div class="body">
+            <p>A JavaScript error stopped React before it drew anything. Press <strong>F12</strong> and read the Console tab — the first red message names the file and line. A blank page always has an explanation waiting there.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Failed to resolve import "./components/Sidebar"</summary>
+          <div class="body">
+            <p>The path or the filename does not match. Check the spelling and the capital letter — <code>sidebar.jsx</code> and <code>Sidebar.jsx</code> are different files on the servers you deploy to in Week 12, even if your own computer is relaxed about it. Also confirm the file is in <code>src/components/</code> and not in <code>src/</code>.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>My styles are not applying</summary>
+          <div class="body">
+            <p>You wrote <code>class</code> instead of <code>className</code>. React ignores <code>class</code> without complaining. Search your components for <code>class=</code> and fix each one.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Everything is squashed into a strip at the top</summary>
+          <div class="body">
+            <p><code>html, body, #root { height: 100%; }</code> is missing from <code>index.css</code>. See the warning in step 5 — this one is specific to React and did not exist in Week 1.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Adjacent JSX elements must be wrapped in an enclosing tag</summary>
+          <div class="body">
+            <p>Your component returns two things at the top level. Wrap them in a single element, or in <code>&lt;&gt;</code> and <code>&lt;/&gt;</code> if you do not want an extra <code>div</code> in the output.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>The Vite welcome page is still showing</summary>
+          <div class="body">
+            <p><code>App.jsx</code> was not saved, or you edited a different <code>App.jsx</code> than the one being served. Confirm the file path is <code>frontend/src/App.jsx</code>, and check the terminal running <code>npm run dev</code> for errors it may be printing.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Port 5173 is already in use</summary>
+          <div class="body">
+            <p>An earlier <code>npm run dev</code> is still running in a terminal you closed the window on. Vite will usually offer the next port instead, which is fine. To reclaim 5173, find and stop the old process — or simply restart your computer, which is faster than looking it up.</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="submit" class="submit">
+      <h2>Hand it in</h2>
+      <hr class="h2-rule">
+      <ul class="check">
+        <li><label><input type="checkbox"> A working Vite + React project in <code>frontend/</code>, committed, with <code>node_modules</code> excluded</label></li>
+        <li><label><input type="checkbox"> Three component files, each exporting one component</label></li>
+        <li><label><input type="checkbox"> <code>App.jsx</code> assembling all three, with your Week 1 styles applied</label></li>
+        <li><label><input type="checkbox"> A screenshot of the running dev server showing the layout and the title you passed in as a prop</label></li>
+      </ul>
+    </section>
+
+    <nav class="weeknav">
+      <a href="week02.html"><span class="dir">Previous</span><span class="ttl">JavaScript: four patterns</span></a>
+      <a class="next" href="week04.html"><span class="dir">Next week</span><span class="ttl">React state and list rendering</span></a>
+    </nav>
+
+  </main>
+</div>
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

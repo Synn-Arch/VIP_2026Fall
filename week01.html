@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Week 1 — Environment and Application Shell</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">Spatial App · Tutorials</a>
+    <div class="ticks">
+      <span class="tick now"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
+      <span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
+      <span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
+      <span class="tick"></span><span class="tick"></span>
+    </div>
+    <span class="ticks-label">Week 1 of 14</span>
+  </div>
+</header>
+
+<div class="shell">
+<div class="layout">
+
+  <nav class="spine" aria-label="On this page">
+    <p class="spine-title">This week</p>
+    <ol>
+      <li><a href="#see">See the destination</a></li>
+      <li><a href="#install">Install your tools</a></li>
+      <li><a href="#verify">Check it worked</a></li>
+      <li><a href="#repo">Create your repository</a></li>
+      <li><a href="#html">Write the HTML</a></li>
+      <li><a href="#css">Style it with flexbox</a></li>
+      <li><a href="#broken">When it breaks</a></li>
+      <li><a href="#submit">Hand it in</a></li>
+    </ol>
+  </nav>
+
+  <main class="content">
+
+    <div class="page-head">
+      <p class="eyebrow">Week 1 · Jan 20 – Jan 27</p>
+      <h1>Environment and application shell</h1>
+      <p class="dek">Install the tools everyone in this class will use, then build the static three-panel layout that the rest of the semester fills in.</p>
+      <div class="meta">
+        <span class="chip">≈2 hours</span>
+        <span class="chip">Half setup, half layout</span>
+        <span class="chip">No Mapbox account needed yet</span>
+      </div>
+    </div>
+
+    <div class="goals">
+      <h2>By the end of this week you will</h2>
+      <ul>
+        <li>Understand what you are building and how the pieces connect</li>
+        <li>Have a working development environment identical to everyone else's</li>
+        <li>Own a GitHub repository you will use for the whole course</li>
+        <li>Have a three-panel page that looks like the finished application, minus the map</li>
+      </ul>
+    </div>
+
+    <div class="warn">
+      <span class="lbl">Read this before you start</span>
+      <p>This week is deliberately front-loaded. <strong>Installation is the required half; the layout is the second half.</strong> If installation eats your full two hours because of a path or permission problem, that is normal — hand in the installation evidence, say so, and finish the layout at the start of Week 2.</p>
+      <p>What you must not do is skip installation to reach the visible part faster. Every remaining week assumes these tools exist and work.</p>
+    </div>
+
+    <!-- ============================================ -->
+    <section id="see">
+      <h2><span class="n">01</span> See the destination</h2>
+      <hr class="h2-rule">
+      <p>Before touching anything, watch the demonstration of the finished application. Two hours a week for thirteen weeks is a long time to spend without a clear picture of where it ends, and almost every decision in these tutorials makes more sense once you have seen the result.</p>
+      <p>The application has three moving parts, and you will build them in this order:</p>
+      <ul>
+        <li><strong>A frontend</strong> — the page in the browser. It shows a map, lets you place components on it, and displays results. Weeks 1 to 6.</li>
+        <li><strong>A backend</strong> — a Python program running on a server. It receives your placements and calculates something from them. Weeks 7 to 10.</li>
+        <li><strong>A connection</strong> — the frontend sends data to the backend and gets an answer back, as JSON. Weeks 8 and 9.</li>
+      </ul>
+      <p>You do not need to understand how any of that works yet. You will meet each concept again, in context, at the moment you need it. Right now it is enough to know that the thing you are building has three parts and that they talk to each other over the network.</p>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="install">
+      <h2><span class="n">02</span> Install your tools</h2>
+      <hr class="h2-rule">
+      <p>Four things, in this order. Take the default options in every installer unless a step below says otherwise.</p>
+
+      <div class="tabs">
+        <div class="tabs-bar" role="tablist">
+          <button role="tab" id="t-win" aria-controls="p-win" aria-selected="true">Windows</button>
+          <button role="tab" id="t-mac" aria-controls="p-mac" aria-selected="false">macOS</button>
+        </div>
+
+        <div class="tabs-panel" id="p-win" role="tabpanel" aria-labelledby="t-win">
+          <h3>1 · Visual Studio Code</h3>
+          <p>Download from <a href="https://code.visualstudio.com" target="_blank" rel="noopener">code.visualstudio.com</a> and run the installer. This is the program you write code in.</p>
+
+          <h3>2 · Node.js</h3>
+          <p>Download the <strong>LTS</strong> version from <a href="https://nodejs.org" target="_blank" rel="noopener">nodejs.org</a>. LTS means "long-term support" — it is the stable one, and the one this course expects. Do not take the version labelled Current.</p>
+
+          <h3>3 · Python</h3>
+          <p>Download Python 3.11 or later from <a href="https://www.python.org/downloads/" target="_blank" rel="noopener">python.org/downloads</a>.</p>
+          <div class="warn">
+            <span class="lbl">One checkbox decides your semester</span>
+            <p>On the first screen of the Python installer, tick <strong>Add python.exe to PATH</strong> before clicking Install. It is easy to miss and it is off by default. Without it, your computer will not know what the word <code>python</code> means, and you will spend Week 7 fighting your own machine instead of writing code.</p>
+          </div>
+
+          <h3>4 · Git</h3>
+          <p>Download from <a href="https://git-scm.com/download/win" target="_blank" rel="noopener">git-scm.com/download/win</a>. The installer asks a lot of questions; accept every default. Git is how you save your work and how you hand it in.</p>
+        </div>
+
+        <div class="tabs-panel" id="p-mac" role="tabpanel" aria-labelledby="t-mac" hidden>
+          <h3>1 · Visual Studio Code</h3>
+          <p>Download from <a href="https://code.visualstudio.com" target="_blank" rel="noopener">code.visualstudio.com</a>, then drag the app into your Applications folder. This is the program you write code in.</p>
+
+          <h3>2 · Node.js</h3>
+          <p>Download the <strong>LTS</strong> installer from <a href="https://nodejs.org" target="_blank" rel="noopener">nodejs.org</a>. LTS means "long-term support" — it is the stable one, and the one this course expects. Do not take the version labelled Current.</p>
+
+          <h3>3 · Python</h3>
+          <p>macOS ships with an old Python that will not do. Download 3.11 or later from <a href="https://www.python.org/downloads/" target="_blank" rel="noopener">python.org/downloads</a> and run the installer.</p>
+          <div class="note">
+            <span class="lbl">On a Mac the command is python3</span>
+            <p>Throughout this course, wherever a tutorial writes <code>python</code>, type <code>python3</code> instead. The same applies to <code>pip</code>, which becomes <code>pip3</code>. Plain <code>python</code> on a Mac points at the old system copy.</p>
+          </div>
+
+          <h3>4 · Git</h3>
+          <p>Open Terminal and run <code>xcode-select --install</code>, then accept the dialog that appears. This installs Git along with the other command line tools. If it reports that the tools are already installed, you are done.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="verify">
+      <h2><span class="n">03</span> Check it worked</h2>
+      <hr class="h2-rule">
+      <p>Open Visual Studio Code. From the menu bar choose <strong>Terminal → New Terminal</strong>. A panel appears at the bottom of the window with a blinking cursor. This is the terminal, and you will use it every week from here on.</p>
+      <p>Type each of these lines and press Enter after each one. Do not type the <code>$</code> — it just marks where a command starts.</p>
+
+      <figure class="code term" data-file="terminal">
+<pre><code><span class="pr">$</span> node -v
+<span class="pr">$</span> npm -v
+<span class="pr">$</span> python --version
+<span class="pr">$</span> git --version</code></pre>
+      </figure>
+
+      <p>Each line should answer with a version number — something like <code>v22.11.0</code> or <code>Python 3.12.4</code>. The exact numbers do not matter as long as Node is version 20 or higher and Python is 3.11 or higher.</p>
+      <p>If any line answers with <em>command not found</em> or <em>is not recognized</em>, that tool did not install correctly. Go to <a href="#broken">When it breaks</a> below — do not continue past this point with a missing tool.</p>
+
+      <div class="note">
+        <span class="lbl">Take the screenshot now</span>
+        <p>Capture the terminal with all four answers visible in one image. That screenshot is the first item you hand in this week, and it is easier to take now than to reconstruct later.</p>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="repo">
+      <h2><span class="n">04</span> Create your repository</h2>
+      <hr class="h2-rule">
+      <p>A repository is a folder whose history is tracked. Yours will hold every file you write this semester, and its address is how you submit work.</p>
+
+      <h3>Make it on GitHub</h3>
+      <p>Sign in at <a href="https://github.com" target="_blank" rel="noopener">github.com</a>, creating an account if you need one. Click <strong>New repository</strong> and set it up like this:</p>
+      <ul>
+        <li>Name: <code>spatial-app</code></li>
+        <li>Visibility: <strong>Public</strong> — your instructor and classmates need to open it</li>
+        <li>Tick <strong>Add a README file</strong></li>
+      </ul>
+      <p>Create it, then click the pencil icon on <code>README.md</code> and put your name on the first line. Commit that change.</p>
+
+      <h3>Bring it onto your computer</h3>
+      <p>On the repository page, click the green <strong>Code</strong> button and copy the HTTPS address. Back in the VS Code terminal:</p>
+
+      <figure class="code term" data-file="terminal">
+<pre><code><span class="cm"># move to a sensible place first — Documents is fine</span>
+<span class="pr">$</span> cd Documents
+<span class="pr">$</span> git clone https://github.com/YOUR-USERNAME/spatial-app.git
+<span class="pr">$</span> cd spatial-app</code></pre>
+      </figure>
+
+      <p>Then in VS Code choose <strong>File → Open Folder</strong> and open the <code>spatial-app</code> folder you just cloned. Everything you write for the rest of the semester goes inside it.</p>
+
+      <h3>The four commands you need from Git</h3>
+      <p>Git has hundreds of commands. You will use four, over and over, and you can ignore the rest until you are curious.</p>
+
+      <figure class="code term" data-file="terminal">
+<pre><code><span class="pr">$</span> git status                          <span class="cm"># what have I changed?</span>
+<span class="pr">$</span> git add .                            <span class="cm"># stage everything I changed</span>
+<span class="pr">$</span> git commit -m "Week 1: app shell"    <span class="cm"># save a snapshot, with a note</span>
+<span class="pr">$</span> git push                             <span class="cm"># send it to GitHub</span></code></pre>
+      </figure>
+
+      <div class="note">
+        <span class="lbl">First commit on a new machine</span>
+        <p>If Git refuses your first commit and asks who you are, tell it once and it will never ask again:</p>
+        <p><code>git config --global user.name "Your Name"</code><br>
+           <code>git config --global user.email "you@example.com"</code></p>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="html">
+      <h2><span class="n">05</span> Write the HTML</h2>
+      <hr class="h2-rule">
+      <p>HTML describes what is on a page — not what it looks like. It is made of <strong>elements</strong>, written as an opening tag, some content, and a closing tag: <code>&lt;h2&gt;Results&lt;/h2&gt;</code>. Elements sit inside other elements, and that nesting is the whole structure.</p>
+      <p>Two attributes matter for this course. <code>class</code> gives an element a label so you can style it later, and <code>id</code> gives it a unique name. Nearly everything below uses <code>class</code>.</p>
+
+      <p>Create a file called <code>index.html</code> in your <code>spatial-app</code> folder and paste this in.</p>
+
+      <figure class="code" data-file="index.html">
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+  &lt;head&gt;
+    &lt;meta charset="utf-8" /&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1" /&gt;
+    &lt;title&gt;Spatial App&lt;/title&gt;
+    &lt;link rel="stylesheet" href="style.css" /&gt;
+  &lt;/head&gt;
+
+  &lt;body&gt;
+    &lt;div class="app"&gt;
+
+      <span class="cm">&lt;!-- top row: palette on the left, map on the right --&gt;</span>
+      &lt;div class="top"&gt;
+
+        &lt;aside class="palette"&gt;
+          &lt;h2&gt;Components&lt;/h2&gt;
+          &lt;button class="item"&gt;Station&lt;/button&gt;
+          &lt;button class="item"&gt;Park&lt;/button&gt;
+          &lt;button class="item"&gt;Shop&lt;/button&gt;
+        &lt;/aside&gt;
+
+        &lt;main class="map-area"&gt;
+          &lt;p class="placeholder"&gt;Map goes here — Week 5&lt;/p&gt;
+        &lt;/main&gt;
+
+      &lt;/div&gt;
+
+      <span class="cm">&lt;!-- bottom strip: analysis results --&gt;</span>
+      &lt;section class="results"&gt;
+        &lt;h2&gt;Results&lt;/h2&gt;
+        &lt;p&gt;Nothing analyzed yet.&lt;/p&gt;
+      &lt;/section&gt;
+
+    &lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      </figure>
+
+      <p>Open the file in your browser — right-click it in the VS Code file list and choose <strong>Reveal in File Explorer</strong> (or <strong>Finder</strong>), then double-click it. You will see three unstyled blocks stacked on top of each other. That is correct for now. HTML alone has no layout.</p>
+
+      <div class="note">
+        <span class="lbl">Why <code>aside</code>, <code>main</code>, and <code>section</code> instead of <code>div</code> everywhere?</span>
+        <p>They behave identically. The difference is that their names say what the region is for, which makes the file readable to you in Week 6 and to screen readers always. Use the specific name when one fits.</p>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="css">
+      <h2><span class="n">06</span> Style it with flexbox</h2>
+      <hr class="h2-rule">
+      <p>CSS decides how the elements look and where they sit. A rule targets elements by class — <code>.palette</code> means "every element with <code>class="palette"</code>" — and then sets properties on them.</p>
+
+      <h3>The one layout idea you need</h3>
+      <p>Flexbox arranges children in a row or a column. You set <code>display: flex</code> on a <em>container</em>, and its direct children line up. Two properties do most of the work:</p>
+      <ul>
+        <li><code>flex-direction: row</code> puts children side by side; <code>column</code> stacks them. Row is the default.</li>
+        <li><code>flex: 1</code> on a child means "take all the leftover space". <code>flex: none</code> means "stay the size I asked for".</li>
+      </ul>
+      <p>That is the entire mechanism behind the layout you are about to build. The outer <code>.app</code> is a column — top row above, results below. The <code>.top</code> inside it is a row — palette beside map.</p>
+
+      <p>Create <code>style.css</code> next to <code>index.html</code> and paste this in. Four values are marked <span style="color:#B45309"><strong>TODO</strong></span>; those are yours to decide.</p>
+
+      <figure class="code" data-file="style.css">
+<pre><code><span class="cm">/* ---------- basics ---------- */</span>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  color: #14232b;
+}
+
+<span class="cm">/* ---------- the app fills the window ---------- */</span>
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;          <span class="cm">/* 100% of the viewport height */</span>
+}
+
+<span class="cm">/* ---------- top row: palette beside map ---------- */</span>
+.top {
+  display: flex;          <span class="todo">/* TODO 1 — delete this line, reload, put it back */</span>
+  flex: 1;
+  min-height: 0;
+}
+
+<span class="cm">/* ---------- left: component palette ---------- */</span>
+.palette {
+  width: 220px;           <span class="todo">/* TODO 2 — try 120px and 400px, then choose */</span>
+  flex: none;
+  padding: 16px;
+  background: #f2f4f5;
+  border-right: 2px solid #94a7ae;
+}
+
+<span class="cm">/* ---------- center: the future map ---------- */</span>
+.map-area {
+  flex: 1;                <span class="todo">/* TODO 3 — change to 0, reload, and see what happens */</span>
+  display: grid;
+  place-items: center;
+  background: #d7dcd8;
+  border: 2px solid #94a7ae;
+}
+
+<span class="cm">/* ---------- bottom: results strip ---------- */</span>
+.results {
+  height: 160px;          <span class="todo">/* TODO 4 — pick a height that fits three lines of text */</span>
+  flex: none;
+  padding: 12px 16px;
+  overflow-y: auto;
+  background: #ffffff;
+  border-top: 2px solid #94a7ae;
+}
+
+<span class="cm">/* ---------- small details ---------- */</span>
+h2 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #5b6f77;
+  margin: 0 0 12px;
+}
+
+.item {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 6px;
+  font: inherit;
+  text-align: left;
+  background: #ffffff;
+  border: 1px solid #94a7ae;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.item:hover { background: #e8edee; }
+
+.placeholder { color: #5b6f77; }</code></pre>
+      </figure>
+
+      <p>Reload the page. You should now see a light panel on the left, a large gray area in the middle, and a white strip along the bottom.</p>
+
+      <h3>Now work through the four TODOs</h3>
+      <p>Each one is a deliberate experiment, not a puzzle. Change the value, save, reload, look. Then decide what you actually want and leave it there. <strong>TODO 1 is the important one</strong> — deleting <code>display: flex</code> and watching the palette and map stack vertically is the fastest way to understand what flexbox is doing for you.</p>
+
+      <div class="warn">
+        <span class="lbl">The borders are on purpose</span>
+        <p>Those visible borders exist so you can see exactly where each region ends. Keep them for now. From Week 4 onward, elements start appearing and disappearing on their own, and being able to see the boundaries turns a confusing bug into an obvious one. You can make it pretty in Week 13.</p>
+      </div>
+
+      <h3>Check it survives being squeezed</h3>
+      <p>Drag your browser window narrower, down to about the width of a small laptop. The three regions should still be recognisable — the palette may get tight, but nothing should overlap or vanish. If it collapses, adjust your TODO 2 width.</p>
+
+      <div class="note">
+        <span class="lbl">Where to stop</span>
+        <p>If you find yourself reading about CSS specificity, gradients, animation, or grid, stop. None of it is needed in this course, and the time is better spent making sure your installation is solid.</p>
+      </div>
+
+      <h3>Save your work</h3>
+      <figure class="code term" data-file="terminal">
+<pre><code><span class="pr">$</span> git add .
+<span class="pr">$</span> git commit -m "Week 1: application shell"
+<span class="pr">$</span> git push</code></pre>
+      </figure>
+      <p>Refresh your repository page on GitHub. If <code>index.html</code> and <code>style.css</code> are listed there, you are done.</p>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="broken">
+      <h2><span class="n">07</span> When it breaks</h2>
+      <hr class="h2-rule">
+      <p>These are the failures that actually happen in Week 1. Try the matching answer before searching more widely — general advice on the internet often assumes a different setup than ours.</p>
+
+      <div class="trouble">
+        <details>
+          <summary><code>python</code> is not recognized / command not found</summary>
+          <div class="body">
+            <p><strong>Windows:</strong> the PATH checkbox was missed during installation. Re-run the Python installer, choose <strong>Modify</strong>, and make sure "Add python.exe to PATH" is ticked. Then close the terminal completely and open a new one — an open terminal does not notice PATH changes.</p>
+            <p><strong>macOS:</strong> use <code>python3</code>, not <code>python</code>. This is normal on a Mac and not a problem.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary><code>node -v</code> works but <code>npm -v</code> does not</summary>
+          <div class="body">
+            <p>The installation was interrupted partway. Uninstall Node.js from your system settings, restart the computer, and install the LTS version again from scratch.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Git asks for a password and then rejects it</summary>
+          <div class="body">
+            <p>GitHub stopped accepting account passwords over the command line. You need a <strong>personal access token</strong> instead.</p>
+            <p>On GitHub go to <strong>Settings → Developer settings → Personal access tokens → Tokens (classic)</strong>, generate a new token with the <code>repo</code> scope, and copy it. When Git asks for a password, paste the token. Save it somewhere private — GitHub will not show it to you again.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>The page opens but has no styling at all</summary>
+          <div class="body">
+            <p>The browser could not find <code>style.css</code>. Three things to check: the file is named exactly <code>style.css</code> with no hidden <code>.txt</code> on the end, it sits in the same folder as <code>index.html</code>, and the <code>&lt;link&gt;</code> line in your HTML is inside <code>&lt;head&gt;</code>.</p>
+            <p>Press <strong>F12</strong> to open the browser developer tools and look at the Console tab. A red 404 line naming <code>style.css</code> confirms the file is not where the page is looking.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>The palette sits above the map instead of beside it</summary>
+          <div class="body">
+            <p><code>display: flex</code> is missing from <code>.top</code>, or the palette and map are not both direct children of <code>.top</code>. Flexbox only arranges an element's immediate children — if something is nested one level deeper, it is not part of the row.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Everything is squashed into the top of the window</summary>
+          <div class="body">
+            <p><code>height: 100vh</code> is missing from <code>.app</code>, so the container is only as tall as its contents. Without a height to divide up, <code>flex: 1</code> has nothing to distribute.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>My changes do not appear when I reload</summary>
+          <div class="body">
+            <p>The file was not saved. VS Code shows a filled dot instead of an × on the tab of any file with unsaved changes. Press <strong>Ctrl+S</strong> (<strong>Cmd+S</strong> on a Mac). If it still looks stale, hold Shift while clicking reload to bypass the browser cache.</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="submit" class="submit">
+      <h2>Hand it in</h2>
+      <hr class="h2-rule">
+      <p>Everything below is checkable by someone who is not you. Tick each item off before you finish.</p>
+      <ul class="check">
+        <li><label><input type="checkbox"> A screenshot of your terminal showing <code>node -v</code>, <code>python --version</code>, and <code>git --version</code> — all three answers visible in one image</label></li>
+        <li><label><input type="checkbox"> The link to your <code>spatial-app</code> repository on GitHub, public, with your name in <code>README.md</code></label></li>
+        <li><label><input type="checkbox"> <code>index.html</code> and <code>style.css</code> committed and visible on GitHub</label></li>
+        <li><label><input type="checkbox"> A screenshot of the rendered page with all three regions clearly distinguishable</label></li>
+        <li><label><input type="checkbox"> The layout still holds together when the browser window is about 1000px wide</label></li>
+        <li><label><input type="checkbox"> All four TODOs in <code>style.css</code> resolved to values you chose on purpose</label></li>
+      </ul>
+
+      <div class="note" style="margin-bottom:0">
+        <span class="lbl">If installation took the whole session</span>
+        <p>Hand in the first two items and note that the layout is coming. Finish it at the start of Week 2. You are not behind — this is the expected fallback and it costs you nothing.</p>
+      </div>
+    </section>
+
+    <nav class="weeknav">
+      <a href="index.html"><span class="dir">Back to</span><span class="ttl">All weeks</span></a>
+      <a class="next" href="week02.html"><span class="dir">Next week</span><span class="ttl">JavaScript: four patterns</span></a>
+    </nav>
+
+  </main>
+</div>
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

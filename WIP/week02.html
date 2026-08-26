@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Week 2 — JavaScript: Four Essential Patterns</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">Spatial App · Tutorials</a>
+    <div class="ticks">
+      <span class="tick done"></span><span class="tick now"></span><span class="tick"></span><span class="tick"></span>
+      <span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
+      <span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
+      <span class="tick"></span><span class="tick"></span>
+    </div>
+    <span class="ticks-label">Week 2 of 14</span>
+  </div>
+</header>
+
+<div class="shell">
+<div class="layout">
+
+  <nav class="spine" aria-label="On this page">
+    <p class="spine-title">This week</p>
+    <ol>
+      <li><a href="#run">Where JavaScript runs</a></li>
+      <li><a href="#data">Pattern 1 · Data</a></li>
+      <li><a href="#change">Pattern 2 · Changing without changing</a></li>
+      <li><a href="#events">Pattern 3 · Events</a></li>
+      <li><a href="#async">Pattern 4 · Waiting</a></li>
+      <li><a href="#practice">The five exercises</a></li>
+      <li><a href="#broken">When it breaks</a></li>
+      <li><a href="#submit">Hand it in</a></li>
+    </ol>
+  </nav>
+
+  <main class="content">
+
+    <div class="page-head">
+      <p class="eyebrow">Week 2 · Jan 27 – Feb 3</p>
+      <h1>JavaScript: four essential patterns</h1>
+      <p class="dek">Almost every line of frontend code you write this semester is one of four moves. Learn those four properly and skip the rest of the language for now.</p>
+      <div class="meta">
+        <span class="chip">≈2 hours</span>
+        <span class="chip">5 exercises, self-marking</span>
+        <span class="chip">No React yet</span>
+      </div>
+    </div>
+
+    <div class="goals">
+      <h2>By the end of this week you will</h2>
+      <ul>
+        <li>Store a list of things as an array of objects — the shape all your data takes</li>
+        <li>Add and remove items without modifying the original array</li>
+        <li>Run code in response to a click</li>
+        <li>Wait for something slow to finish, using <code>async</code> and <code>await</code></li>
+      </ul>
+    </div>
+
+    <div class="note">
+      <span class="lbl">What is deliberately missing</span>
+      <p>Classes, prototypes, closures, inheritance, modules, <code>this</code>. These are real parts of JavaScript and you will meet them eventually. You will not need any of them in this course, and learning them now costs you the time you need for the four patterns that matter.</p>
+    </div>
+
+    <!-- ============================================ -->
+    <section id="run">
+      <h2><span class="n">01</span> Where JavaScript runs</h2>
+      <hr class="h2-rule">
+      <p>The same language runs in two places, and this week you use both.</p>
+      <p><strong>In the browser</strong>, where it can change what is on the page. Press <strong>F12</strong> on any web page and pick the Console tab — you can type JavaScript there and see it run immediately. It is the fastest way to test one line.</p>
+      <p><strong>In your terminal</strong>, through Node — the thing you installed last week. This runs a file top to bottom with no page involved, and it is how you will check your exercises:</p>
+
+      <figure class="code term" data-file="terminal">
+<pre><code><span class="pr">$</span> node practice.js</code></pre>
+      </figure>
+
+      <p>Same language, same rules. The only difference is what is available around it: the browser has a page, Node has your file system.</p>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="data">
+      <h2><span class="n">02</span> Pattern 1 · Data as an array of objects</h2>
+      <hr class="h2-rule">
+      <p>An <strong>object</strong> is a labelled bundle of values. You read and write its parts by name:</p>
+
+      <figure class="code" data-file="console">
+<pre><code>const station = { id: 1, type: "station", lng: 127.0, lat: 37.5 };
+
+station.type        <span class="cm">// "station"</span>
+station.lng         <span class="cm">// 127.0</span>
+station.lat = 37.6  <span class="cm">// change one field, leave the rest alone</span></code></pre>
+      </figure>
+
+      <p>An <strong>array</strong> is an ordered list. Put objects in an array and you have the shape that every piece of data in this application takes:</p>
+
+      <figure class="code" data-file="console">
+<pre><code>const placements = [
+  { id: 1, type: "station", lng: 127.00, lat: 37.50 },
+  { id: 2, type: "park",    lng: 127.05, lat: 37.55 },
+  { id: 3, type: "shop",    lng: 127.02, lat: 37.48 }
+];
+
+placements.length   <span class="cm">// 3</span>
+placements[0]       <span class="cm">// the first object — counting starts at 0</span>
+placements[0].type  <span class="cm">// "station"</span></code></pre>
+      </figure>
+
+      <div class="warn">
+        <span class="lbl">Memorise this shape</span>
+        <p><code>{ id, type, lng, lat }</code> is the object your entire application is built around. Week 4 stores it in React, Week 6 fills it from map clicks, Week 7 receives it in Python, Week 10 analyzes it. It does not change. Every field has a job: <code>id</code> identifies one placement uniquely, <code>type</code> says which component it is, and <code>lng</code>/<code>lat</code> say where it sits.</p>
+      </div>
+
+      <h3>Reading a whole array with <code>map</code></h3>
+      <p><code>map</code> runs a function on every item and hands back a new array of the answers. Same length, one result per item:</p>
+
+      <figure class="code" data-file="console">
+<pre><code>const types = placements.map(function (p) {
+  return p.type;
+});
+<span class="cm">// ["station", "park", "shop"]</span>
+
+<span class="cm">// the same thing, written with an arrow function</span>
+const types2 = placements.map((p) =&gt; p.type);</code></pre>
+      </figure>
+
+      <p>Both forms appear everywhere in real code, so read both. Arrow functions are shorter and are what you will mostly see from Week 3 onward.</p>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="change">
+      <h2><span class="n">03</span> Pattern 2 · Changing without changing</h2>
+      <hr class="h2-rule">
+      <p>This is the pattern that trips people up, and it is worth slowing down for. From Week 4, React only redraws the screen when it notices that your data was <em>replaced</em>. If you modify an array in place, React sees the same array it already had and nothing happens on screen — your code is correct and the page is frozen.</p>
+      <p>So the rule is: never change an array. Build a new one.</p>
+
+      <h3>Adding — the spread operator</h3>
+      <p>Three dots in front of an array means "pour all of its items in here":</p>
+
+      <figure class="code" data-file="console">
+<pre><code>const newOne = { id: 4, type: "park", lng: 127.1, lat: 37.6 };
+
+<span class="cm">// YES — a brand new array, original untouched</span>
+const next = [...placements, newOne];
+
+<span class="cm">// NO — this modifies the original in place</span>
+placements.push(newOne);</code></pre>
+      </figure>
+
+      <p><code>push</code> is not wrong in general JavaScript. It is wrong <em>here</em>, because of how React decides when to redraw. Get into the habit now and Week 4 will be much shorter.</p>
+
+      <h3>Removing — <code>filter</code></h3>
+      <p><code>filter</code> keeps every item for which your function answers true, and returns those as a new array:</p>
+
+      <figure class="code" data-file="console">
+<pre><code><span class="cm">// keep everything whose id is NOT 2</span>
+const without2 = placements.filter((p) =&gt; p.id !== 2);
+
+<span class="cm">// keep only the parks</span>
+const parks = placements.filter((p) =&gt; p.type === "park");</code></pre>
+      </figure>
+
+      <div class="note">
+        <span class="lbl">Two equals signs or three?</span>
+        <p>Always three. <code>===</code> compares value and type strictly. <code>==</code> performs conversions behind your back — <code>"1" == 1</code> is true — and produces bugs that are genuinely hard to find. Use <code>===</code> and <code>!==</code> without exception.</p>
+      </div>
+
+      <h3>Changing one item</h3>
+      <p>Week 6 needs this when a marker is dragged to a new position. Map over the list, replace only the one that matches, and keep the rest as they are:</p>
+
+      <figure class="code" data-file="console">
+<pre><code>const moved = placements.map((p) =&gt;
+  p.id === 2 ? { ...p, lng: 127.9, lat: 37.9 } : p
+);</code></pre>
+      </figure>
+
+      <p><code>{ ...p, lng: 127.9 }</code> means "a new object with everything <code>p</code> had, except these fields". The <code>condition ? a : b</code> form is a compact <code>if</code>: if the condition holds use <code>a</code>, otherwise use <code>b</code>.</p>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="events">
+      <h2><span class="n">04</span> Pattern 3 · Events</h2>
+      <hr class="h2-rule">
+      <p>An event is something that happened — a click, a keystroke, a drag. You respond by handing over a function to be called when it happens.</p>
+
+      <figure class="code" data-file="console">
+<pre><code>const button = document.querySelector(".item");
+
+button.addEventListener("click", function (event) {
+  console.log("clicked");
+});</code></pre>
+      </figure>
+
+      <p>Notice what you are <em>not</em> doing: you never call that function yourself. You give it away and the browser calls it later, possibly many times, possibly never. That inversion is the whole idea, and it is exactly how React works too — in Week 4 you will write <code>onClick={handleAdd}</code>, which is the same move in different clothing.</p>
+
+      <p>The <code>event</code> argument carries details about what happened. You will not need much from it until Week 6, when a map click hands you the coordinates you clicked at.</p>
+
+      <div class="note">
+        <span class="lbl"><code>console.log</code> is your main debugging tool</span>
+        <p>When something does not behave, print the value and look at it. Most bugs in this course are not broken logic — they are a value being a different shape than you assumed. <code>console.log(placements)</code> answers that question in one second.</p>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="async">
+      <h2><span class="n">05</span> Pattern 4 · Waiting for slow things</h2>
+      <hr class="h2-rule">
+      <p>Asking a server for something takes time — maybe 50 milliseconds, maybe two seconds. JavaScript refuses to freeze while it waits, so slow operations hand back a <strong>Promise</strong>: a receipt that says "an answer will exist here later".</p>
+      <p><code>await</code> pauses your function until that receipt is honoured. Any function containing <code>await</code> must be marked <code>async</code>:</p>
+
+      <figure class="code" data-file="console">
+<pre><code>async function loadResult() {
+  const response = await fetch("http://127.0.0.1:8000/analyze");
+  const data = await response.json();
+  console.log(data.score);
+}</code></pre>
+      </figure>
+
+      <p>Two awaits, because there are two waits: one for the server to reply at all, and one for the reply's body to be read and turned into a JavaScript object. This exact pair of lines is what you write in Week 8.</p>
+
+      <h3>JSON</h3>
+      <p>Servers cannot send objects — they send text. <strong>JSON</strong> is the agreed way of writing an object as text, and it looks almost identical to what you already write:</p>
+
+      <figure class="code" data-file="console">
+<pre><code>{ "id": 1, "type": "station", "lng": 127.0, "lat": 37.5 }</code></pre>
+      </figure>
+
+      <p>The only visible difference is that every key is quoted. <code>response.json()</code> turns that text back into a real object; <code>JSON.stringify(x)</code> goes the other way when you need to send something. Python speaks the same format, which is why the two halves of your application can understand each other at all.</p>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="practice">
+      <h2><span class="n">06</span> The five exercises</h2>
+      <hr class="h2-rule">
+      <p>Create a file called <code>practice.js</code> in your <code>spatial-app</code> folder and paste this in. Five functions are empty. Fill each one in, then run the file — it marks itself.</p>
+
+      <figure class="code" data-file="practice.js">
+<pre><code><span class="cm">/* =========================================================
+   Week 2 — practice
+   Run with:  node practice.js
+   Fill in each TODO until all seven checks print PASS.
+   ========================================================= */</span>
+
+<span class="cm">/* --- Exercise 1 ------------------------------------------
+   Return a placement object with exactly these four keys:
+   id, type, lng, lat
+--------------------------------------------------------- */</span>
+function makePlacement(id, type, lng, lat) {
+  <span class="todo">// TODO 1</span>
+}
+
+<span class="cm">/* --- Exercise 2 ------------------------------------------
+   Return a NEW array with `placement` added to the end.
+   `list` itself must come out unchanged.
+--------------------------------------------------------- */</span>
+function addPlacement(list, placement) {
+  <span class="todo">// TODO 2</span>
+}
+
+<span class="cm">/* --- Exercise 3 ------------------------------------------
+   Return a NEW array without the placement whose id matches.
+   `list` itself must come out unchanged.
+--------------------------------------------------------- */</span>
+function removePlacement(list, id) {
+  <span class="todo">// TODO 3</span>
+}
+
+<span class="cm">/* --- Exercise 4 ------------------------------------------
+   Return an array of the `type` values, one per placement,
+   in the same order.
+--------------------------------------------------------- */</span>
+function typeList(list) {
+  <span class="todo">// TODO 4</span>
+}
+
+<span class="cm">/* --- Exercise 5 ------------------------------------------
+   `fakeServer()` below returns a Promise that resolves to
+   an object. Wait for it and return its `count` field.
+--------------------------------------------------------- */</span>
+async function countFromServer() {
+  <span class="todo">// TODO 5</span>
+}
+
+<span class="cm">// pretends to be a slow server — do not edit</span>
+function fakeServer() {
+  return new Promise((resolve) =&gt; {
+    setTimeout(() =&gt; resolve({ count: 3, center: [127.0, 37.5] }), 300);
+  });
+}
+
+<span class="cm">/* ========== checks — do not edit below this line ========= */</span>
+async function run() {
+  let pass = 0;
+  let fail = 0;
+
+  const check = (label, got, want) =&gt; {
+    const ok = JSON.stringify(got) === JSON.stringify(want);
+    ok ? pass++ : fail++;
+    console.log(
+      (ok ? "PASS  " : "FAIL  ") + label +
+      (ok ? "" : "\n        expected " + JSON.stringify(want) +
+                 "\n        received " + JSON.stringify(got))
+    );
+  };
+
+  const sample = [
+    { id: 1, type: "station", lng: 127.0, lat: 37.5 },
+    { id: 2, type: "park",    lng: 127.1, lat: 37.6 }
+  ];
+  const untouched = JSON.stringify(sample);
+
+  check("1  makePlacement builds the right shape",
+        makePlacement(7, "shop", 1, 2),
+        { id: 7, type: "shop", lng: 1, lat: 2 });
+
+  check("2  addPlacement returns a longer list",
+        addPlacement(sample, { id: 3, type: "shop", lng: 0, lat: 0 }).length,
+        3);
+
+  check("2  addPlacement left the original alone",
+        JSON.stringify(sample), untouched);
+
+  check("3  removePlacement drops the right one",
+        removePlacement(sample, 1),
+        [{ id: 2, type: "park", lng: 127.1, lat: 37.6 }]);
+
+  check("3  removePlacement left the original alone",
+        JSON.stringify(sample), untouched);
+
+  check("4  typeList reads every type in order",
+        typeList(sample), ["station", "park"]);
+
+  check("5  countFromServer waited for the answer",
+        await countFromServer(), 3);
+
+  console.log("\n" + pass + " passed, " + fail + " failed");
+}
+
+run();</code></pre>
+      </figure>
+
+      <p>Run it from the terminal, inside your <code>spatial-app</code> folder:</p>
+
+      <figure class="code term" data-file="terminal">
+<pre><code><span class="pr">$</span> node practice.js</code></pre>
+      </figure>
+
+      <p>Every failure prints what it expected and what it got. That difference is usually enough to tell you what is wrong without any further hunting.</p>
+
+      <div class="warn">
+        <span class="lbl">Exercises 2 and 3 are the ones that matter</span>
+        <p>Each has two checks: one that your answer is right, and one that you did not damage the original array. If the first passes and the second fails, you used <code>push</code> or <code>splice</code> instead of building something new. That exact mistake, made inside React, produces a page that silently refuses to update — and it is the single most common bug in Week 4.</p>
+      </div>
+
+      <h3>Save your work</h3>
+      <figure class="code term" data-file="terminal">
+<pre><code><span class="pr">$</span> git add .
+<span class="pr">$</span> git commit -m "Week 2: JavaScript practice"
+<span class="pr">$</span> git push</code></pre>
+      </figure>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="broken">
+      <h2><span class="n">07</span> When it breaks</h2>
+      <hr class="h2-rule">
+
+      <div class="trouble">
+        <details>
+          <summary>Cannot find module 'practice.js'</summary>
+          <div class="body">
+            <p>Your terminal is in a different folder than the file. Run <code>ls</code> (or <code>dir</code> on Windows) to see what is around you — if <code>practice.js</code> is not in that list, use <code>cd spatial-app</code> to move into the right folder and try again.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Every check prints <code>received undefined</code></summary>
+          <div class="body">
+            <p>The function has no <code>return</code>. A JavaScript function that does not explicitly return something returns <code>undefined</code>. Calculating the answer is not enough — you have to hand it back.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Check 2 or 3 passes but "left the original alone" fails</summary>
+          <div class="body">
+            <p>You modified <code>list</code> instead of building a new array. <code>push</code>, <code>splice</code>, <code>sort</code>, and <code>reverse</code> all change the array they are called on. Use <code>[...list, item]</code> to add and <code>list.filter(...)</code> to remove — both return something new and leave the original as it was.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Check 5 returns a Promise instead of 3</summary>
+          <div class="body">
+            <p>The <code>await</code> is missing. Without it you are returning the receipt rather than the thing the receipt was for. Write <code>const data = await fakeServer();</code> and then return <code>data.count</code>.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>SyntaxError: Unexpected token</summary>
+          <div class="body">
+            <p>A bracket, brace, or quote is unbalanced. The error message names a line number — the real problem is usually on that line or the one just above it. In VS Code, clicking next to a bracket highlights its partner, which finds the gap quickly.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>My arrow function returns nothing</summary>
+          <div class="body">
+            <p><code>(p) =&gt; p.type</code> returns <code>p.type</code>, but <code>(p) =&gt; { p.type }</code> returns <code>undefined</code>. Adding braces turns the arrow into a normal function body, which then needs an explicit <code>return</code>. Either drop the braces or write <code>return</code> inside them.</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="submit" class="submit">
+      <h2>Hand it in</h2>
+      <hr class="h2-rule">
+      <ul class="check">
+        <li><label><input type="checkbox"> <code>practice.js</code> committed with all five functions written</label></li>
+        <li><label><input type="checkbox"> A screenshot of the terminal showing <strong>7 passed, 0 failed</strong></label></li>
+        <li><label><input type="checkbox"> A commit message naming which exercise you found hardest, in one or two sentences</label></li>
+        <li><label><input type="checkbox"> If Week 1's layout was unfinished, it is finished and committed now</label></li>
+      </ul>
+    </section>
+
+    <nav class="weeknav">
+      <a href="week01.html"><span class="dir">Previous</span><span class="ttl">Environment and shell</span></a>
+      <a class="next" href="week03.html"><span class="dir">Next week</span><span class="ttl">React: components and props</span></a>
+    </nav>
+
+  </main>
+</div>
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>
