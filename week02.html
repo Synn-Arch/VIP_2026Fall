@@ -136,10 +136,10 @@
       <p>Type each of these lines and press Enter after each one. Do not type the <code>$</code> — it just marks where a command starts.</p>
 
       <figure class="code term" data-file="terminal">
-<pre><code><span class="pr">$</span> node -v
-<span class="pr">$</span> npm -v
-<span class="pr">$</span> python --version
-<span class="pr">$</span> git --version</code></pre>
+<pre><code><span class="pr"></span> node -v
+<span class="pr"></span> npm -v
+<span class="pr"></span> python --version
+<span class="pr"></span> git --version</code></pre>
       </figure>
 
       <p>Each line should answer with a version number — something like <code>v22.11.0</code> or <code>Python 3.12.4</code>. The exact numbers do not matter as long as Node is version 20 or higher and Python is 3.11 or higher.</p>
@@ -168,25 +168,29 @@
 
       <h3>Bring it onto your computer</h3>
       <p>On the repository page, click the green <strong>Code</strong> button and copy the HTTPS address. Back in the VS Code terminal:</p>
-      <p>This is quite a traditional way! You may already know how to use <strong>github desktop</strong> or <strong>GitKraken</strong>. If you do not, then I'd recommend to see <strong>GitKraken</strong> Download it and explore it.</p>
-
+      
       <figure class="code term" data-file="terminal">
 <pre><code><span class="cm"># move to a sensible place first — Documents is fine</span>
 <span class="pr">$</span> cd Documents
 <span class="pr">$</span> git clone https://github.com/YOUR-USERNAME/spatial-app.git
 <span class="pr">$</span> cd spatial-app</code></pre>
+
+      
       </figure>
 
+
       <p>Then in VS Code choose <strong>File → Open Folder</strong> and open the <code>spatial-app</code> folder you just cloned. Everything you write for the rest of the semester goes inside it.</p>
+      <p>This is quite a traditional way! You may already know how to use <strong>github desktop</strong> or <strong>GitKraken</strong>. If you do not, then I'd recommend to see <strong>GitKraken</strong> Download it and explore it.</p>
+
 
       <h3>The four commands you need from Git</h3>
       <p>Git has hundreds of commands. You will use four, over and over, and you can ignore the rest until you are curious.</p>
 
       <figure class="code term" data-file="terminal">
-<pre><code><span class="pr">$</span> git status                          <span class="cm"># what have I changed?</span>
-<span class="pr">$</span> git add .                            <span class="cm"># stage everything I changed</span>
-<span class="pr">$</span> git commit -m "Week 1: app shell"    <span class="cm"># save a snapshot, with a note</span>
-<span class="pr">$</span> git push                             <span class="cm"># send it to GitHub</span></code></pre>
+<pre><code><span class="pr"></span> git status                          <span class="cm"># what have I changed?</span>
+<span class="pr"></span> git add .                            <span class="cm"># stage everything I changed</span>
+<span class="pr"></span> git commit -m "Week 1: app shell"    <span class="cm"># save a snapshot, with a note</span>
+<span class="pr"></span> git push                             <span class="cm"># send it to GitHub</span></code></pre>
       </figure>
 
       <div class="note">
