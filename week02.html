@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Week 1 — Environment and Application Shell</title>
+<title>Week 2 — Research Setup</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -13,14 +13,14 @@
 
 <header class="topbar">
   <div class="topbar-inner">
-    <a class="brand" href="index.html">Spatial App · Tutorials</a>
+    <a class="brand" href="index.html">Cool Choice · Tutorials</a>
     <div class="ticks">
-      <span class="tick now"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
+      <span class="tick done"></span><span class="tick now"></span><span class="tick"></span><span class="tick"></span>
       <span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
       <span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
       <span class="tick"></span><span class="tick"></span>
     </div>
-    <span class="ticks-label">Week 1 of 14</span>
+    <span class="ticks-label">Week 2 of 14</span>
   </div>
 </header>
 
@@ -30,12 +30,17 @@
   <nav class="spine" aria-label="On this page">
     <p class="spine-title">This week</p>
     <ol>
-      <li><a href="#see">See the destination</a></li>
-      <li><a href="#install">Install your tools</a></li>
-      <li><a href="#verify">Check it worked</a></li>
-      <li><a href="#repo">Create your repository</a></li>
-      <li><a href="#html">Write the HTML</a></li>
-      <li><a href="#css">Style it with flexbox</a></li>
+      <li><a href="#model">What the model does</a></li>
+      <li><a href="#github">Create a GitHub account</a></li>
+      <li><a href="#desktop">GitHub Desktop</a></li>
+      <li><a href="#conda">Install Miniconda</a></li>
+      <li><a href="#env">Build the environment</a></li>
+      <li><a href="#verify">Check the install</a></li>
+      <li><a href="#sampledata">Download sample data</a></li>
+      <li><a href="#vscode">Work in VS Code</a></li>
+      <li><a href="#inputs">What goes in</a></li>
+      <li><a href="#run">Run the sample</a></li>
+      <li><a href="#qgis">Open it in QGIS</a></li>
       <li><a href="#broken">When it breaks</a></li>
     </ol>
   </nav>
@@ -44,45 +49,100 @@
 
     <div class="page-head">
       <p class="eyebrow">Week 2 · Aug 30 – Sep 5</p>
-      <h1>Environment and application shell</h1>
-      <p class="dek">Install the tools everyone in this class will use, then build the static three-panel layout that the rest of the semester fills in.</p>
+      <h1>Research setup</h1>
+      <p class="dek">Get your account, tools, and Python environment in place, then learn what SOLWEIG-GPU consumes and what it produces.</p>
+      <p class="dek">To build a successful web application, you'll need a solid understanding on what the model does, what it requires, and what it consumes & produces. In this week, we will set up the things we need for this semester, and try to run the Solweig model.</p>
     </div>
 
     <div class="goals">
-      <h2>By the end of this week you will</h2>
+      <h2>Week 2 Tasks</h2>
       <ul>
-        <li>Understand what you are building and how the pieces connect</li>
-        <li>Have a working development environment identical to everyone else's</li>
-        <li>Own a GitHub repository you will use for the whole course</li>
-        <li>Have a three-panel page that looks like the finished application, minus the map</li>
+        <li>Have a GitHub account and the course repository cloned to your computer</li>
+        <li>Know how to pull updates and push your own work with GitHub Desktop</li>
+        <li>Have a working <code>solweig</code> Python environment with the model installed</li>
+        <li>Be able to name the four inputs the model needs and the main outputs it returns</li>
       </ul>
-    </div>
-
-    <div class="warn">
-      <span class="lbl">Read this before you start</span>
-      <p>This week is deliberately front-loaded. <strong>Installation is the required half; the layout is the second half.</strong> If installation eats your full two hours because of a path or permission problem, that is normal — hand in the installation evidence, say so, and finish the layout at the start of Week 2.</p>
-      <p>What you must not do is skip installation to reach the visible part faster. Every remaining week assumes these tools exist and work.</p>
     </div>
 
     <!-- ============================================ -->
-    <section id="see">
-      <h2><span class="n">01</span> See the destination</h2>
+    <section id="model">
+      <h2><span class="n">01</span> What the model does</h2>
       <hr class="h2-rule">
-      <p>Before touching anything, watch the demonstration of the finished application. Two hours a week for thirteen weeks is a long time to spend without a clear picture of where it ends, and almost every decision in these tutorials makes more sense once you have seen the result.</p>
-      <p>The application has three moving parts, and you will build them in this order:</p>
-      <ul>
-        <li><strong>A frontend</strong> — the page in the browser. It shows a map, lets you place components on it, and displays results. Weeks 1 to 6.</li>
-        <li><strong>A backend</strong> — a Python program running on a server. It receives your placements and calculates something from them. Weeks 7 to 10.</li>
-        <li><strong>A connection</strong> — the frontend sends data to the backend and gets an answer back, as JSON. Weeks 8 and 9.</li>
-      </ul>
-      <p>You do not need to understand how any of that works yet. You will meet each concept again, in context, at the moment you need it. Right now it is enough to know that the thing you are building has three parts and that they talk to each other over the network.</p>
+      <p>Stand on the same street at the same moment. A thermometer reads the same air temperature under a street tree and in the middle of an asphalt plaza. The person standing in each place is not experiencing the same heat at all.</p>
+      <p>The difference is <strong>radiation</strong> — direct sunlight, shortwave bounced off pavement and walls, and longwave emitted by surfaces that have been baking all afternoon. SOLWEIG collapses all of it into one number, the <strong>mean radiant temperature (Tmrt)</strong>, and computes it for every grid cell on the ground.</p>
+
+      <p>So the model is not a map of air temperature. It is a map of what urban form does to the heat a body absorbs. Its inputs are shape — building heights, tree canopy, terrain — and its output is pedestrian-level thermal load.</p>
+
+      <p>Add air temperature, humidity, and wind and you get the comfort indices <strong>UTCI</strong> and <strong>WBGT</strong>. Tmrt is sharply sensitive to form, so its maps look crisp; UTCI mixes in meteorology and varies more smoothly across space.</p>
+
+      <p>This week you get the machinery in place, learn the file structure, and run the model once on a small piece of the sample city so you have real output to look at.</p>
     </section>
 
     <!-- ============================================ -->
-    <section id="install">
-      <h2><span class="n">02</span> Install your tools</h2>
+    <section id="github">
+      <h2><span class="n">02</span> Create a GitHub account</h2>
       <hr class="h2-rule">
-      <p>Four things, in this order. Take the default options in every installer unless a step below says otherwise.</p>
+      <p>GitHub is where the course materials live and where you will hand in work. It tracks the history of a folder, so nothing is ever lost and everyone can see who changed what.</p>
+
+      <p>Sign up at <a href="https://github.com" target="_blank" rel="noopener">github.com</a>. Three things to get right while you are there:</p>
+
+      <ul>
+        <li><strong>Use a username you would put on a CV.</strong> This account is public and outlives the course. Your name or a plain variant of it works; a handle from middle school does not.</li>
+        <li><strong>Use an email address you will still have after graduating.</strong> A personal address is safer than a school one.</li>
+        <li><strong>Turn on two-factor authentication.</strong> GitHub requires it for most accounts now, and setting it up during signup is far less annoying than being locked out later.</li>
+      </ul>
+
+      <div class="warn">
+        <span class="lbl">Send your username & email address of GitHub to me!</span>
+        <p>Please send your GitHub username and email address to Sungho Synn (ssynn3@gatech.edu) (Teams message is the best way to reach me) so you can be added to our repository.</p>
+      </div>
+
+    </section>
+
+    <!-- ============================================ -->
+    <section id="desktop">
+      <h2><span class="n">03</span> GitHub Desktop and the course repository</h2>
+      <hr class="h2-rule">
+      <p>Git is normally driven from a terminal. GitHub Desktop puts the same operations behind four buttons, which is the right trade for this course — you have a heat model to learn, not a version control system.</p>
+
+      <h3>Install and sign in</h3>
+      <p>Download from <a href="https://desktop.github.com" target="_blank" rel="noopener">desktop.github.com</a>, install it, and sign in with the account you just made. It will offer to configure your name and email; accept.</p>
+
+      <h3>Clone the course repository</h3>
+      <p>If this is the first time to use Github Desktop, in the landing page of GitHub Desktop, choose <strong>remap-research-group/no-heat-vip</strong></p>
+
+      <p>If you are already using Github Desktop, go to File → Clone repository and paste the URL: <strong>https://github.com/remap-research-group/no-heat-vip</strong></p>
+
+      <p>Pick a local path you will remember and can find quickly — <code>Documents/no-heat-vip</code> is fine. Avoid anything synced by iCloud, OneDrive, or Dropbox: those services rewrite files underneath Git and cause conflicts that are genuinely painful to unpick.</p>
+
+      <p>Our materials for this term are in:</p>
+
+      <figure class="code" data-file="folder">
+<pre><code>no-heat-vip/2026_Fall/Cool_Choices/</code></pre>
+      </figure>
+
+      <p>Open that folder on your computer and look through it before going further. Knowing what is already there saves you from rebuilding something that exists.</p>
+
+      <h3>The four things you will actually do</h3>
+      <p>Everything you need from GitHub Desktop for the whole semester:</p>
+
+      <ul>
+        <li><strong>Fetch origin</strong> — top right. Pulls down whatever changed on GitHub. Press it every time you sit down to work, before you touch anything. If it turns into <strong>Pull origin</strong>, press that too.</li>
+        <li><strong>Changes tab</strong> — left side. Lists every file you have edited, added, or deleted since the last save point. Clicking a file shows the exact lines that differ.</li>
+        <li><strong>Commit to main</strong> — bottom left. Writes a save point. Type a short summary of what you did; "Week 2 input inspection" tells a reader more than "update".</li>
+        <li><strong>Push origin</strong> — sends your commits to GitHub so everyone else can see them.</li>
+      </ul>
+
+    </section>
+
+    <!-- ============================================ -->
+    <section id="conda">
+      <h2><span class="n">04</span> Install Miniconda</h2>
+      <hr class="h2-rule">
+      <p>If you already installed conda or miniconda, you can skip this step.</p>
+      <p>SOLWEIG-GPU depends on GDAL, the library that reads and writes geospatial rasters. GDAL is notoriously awkward to install with <code>pip</code> because the Python package has to match a system library exactly. Conda installs both together and keeps them in step, which removes an entire category of problem before it starts.</p>
+
+      <p>Install <strong>Miniconda</strong> — the small distribution — from <a href="https://www.anaconda.com/docs/getting-started/miniconda/install" target="_blank" rel="noopener">the Miniconda install page</a>. Anaconda works too, but it is several gigabytes of packages you will not use.</p>
 
       <div class="tabs">
         <div class="tabs-bar" role="tablist">
@@ -91,343 +151,588 @@
         </div>
 
         <div class="tabs-panel" id="p-win" role="tabpanel" aria-labelledby="t-win">
-          <h3>1 · Visual Studio Code</h3>
-          <p>Download from <a href="https://code.visualstudio.com" target="_blank" rel="noopener">code.visualstudio.com</a> and run the installer. This is the program you write code in.</p>
-
-          <h3>2 · Node.js</h3>
-          <p>Download the <strong>LTS</strong> version from <a href="https://nodejs.org" target="_blank" rel="noopener">nodejs.org</a>. LTS means "long-term support" — it is the stable one, and the one this course expects. Do not take the version labelled Current.</p>
-
-          <h3>3 · Python</h3>
-          <p>Download Python 3.11 or later from <a href="https://www.python.org/downloads/" target="_blank" rel="noopener">python.org/downloads</a>.</p>
-          <div class="warn">
-            <span class="lbl">One checkbox decides your semester</span>
-            <p>On the first screen of the Python installer, tick <strong>Add python.exe to PATH</strong> before clicking Install. It is easy to miss and it is off by default. Without it, your computer will not know what the word <code>python</code> means, and you will spend Week 7 fighting your own machine instead of writing code.</p>
-          </div>
-
-          <h3>4 · Git</h3>
-          <p>Download from <a href="https://git-scm.com/download/win" target="_blank" rel="noopener">git-scm.com/download/win</a>. The installer asks a lot of questions; accept every default. Git is how you save your work and how you hand it in.</p>
+          <p>Download the Windows installer and accept the defaults. Do <strong>not</strong> tick the option to add conda to your PATH — the installer warns against it and it interferes with other software.</p>
+          <p>Instead, use conda through its own terminal. Open the Start menu and launch <strong>Anaconda Prompt</strong>. That is the window you will use for every conda and Python command in this course. A normal Command Prompt or PowerShell will report that conda does not exist.</p>
         </div>
 
         <div class="tabs-panel" id="p-mac" role="tabpanel" aria-labelledby="t-mac" hidden>
-          <h3>1 · Visual Studio Code</h3>
-          <p>Download from <a href="https://code.visualstudio.com" target="_blank" rel="noopener">code.visualstudio.com</a>, then drag the app into your Applications folder. This is the program you write code in.</p>
-
-          <h3>2 · Node.js</h3>
-          <p>Download the <strong>LTS</strong> installer from <a href="https://nodejs.org" target="_blank" rel="noopener">nodejs.org</a>. LTS means "long-term support" — it is the stable one, and the one this course expects. Do not take the version labelled Current.</p>
-
-          <h3>3 · Python</h3>
-          <p>macOS ships with an old Python that will not do. Download 3.11 or later from <a href="https://www.python.org/downloads/" target="_blank" rel="noopener">python.org/downloads</a> and run the installer.</p>
-          <div class="note">
-            <span class="lbl">On a Mac the command is python3</span>
-            <p>Throughout this course, wherever a tutorial writes <code>python</code>, type <code>python3</code> instead. The same applies to <code>pip</code>, which becomes <code>pip3</code>. Plain <code>python</code> on a Mac points at the old system copy.</p>
-          </div>
-
-          <h3>4 · Git</h3>
-          <p>Open Terminal and run <code>xcode-select --install</code>, then accept the dialog that appears. This installs Git along with the other command line tools. If it reports that the tools are already installed, you are done.</p>
+          <p>Download the <code>.pkg</code> installer matching your chip — <strong>Apple silicon</strong> for M1 through M4, <strong>Intel</strong> for older machines. If you are unsure, check  → About This Mac.</p>
+          <p>Run the installer, then <strong>quit Terminal completely and reopen it</strong>. Your prompt should now begin with <code>(base)</code>, which means conda is active.</p>
         </div>
       </div>
+
+      <p>Confirm it is there:</p>
+
+      <figure class="code term" data-file="terminal">
+<pre><code>conda --version</code></pre>
+      </figure>
+
+      <p>You should get something like <code>conda 24.9.2</code>. The exact number does not matter.</p>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="env">
+      <h2><span class="n">05</span> Build the environment</h2>
+      <hr class="h2-rule">
+      <p>A conda <strong>environment</strong> is an isolated set of packages with its own Python. Keeping this project in its own environment means a library upgrade for some other class cannot silently break your model.</p>
+
+      <p>Run these one line at a time. The second and third will take several minutes and print a great deal of text — that is normal.</p>
+
+      <figure class="code term" data-file="terminal">
+<pre><code>conda create -n solweig python=3.10
+conda activate solweig
+conda install -c conda-forge gdal pytorch rasterio timezonefinder matplotlib
+pip install solweig-gpu</code></pre>
+      </figure>
+
+      <p>If you have an NVIDIA GPU, add CUDA support as well. Skip this line on a Mac — Apple silicon has no CUDA.</p>
+
+      <figure class="code term" data-file="terminal">
+<pre><code>conda install -c conda-forge cudnn</code></pre>
+      </figure>
+
+      <div class="warn">
+        <span class="lbl">Activate the environment every single time</span>
+        <p>Your prompt shows which environment is active. If it reads <code>(base)</code> rather than <code>(solweig)</code>, none of the packages you just installed are visible, and every import will fail with a confusing message.</p>
+        <p>Whenever you open a new terminal to work on this project, the first command is always <code>conda activate solweig</code>.</p>
+      </div>
+
     </section>
 
     <!-- ============================================ -->
     <section id="verify">
-      <h2><span class="n">03</span> Check it worked</h2>
+      <h2><span class="n">06</span> Check the install</h2>
       <hr class="h2-rule">
-      <p>Open Visual Studio Code. From the menu bar choose <strong>Terminal → New Terminal</strong>. A panel appears at the bottom of the window with a blinking cursor. This is the terminal, and you will use it every week from here on.</p>
-      <p>Type each of these lines and press Enter after each one. Do not type the <code>$</code> — it just marks where a command starts.</p>
+      <p>Three checks, in the shell, with <code>solweig</code> active. Run them in this order.</p>
 
       <figure class="code term" data-file="terminal">
-<pre><code><span class="pr"></span> node -v
-<span class="pr"></span> npm -v
-<span class="pr"></span> python --version
-<span class="pr"></span> git --version</code></pre>
+<pre><code>python -c "import solweig_gpu; print(solweig_gpu.__version__)"
+python -c "from osgeo import gdal_array; print('gdal ok')"
+python -c "import torch; print('cuda:', torch.cuda.is_available())"</code></pre>
       </figure>
 
-      <p>Each line should answer with a version number — something like <code>v22.11.0</code> or <code>Python 3.12.4</code>. The exact numbers do not matter as long as Node is version 20 or higher and Python is 3.11 or higher.</p>
-      <p>If any line answers with <em>command not found</em> or <em>is not recognized</em>, that tool did not install correctly. Go to <a href="#broken">When it breaks</a> below — do not continue past this point with a missing tool.</p>
-
-      <div class="note">
-        <span class="lbl">Take the screenshot now</span>
-        <p>Capture the terminal with all four answers visible in one image. That screenshot is the first item you hand in this week, and it is easier to take now than to reconstruct later.</p>
-      </div>
-    </section>
-
-    <!-- ============================================ -->
-    <section id="repo">
-      <h2><span class="n">04</span> Create your repository</h2>
-      <hr class="h2-rule">
-      <p>A repository is a folder whose history is tracked. Yours will hold every file you write this semester, and its address is how you submit work.</p>
-
-      <h3>Make it on GitHub</h3>
-      <p>Sign in at <a href="https://github.com" target="_blank" rel="noopener">github.com</a>, creating an account if you need one. Click <strong>New repository</strong> and set it up like this:</p>
       <ul>
-        <li>Name: <code>spatial-app</code></li>
-        <li>Visibility: <strong>Public or Private</strong> - choose based on your preference</li>
-        <li>Tick <strong>Add a README file</strong></li>
+        <li><strong>First</strong> — the model is installed. It should print a version number.</li>
+        <li><strong>Second</strong> — <em>this is the one that matters.</em> It is silent when it works. If it raises <code>No module named '_gdal_array'</code>, your GDAL bindings do not match the system library, and the model will fail later in a way that looks unrelated. Fix it now, using the troubleshooting entry below.</li>
+        <li><strong>Third</strong> — reports whether a CUDA GPU is available. <code>False</code> is fine and expected on most laptops. The model runs on the CPU; it just takes longer.</li>
       </ul>
-      <p>Create it, then click the pencil icon on <code>README.md</code> and put your name on the first line. Commit that change.</p>
 
-      <h3>Bring it onto your computer</h3>
-      <p>On the repository page, click the green <strong>Code</strong> button and copy the HTTPS address. Back in the VS Code terminal:</p>
-      
-      <figure class="code term" data-file="terminal">
-<pre><code><span class="cm"># move to a sensible place first — Documents is fine</span>
-<span class="pr">$</span> cd Documents
-<span class="pr">$</span> git clone https://github.com/YOUR-USERNAME/spatial-app.git
-<span class="pr">$</span> cd spatial-app</code></pre>
-
-      
-      </figure>
+    </section>
 
 
-      <p>Then in VS Code choose <strong>File → Open Folder</strong> and open the <code>spatial-app</code> folder you just cloned. Everything you write for the rest of the semester goes inside it.</p>
-      <p>This is quite a traditional way! You may already know how to use <strong>github desktop</strong> or <strong>GitKraken</strong>. If you do not, then I'd recommend to see <strong>GitKraken</strong> Download it and explore it.</p>
-
-
-      <h3>The four commands you need from Git</h3>
-      <p>Git has hundreds of commands. You will use four, over and over, and you can ignore the rest until you are curious.</p>
-
-      <figure class="code term" data-file="terminal">
-<pre><code><span class="pr"></span> git status                          <span class="cm"># what have I changed?</span>
-<span class="pr"></span> git add .                            <span class="cm"># stage everything I changed</span>
-<span class="pr"></span> git commit -m "Week 1: app shell"    <span class="cm"># save a snapshot, with a note</span>
-<span class="pr"></span> git push                             <span class="cm"># send it to GitHub</span></code></pre>
-      </figure>
-
-      <div class="note">
-        <span class="lbl">First commit on a new machine</span>
-        <p>If Git refuses your first commit and asks who you are, tell it once and it will never ask again:</p>
-        <p><code>git config --global user.name "Your Name"</code><br>
-           <code>git config --global user.email "you@example.com"</code></p>
-      </div>
+        <!-- ============================================ -->
+    <section id="sampledata">
+      <h2><span class="n">07</span> Download sample data</h2>
+      <hr class="h2-rule">
+      <p>Go to the webpage https://zenodo.org/records/21081622 to download the sample data.</p>
+      <p>Scroll down to the bottom, you should be able to see download options.</p>
+      <p>Download the whole files. (ERA-5_forcing_data.zip, Forcing_data.zip, Input_rasters.zip, ownmet_Forcing_data.txt, SOLWEIG-GPU_Version-2.0.zip)</p>
+      <p>Place them in a directory of your choice. But I recommend to create a dedicated folder for this week's work.</p>
+      <p>Unzip all the files into the same directory.</p>
     </section>
 
     <!-- ============================================ -->
-    <section id="html">
-      <h2><span class="n">05</span> Write the HTML</h2>
+    <section id="vscode">
+      <h2><span class="n">08</span> Work in VS Code</h2>
       <hr class="h2-rule">
-      <p>HTML describes what is on a page — not what it looks like. It is made of <strong>elements</strong>, written as an opening tag, some content, and a closing tag: <code>&lt;h2&gt;Results&lt;/h2&gt;</code>. Elements sit inside other elements, and that nesting is the whole structure.</p>
-      <p>Two attributes matter for this course. <code>class</code> gives an element a label so you can style it later, and <code>id</code> gives it a unique name. Nearly everything below uses <code>class</code>.</p>
+      <p>From here on you will be writing short Python files and running them. Visual Studio Code is where you do that. It keeps your folder, your files, and a terminal in one window, so you always know which directory a command is running in — which turns out to be the thing that goes wrong most often.</p>
 
-      <p>Create a file called <code>index.html</code> in your <code>spatial-app</code> folder and paste this in.</p>
+      <p>If you do not have it, download it from <a href="https://code.visualstudio.com" target="_blank" rel="noopener">code.visualstudio.com</a> and run the installer, accepting the defaults. If you already have it, skip ahead.</p>
 
-      <figure class="code" data-file="index.html">
-<pre><code>&lt;!DOCTYPE html&gt;
-&lt;html lang="en"&gt;
-  &lt;head&gt;
-    &lt;meta charset="utf-8" /&gt;
-    &lt;meta name="viewport" content="width=device-width, initial-scale=1" /&gt;
-    &lt;title&gt;Spatial App&lt;/title&gt;
-    &lt;link rel="stylesheet" href="style.css" /&gt;
-  &lt;/head&gt;
+      <p>We will not teach VS Code as such. You need four things from it, and they are all below.</p>
 
-  &lt;body&gt;
-    &lt;div class="app"&gt;
+      <h3>1 &middot; Open your folder</h3>
+      <p><strong>File &rarr; Open Folder</strong>, and choose the folder where you unzipped the sample data. The Explorer panel down the left now lists everything inside it, <code>Input_rasters</code> included.</p>
 
-      <span class="cm">&lt;!-- top row: palette on the left, map on the right --&gt;</span>
-      &lt;div class="top"&gt;
+      <div class="warn">
+        <span class="lbl">Open the folder, not a file</span>
+        <p><strong>File &rarr; Open File</strong> gives you an editor with no project around it, and the terminal opens somewhere unrelated. Nearly every "file not found" error in this course traces back to that one difference. Check the window title — it should show your folder's name.</p>
+      </div>
 
-        &lt;aside class="palette"&gt;
-          &lt;h2&gt;Components&lt;/h2&gt;
-          &lt;button class="item"&gt;Station&lt;/button&gt;
-          &lt;button class="item"&gt;Park&lt;/button&gt;
-          &lt;button class="item"&gt;Shop&lt;/button&gt;
-        &lt;/aside&gt;
+      <h3>2 &middot; Create a Python file</h3>
+      <p>Right-click empty space in the Explorer panel and choose <strong>New File</strong>. Type the whole filename including the extension, for example <code>inspect_inputs.py</code>.</p>
+      <p>The <code>.py</code> matters. Without it you get no syntax highlighting, and Python will not run the file.</p>
+      <p>Keep your scripts in the same folder as the data. Then a path like <code>"Input_rasters/DEM.tif"</code> works without you having to think about it.</p>
 
-        &lt;main class="map-area"&gt;
-          &lt;p class="placeholder"&gt;Map goes here — Week 5&lt;/p&gt;
-        &lt;/main&gt;
-
-      &lt;/div&gt;
-
-      <span class="cm">&lt;!-- bottom strip: analysis results --&gt;</span>
-      &lt;section class="results"&gt;
-        &lt;h2&gt;Results&lt;/h2&gt;
-        &lt;p&gt;Nothing analyzed yet.&lt;/p&gt;
-      &lt;/section&gt;
-
-    &lt;/div&gt;
-  &lt;/body&gt;
-&lt;/html&gt;</code></pre>
-      </figure>
-
-      <p>Open the file in your browser — right-click it in the VS Code file list and choose <strong>Reveal in File Explorer</strong> (or <strong>Finder</strong>), then double-click it. You will see three unstyled blocks stacked on top of each other. That is correct for now. HTML alone has no layout.</p>
+      <h3>3 &middot; Open a terminal inside that folder</h3>
+      <p><strong>Terminal &rarr; New Terminal</strong>. It appears at the bottom of the window, already sitting in the folder you opened. That is the whole reason to work this way.</p>
 
       <div class="note">
-        <span class="lbl">Why <code>aside</code>, <code>main</code>, and <code>section</code> instead of <code>div</code> everywhere?</span>
-        <p>They behave identically. The difference is that their names say what the region is for, which makes the file readable to you in Week 6 and to screen readers always. Use the specific name when one fits.</p>
+        <span class="lbl">On Windows, if the terminal does not know what conda is</span>
+        <p>VS Code opens PowerShell by default, and a Miniconda installed without PATH is invisible to it. Two ways round it:</p>
+        <p>Run <code>conda init</code> once from Anaconda Prompt, then reopen VS Code and try again.</p>
+        <p>Or simply use <strong>Anaconda Prompt</strong> as your terminal and move to the folder yourself. In VS Code, right-click the folder in Explorer &rarr; <strong>Copy Path</strong>, then in Anaconda Prompt type <code>cd</code>, a space, and paste.</p>
       </div>
+
+      <h3>4 &middot; Activate the environment, then run</h3>
+      <p>Every new terminal starts in <code>(base)</code>. Activate your environment first, every time.</p>
+
+      <figure class="code term" data-file="terminal">
+<pre><code>conda activate solweig</code></pre>
+      </figure>
+
+      <h3>Your first script</h3>
+      <p>Reading a table about the input files is not the same as looking at them. Create <code>inspect_inputs.py</code> as described above, paste this in, and run it.</p>
+
+      <figure class="code" data-file="inspect_inputs.py">
+<pre><code>import os
+import rasterio
+
+FOLDER = "Input_rasters"          <span class="todo"># ← your unzipped sample folder</span>
+NAMES  = ["Building_DSM.tif", "DEM.tif", "Trees.tif"]
+
+profiles = {}
+
+for name in NAMES:
+    path = os.path.join(FOLDER, name)
+    with rasterio.open(path) as src:
+        profiles[name] = (src.crs, src.transform, src.width, src.height)
+        print(name)
+        print("   size        ", src.width, "x", src.height, "px")
+        print("   CRS         ", src.crs)
+        print("   resolution  ", src.res, "(map units per pixel)")
+        print("   bands       ", src.count)
+        print("   bounds      ", [round(b, 1) for b in src.bounds])
+        print()
+
+<span class="cm"># same CRS, same pixel grid, same origin, same size?</span>
+unique = set(profiles.values())
+print("ALIGNED" if len(unique) == 1 else "NOT ALIGNED — the model will refuse this")
+
+<span class="cm"># how tall is the tallest building? read coarsely, this is only a sanity check</span>
+with rasterio.open(os.path.join(FOLDER, "Building_DSM.tif")) as s:
+    dsm = s.read(1, out_shape=(300, 300))
+with rasterio.open(os.path.join(FOLDER, "DEM.tif")) as s:
+    dem = s.read(1, out_shape=(300, 300))
+
+height = dsm - dem
+print("tallest building  ~", round(float(height.max()), 1), "m")
+print("mean built height ~", round(float(height[height &gt; 1].mean()), 1), "m")</code></pre>
+      </figure>
+
+      <figure class="code term" data-file="terminal">
+<pre><code>python inspect_inputs.py</code></pre>
+      </figure>
+
     </section>
 
     <!-- ============================================ -->
-    <section id="css">
-      <h2><span class="n">06</span> Style it with flexbox</h2>
+    <section id="inputs">
+      <h2><span class="n">09</span> What goes in</h2>
       <hr class="h2-rule">
-      <p>CSS decides how the elements look and where they sit. A rule targets elements by class — <code>.palette</code> means "every element with <code>class="palette"</code>" — and then sets properties on them.</p>
+      <p>Three rasters describing the shape of the city, plus one meteorological time series. That is the whole input contract.</p>
 
-      <h3>The one layout idea you need</h3>
-      <p>Flexbox arranges children in a row or a column. You set <code>display: flex</code> on a <em>container</em>, and its direct children line up. Two properties do most of the work:</p>
+      <h3>The rasters</h3>
+      <table style="width:100%;border-collapse:collapse;font-size:0.96rem;margin:16px 0 22px">
+        <tr style="background:#E8EAED">
+          <th style="text-align:left;padding:9px 12px;border:1px solid #CBD8DC;font-family:var(--font-display);font-size:0.86rem">File</th>
+          <th style="text-align:left;padding:9px 12px;border:1px solid #CBD8DC;font-family:var(--font-display);font-size:0.86rem">What it holds</th>
+        </tr>
+        <tr>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC"><code>Building_DSM.tif</code></td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC">Surface model including roof heights, measured from sea level.</td>
+        </tr>
+        <tr style="background:#F7F8F9">
+          <td style="padding:9px 12px;border:1px solid #CBD8DC"><code>DEM.tif</code></td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC">Bare terrain with buildings and vegetation stripped out. Building height is the DSM minus this.</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC"><code>Trees.tif</code></td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC">Canopy height. Treated as partly transmissive — casts shade without blocking light completely.</td>
+        </tr>
+        <tr style="background:#F7F8F9">
+          <td style="padding:9px 12px;border:1px solid #CBD8DC"><code>Landcover.tif</code></td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC">Optional. Distinguishes albedo and heat capacity by surface material.</td>
+        </tr>
+      </table>
+
+      <div class="warn">
+        <span class="lbl">All three must be perfectly aligned</span>
+        <p>Same coordinate system, same resolution, same extent, same pixel grid. If one differs the model refuses to run, and the error message rarely says which file is at fault. Checking alignment before you run is faster than diagnosing it afterwards.</p>
+      </div>
+
+      <h3>The meteorological forcing</h3>
+      <p>Whichever source you use, the model needs the same variables: <strong>2m air temperature</strong> (°C), <strong>relative humidity</strong> (%), <strong>pressure</strong> (kPa), and <strong>downward shortwave radiation</strong> (W/m²). UTCI additionally needs <strong>near-surface wind speed</strong> (m/s).</p>
+      <p>That list is not arbitrary. Shortwave feeds the radiation budget; humidity and wind are what turn Tmrt into a comfort index. The inputs follow from the calculation.</p>
+      <p>Three ways to supply it — a plain text file in UMEP format, ERA-5 reanalysis, or WRF output. <strong>Start with the text file.</strong> It needs no API keys and no authentication, which makes it the only sensible choice for a first run.</p>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="run">
+      <h2><span class="n">10</span> Run the sample</h2>
+      <hr class="h2-rule">
+      <p>The distributed sample covers Austin, Texas on 13 August 2020. The rasters are 3913 &times; 3367 pixels at 2m resolution — roughly 7.8 &times; 6.7km, or about 13 million pixels.</p>
+
+      <div class="warn">
+        <span class="lbl">Do not run the full domain</span>
+        <p>Sky view factor over 13 million pixels takes <strong>hours</strong> on a CPU. And reducing <code>tile_size</code> does not help: tiles are a memory management device, so smaller tiles still compute the whole domain, just in more pieces with more overlap redundancy.</p>
+        <p>The fix is to cut the raster itself down to about 1km&sup2; and run that. One tile at that size finishes in roughly two minutes.</p>
+      </div>
+
+      <h3>Find somewhere with buildings in it</h3>
+      <p>Cut an empty field and your sky view factor comes out as 1 everywhere, which tells you nothing. Read the raster coarsely first and locate the densest block.</p>
+
+      <figure class="code" data-file="find_dense.py">
+<pre><code>import rasterio
+import numpy as np
+
+FOLDER = "Input_rasters"          <span class="todo"># ← your sample data folder</span>
+N = 400                           <span class="cm"># read everything down to 400 x 400</span>
+B = 20                            <span class="cm"># then score it in 20 x 20 blocks</span>
+
+with rasterio.open(f"{FOLDER}/Building_DSM.tif") as s:
+    dsm = s.read(1, out_shape=(N, N)).astype("float32")
+    W, H = s.width, s.height
+with rasterio.open(f"{FOLDER}/DEM.tif") as s:
+    dem = s.read(1, out_shape=(N, N)).astype("float32")
+
+height = dsm - dem
+blocks = height.reshape(B, N // B, B, N // B).mean(axis=(1, 3))
+r, c = np.unravel_index(blocks.argmax(), blocks.shape)
+
+print("densest block, mean built height:", round(float(blocks.max()), 1), "m")
+print("col_off =", int(c * W / B))
+print("row_off =", int(r * H / B))</code></pre>
+      </figure>
+
+            <figure class="code term" data-file="terminal">
+<pre><code>python find_dense.py</code></pre>
+      </figure>
+
+      <p>Note the two offsets it prints. If the mean built height comes back near zero, the whole raster may be flat — check that you pointed <code>FOLDER</code> at the right place.</p>
+
+      <h3>Cut the subset</h3>
+      <p>Put your two offsets into the script below. The critical part is that <strong>the same window is applied to all three rasters</strong> — if they come out misaligned the model fails immediately.</p>
+
+      <figure class="code" data-file="make_subset.py">
+<pre><code>import os
+import rasterio
+from rasterio.windows import Window
+
+SRC = "Input_rasters"
+DST = "Input_subset"
+
+col_off, row_off = 1700, 1400     <span class="todo"># ← from find_dense.py</span>
+size = 500                        <span class="cm"># 500 px x 2 m = 1 km across</span>
+
+os.makedirs(DST, exist_ok=True)
+
+<span class="cm"># stop early if the window runs off the edge of the raster —</span>
+<span class="cm"># otherwise you get files that claim one size and hold another</span>
+with rasterio.open(f"{SRC}/Building_DSM.tif") as src:
+    if col_off + size &gt; src.width or row_off + size &gt; src.height:
+        raise SystemExit(
+            f"Window runs past the edge ({src.width} x {src.height} px). "
+            "Reduce size, or move col_off / row_off."
+        )
+
+win = Window(col_off, row_off, size, size)
+
+for name in ["Building_DSM.tif", "DEM.tif", "Trees.tif"]:
+    with rasterio.open(f"{SRC}/{name}") as src:
+        data = src.read(1, window=win)
+        prof = src.profile.copy()
+        prof.update(width=size, height=size,
+                    transform=src.window_transform(win))
+    with rasterio.open(f"{DST}/{name}", "w", **prof) as dst:
+        dst.write(data, 1)
+    print(name, data.shape,
+          "min", round(float(data.min()), 1),
+          "max", round(float(data.max()), 1))</code></pre>
+      </figure>
+
+                <figure class="code term" data-file="terminal">
+<pre><code>python make_subset.py</code></pre>
+      </figure>
+
+      <p>The guard at the top stops you cutting past the edge of the raster, which would otherwise write files that claim one size and contain another. Beyond that, check two things in the output. All three files should report <code>(500, 500)</code>. And <code>Building_DSM</code>'s maximum should be meaningfully higher than <code>DEM</code>'s — if they are close, you cut a block with no buildings, so go back and pick a different offset.</p>
+      <p>Copy the meteorological file into place as well, so the run script can find it next to the rasters.</p>
+
+      <h3>Run it</h3>
+
+      <figure class="code" data-file="run_test.py">
+<pre><code>import os
+from solweig_gpu import thermal_comfort
+
+def main():
+    thermal_comfort(
+        base_path=os.path.abspath("Input_subset"),
+        selected_date_str="2020-08-13",       <span class="cm"># must match the met file</span>
+        building_dsm_filename="Building_DSM.tif",
+        dem_filename="DEM.tif",
+        trees_filename="Trees.tif",
+        landcover_filename=None,
+        tile_size=600,                        <span class="cm"># larger than 500 → one tile</span>
+        overlap=20,
+        use_own_met=True,
+        own_met_file=os.path.abspath("ownmet_Forcing_data.txt"),
+        save_tmrt=True,
+        save_svf=True,
+        save_shadow=True,
+    )
+
+if __name__ == "__main__":
+    main()</code></pre>
+      </figure>
+
+      <figure class="code term" data-file="terminal">
+<pre><code>python run_test.py</code></pre>
+      </figure>
+
+      <div class="warn">
+        <span class="lbl">On macOS the <code>if __name__ == "__main__"</code> guard is not optional</span>
+        <p>The wall-height step runs in parallel processes. macOS starts those with <em>spawn</em>, which re-imports your script from the top in every child process. Without the guard, <code>thermal_comfort()</code> calls itself recursively and the run dies with <code>BrokenProcessPool</code>. Linux defaults to <em>fork</em>, so the same script works there and hides the problem.</p>
+      </div>
+
+      <h3>What a healthy run looks like</h3>
+
+      <figure class="code term" data-file="expected output">
+<pre><code>Creating tiles for Building_DSM...
+Creating tiles for DEM...
+Creating tiles for Trees...
+Copied to .../metfiles/metfile_0_0.txt
+Computing Wall Height and Aspect: 100%|██████| 1/1 [00:08&lt;00:00]
+Calculating standalone SVF:       100%|██████| 1/1 [00:39&lt;00:00]
+Running Solweig ...
+[INFO] Timezone: America/Chicago, UTC offset: -5.0 hours
+Time taken to execute tile 0_0: 73.88 seconds</code></pre>
+      </figure>
+
+      <p>Two lines are worth reading rather than skipping. The <strong>metfile copy</strong> succeeding means your <code>selected_date_str</code> matched the date in the meteorological file. And the <strong>timezone</strong> was inferred from the coordinates — that is what the output bands' timestamps are interpreted against.</p>
+      <p><code>Could not find ERA-5 file with roughness length</code> is expected when <code>use_own_met=True</code>. Ignore it.</p>
+
+
+    <!-- ============================================ -->
+    <section id="qgis">
+      <h2><span class="n">11</span> Open it in QGIS</h2>
+      <hr class="h2-rule">
+      <p>QGIS is a free desktop GIS and it is how you will look at every result from here on.</p>
+
+      <h3>Install it</h3>
+      <p>Download from <a href="https://qgis.org/download/" target="_blank" rel="noopener">qgis.org/download</a>. Take the version marked <strong>LTR</strong> (long term release) rather than the newest — it is the stable one, and it is what these instructions assume.</p>
+
+      <div class="tabs">
+        <div class="tabs-bar" role="tablist">
+          <button role="tab" id="t-qwin" aria-controls="p-qwin" aria-selected="true">Windows</button>
+          <button role="tab" id="t-qmac" aria-controls="p-qmac" aria-selected="false">macOS</button>
+        </div>
+
+        <div class="tabs-panel" id="p-qwin" role="tabpanel" aria-labelledby="t-qwin">
+          <p>Choose the <strong>standalone installer</strong> for the LTR version, not the OSGeo4W network installer. OSGeo4W is more flexible and considerably more ways to go wrong.</p>
+          <p>Run it and accept the defaults. It installs several shortcuts; the one you want is plain <strong>QGIS Desktop</strong>.</p>
+        </div>
+
+        <div class="tabs-panel" id="p-qmac" role="tabpanel" aria-labelledby="t-qmac" hidden>
+          <p>Download the <code>.dmg</code> matching your chip and drag QGIS into Applications.</p>
+          <p>If macOS refuses to open it because the developer cannot be verified, right-click the app icon and choose <strong>Open</strong> from the menu, then confirm. Doing it that way once registers the exception; double-clicking afterwards works normally.</p>
+        </div>
+      </div>
+
+      <div class="note">
+        <span class="lbl">QGIS is separate from your conda environment</span>
+        <p>It ships its own Python and its own GDAL. Nothing you installed in step 5 affects it, and nothing you do in QGIS can break the <code>solweig</code> environment. They only ever meet through the files on disk.</p>
+      </div>
+
+      <h3>Load a result</h3>
+      <p>Open QGIS and drag <code>SVF_0_0.tif</code> from your file browser straight onto the map canvas. Or use <strong>Layer → Add Layer → Add Raster Layer</strong> if you prefer menus.</p>
+      <p>Start with SVF, because it is the easiest to sanity-check: it has no time dimension, values run from 0 to 1, and the shape of the streets should be immediately legible.</p>
+
+      <h3>Make it readable</h3>
+      <p>The default grey stretch is usually poor. Double-click the layer name to open Layer Properties, go to <strong>Symbology</strong>, and set:</p>
       <ul>
-        <li><code>flex-direction: row</code> puts children side by side; <code>column</code> stacks them. Row is the default.</li>
-        <li><code>flex: 1</code> on a child means "take all the leftover space". <code>flex: none</code> means "stay the size I asked for".</li>
+        <li><strong>Render type</strong> → Singleband pseudocolor</li>
+        <li><strong>Band</strong> → see the warning below</li>
+        <li>Pick a colour ramp, then press <strong>Classify</strong> — without this the ramp has no break values and the display stays flat</li>
       </ul>
-      <p>That is the entire mechanism behind the layout you are about to build. The outer <code>.app</code> is a column — top row above, results below. The <code>.top</code> inside it is a row — palette beside map.</p>
 
-      <p>Create <code>style.css</code> next to <code>index.html</code> and paste this in. Four values are marked <span style="color:#B45309"><strong>TODO</strong></span>; those are yours to decide.</p>
+      <div class="warn">
+        <span class="lbl">Bands are timestamps, not colours</span>
+        <p>Seeing Band 01, Band 02, Band 03 in the layer tree invites you to read them as red, green, blue. They are not. <strong>Each band is one timestep of the simulation.</strong> QGIS shows Band 01 by default, which is the first hour simulated — and if that is before dawn, your screen goes black and everything looks broken.</p>
+        <p>For Shadow and Tmrt, switch to a band near midday. Count forward from the first hour in your meteorological file to work out which number that is.</p>
+      </div>
 
-      <figure class="code" data-file="style.css">
-<pre><code><span class="cm">/* ---------- basics ---------- */</span>
-* { box-sizing: border-box; }
+      <h3>Read actual values</h3>
+      <p>Use the <strong>Identify Features</strong> tool — the blue <em>i</em> icon in the toolbar — and click a pixel. QGIS prints the value for the band currently displayed. This is how you compare a shaded alley against an open plaza rather than guessing from colour.</p>
 
-body {
-  margin: 0;
-  font-family: system-ui, sans-serif;
-  color: #14232b;
-}
+      <div class="note">
+        <span class="lbl">Building footprints are empty on purpose</span>
+        <p>Tmrt maps have holes where buildings stand. SOLWEIG computes the pedestrian-level environment at ground level, so cells occupied by a building have no value. Seeing those holes means the run worked.</p>
+      </div>
 
-<span class="cm">/* ---------- the app fills the window ---------- */</span>
-.app {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;          <span class="cm">/* 100% of the viewport height */</span>
-}
+      <h3>What to look at, and in what order</h3>
 
-<span class="cm">/* ---------- top row: palette beside map ---------- */</span>
-.top {
-  display: flex;          <span class="todo">/* TODO 1 — delete this line, reload, put it back */</span>
-  flex: 1;
-  min-height: 0;
-}
+      <table style="width:100%;border-collapse:collapse;font-size:0.96rem;margin:16px 0 22px">
+        <tr style="background:#E8EAED">
+          <th style="text-align:left;padding:9px 12px;border:1px solid #CBD8DC;font-family:var(--font-display);font-size:0.86rem">Output</th>
+          <th style="text-align:left;padding:9px 12px;border:1px solid #CBD8DC;font-family:var(--font-display);font-size:0.86rem">How to read it</th>
+        </tr>
+        <tr>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC"><strong>SVF</strong><br><span style="font-size:0.86rem;color:#3B5866">Sky view factor</span></td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC">Look first. A pure form metric with no time in it — 0 is a fully enclosed canyon, 1 is open ground. The urban fabric appears immediately. Computed once and cached, because it is the expensive step.</td>
+        </tr>
+        <tr style="background:#F7F8F9">
+          <td style="padding:9px 12px;border:1px solid #CBD8DC"><strong>Shadow</strong></td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC">Step through the bands and shadows rotate through the day. Night bands are entirely zero.</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC"><strong>Tmrt</strong><br><span style="font-size:0.86rem;color:#3B5866">Mean radiant temperature</span></td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC">The main result. At midday, identify a shaded alley pixel and an open asphalt pixel — the gap is routinely more than 20&deg;C, in identical air.</td>
+        </tr>
+        <tr style="background:#F7F8F9">
+          <td style="padding:9px 12px;border:1px solid #CBD8DC"><strong>UTCI</strong></td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC">Tmrt blended with temperature, humidity, and wind. Smoother across space than Tmrt, and the more citable figure in a health or policy argument.</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC"><strong>Kup / Kdown<br>Lup / Ldown</strong></td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC">Shortwave and longwave components of the budget. Use them to decompose <em>why</em> Tmrt came out as it did.</td>
+        </tr>
+      </table>
 
-<span class="cm">/* ---------- left: component palette ---------- */</span>
-.palette {
-  width: 220px;           <span class="todo">/* TODO 2 — try 120px and 400px, then choose */</span>
-  flex: none;
-  padding: 16px;
-  background: #f2f4f5;
-  border-right: 2px solid #94a7ae;
-}
-
-<span class="cm">/* ---------- center: the future map ---------- */</span>
-.map-area {
-  flex: 1;                <span class="todo">/* TODO 3 — change to 0, reload, and see what happens */</span>
-  display: grid;
-  place-items: center;
-  background: #d7dcd8;
-  border: 2px solid #94a7ae;
-}
-
-<span class="cm">/* ---------- bottom: results strip ---------- */</span>
-.results {
-  height: 160px;          <span class="todo">/* TODO 4 — pick a height that fits three lines of text */</span>
-  flex: none;
-  padding: 12px 16px;
-  overflow-y: auto;
-  background: #ffffff;
-  border-top: 2px solid #94a7ae;
-}
-
-<span class="cm">/* ---------- small details ---------- */</span>
-h2 {
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #5b6f77;
-  margin: 0 0 12px;
-}
-
-.item {
-  display: block;
-  width: 100%;
-  padding: 8px;
-  margin-bottom: 6px;
-  font: inherit;
-  text-align: left;
-  background: #ffffff;
-  border: 1px solid #94a7ae;
-  border-radius: 3px;
-  cursor: pointer;
-}
-
-.item:hover { background: #e8edee; }
-
-.placeholder { color: #5b6f77; }</code></pre>
-      </figure>
-
-      <p>Reload the page. You should now see a light panel on the left, a large gray area in the middle, and a white strip along the bottom.</p>
-
-      <h3>Save your work</h3>
-      <figure class="code term" data-file="terminal">
-<pre><code><span class="pr">$</span> git add .
-<span class="pr">$</span> git commit -m "Week 1: application shell"
-<span class="pr">$</span> git push</code></pre>
-      </figure>
-      <p>Refresh your repository page on GitHub. If <code>index.html</code> and <code>style.css</code> are listed there, you are done.</p>
+      <p>The argument this model exists to make fits on a single screen: open the midday Tmrt layer and remember that air temperature is uniform across the whole scene. Twenty degrees of difference, produced by form alone. That is why tree placement and building massing are public health decisions.</p>
     </section>
 
-    <!-- ============================================ -->
+  <!-- ============================================ -->
     <section id="broken">
-      <h2><span class="n">07</span> When it breaks</h2>
+      <h2><span class="n">12</span> When it breaks</h2>
       <hr class="h2-rule">
-      <p>These are the failures that actually happen in Week 1. Try the matching answer before searching more widely — general advice on the internet often assumes a different setup than ours.</p>
+      <p>In roughly the order people hit them.</p>
 
       <div class="trouble">
         <details>
-          <summary><code>python</code> is not recognized / command not found</summary>
+          <summary><code>conda: command not found</code></summary>
           <div class="body">
-            <p><strong>Windows:</strong> the PATH checkbox was missed during installation. Re-run the Python installer, choose <strong>Modify</strong>, and make sure "Add python.exe to PATH" is ticked. Then close the terminal completely and open a new one — an open terminal does not notice PATH changes.</p>
-            <p><strong>macOS:</strong> use <code>python3</code>, not <code>python</code>. This is normal on a Mac and not a problem.</p>
+            <p><strong>Windows:</strong> you are in Command Prompt or PowerShell. Use <strong>Anaconda Prompt</strong> from the Start menu instead.</p>
+            <p><strong>macOS:</strong> the installer finished but your terminal predates it. Quit Terminal completely — not just the window — and reopen. Your prompt should start with <code>(base)</code>.</p>
           </div>
         </details>
 
         <details>
-          <summary><code>node -v</code> works but <code>npm -v</code> does not</summary>
+          <summary><code>No module named '_gdal_array'</code></summary>
           <div class="body">
-            <p>The installation was interrupted partway. Uninstall Node.js from your system settings, restart the computer, and install the LTS version again from scratch.</p>
+            <p>The GDAL Python bindings do not match the system library. This almost always means GDAL arrived through <code>pip</code> at some point. Remove it and reinstall from conda-forge:</p>
+            <p><code>pip uninstall gdal</code><br>
+               <code>conda install -c conda-forge gdal --force-reinstall</code></p>
+            <p>If it persists, deleting the environment and rebuilding is quicker than debugging: <code>conda deactivate</code>, then <code>conda env remove -n solweig</code>, then start step 5 again.</p>
           </div>
         </details>
 
         <details>
-          <summary>Git asks for a password and then rejects it</summary>
+          <summary><code>ModuleNotFoundError: No module named 'solweig_gpu'</code></summary>
           <div class="body">
-            <p>GitHub stopped accepting account passwords over the command line. You need a <strong>personal access token</strong> instead.</p>
-            <p>On GitHub go to <strong>Settings → Developer settings → Personal access tokens → Tokens (classic)</strong>, generate a new token with the <code>repo</code> scope, and copy it. When Git asks for a password, paste the token. Save it somewhere private — GitHub will not show it to you again.</p>
+            <p>The environment is not active. Check your prompt — if it says <code>(base)</code>, run <code>conda activate solweig</code> and try again. This is the single most frequent cause of "but I already installed it".</p>
           </div>
         </details>
 
         <details>
-          <summary>The page opens but has no styling at all</summary>
+          <summary><code>zsh: command not found: import</code></summary>
           <div class="body">
-            <p>The browser could not find <code>style.css</code>. Three things to check: the file is named exactly <code>style.css</code> with no hidden <code>.txt</code> on the end, it sits in the same folder as <code>index.html</code>, and the <code>&lt;link&gt;</code> line in your HTML is inside <code>&lt;head&gt;</code>.</p>
-            <p>Press <strong>F12</strong> to open the browser developer tools and look at the Console tab. A red 404 line naming <code>style.css</code> confirms the file is not where the page is looking.</p>
+            <p>You typed Python at a shell prompt. Either enter Python first with <code>python</code>, or wrap the statement: <code>python -c "import ..."</code>.</p>
           </div>
         </details>
 
         <details>
-          <summary>The palette sits above the map instead of beside it</summary>
+          <summary><code>SyntaxError</code> when running <code>pip install</code></summary>
           <div class="body">
-            <p><code>display: flex</code> is missing from <code>.top</code>, or the palette and map are not both direct children of <code>.top</code>. Flexbox only arranges an element's immediate children — if something is nested one level deeper, it is not part of the row.</p>
+            <p>The reverse — you are inside Python and typed a shell command. Type <code>exit()</code> to leave, then run it at the shell.</p>
           </div>
         </details>
 
         <details>
-          <summary>Everything is squashed into the top of the window</summary>
+          <summary>Conda hangs for a long time on "Solving environment"</summary>
           <div class="body">
-            <p><code>height: 100vh</code> is missing from <code>.app</code>, so the container is only as tall as its contents. Without a height to divide up, <code>flex: 1</code> has nothing to distribute.</p>
+            <p>Normal for a first environment with GDAL and PyTorch in it; give it several minutes. If it runs past roughly fifteen, cancel with Ctrl+C and install in two smaller steps — <code>conda install -c conda-forge gdal rasterio</code> first, then <code>conda install -c conda-forge pytorch timezonefinder matplotlib</code>.</p>
           </div>
         </details>
 
         <details>
-          <summary>My changes do not appear when I reload</summary>
+          <summary><code>torch.cuda.is_available()</code> prints False</summary>
           <div class="body">
-            <p>The file was not saved. VS Code shows a filled dot instead of an × on the tab of any file with unsaved changes. Press <strong>Ctrl+S</strong> (<strong>Cmd+S</strong> on a Mac). If it still looks stale, hold Shift while clicking reload to bypass the browser cache.</p>
+            <p>Not an error. It means no CUDA GPU was found, which is the normal answer on Macs and on laptops without an NVIDIA card. The model runs on the CPU. Keep your test areas small and you will be fine.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>GitHub Desktop: "You do not have permission to push"</summary>
+          <div class="body">
+            <p>You are not a collaborator on the repository yet. Send your GitHub username to your instructor. Cloning and fetching already work, so nothing else this week is blocked.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>The terminal says <code>conda</code> is not recognised</summary>
+          <div class="body">
+            <p>You are in a shell that cannot see Miniconda — usually PowerShell inside VS Code on Windows. Run <code>conda init</code> once from Anaconda Prompt and reopen VS Code, or use Anaconda Prompt directly and <code>cd</code> into your folder.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary><code>FileNotFoundError</code> or <code>No such file or directory</code></summary>
+          <div class="body">
+            <p>The terminal is not in the folder you think it is. Run <code>ls</code> (macOS) or <code>dir</code> (Windows) and see whether your script and <code>Input_rasters</code> are in the list. If they are not, you opened a file rather than a folder in VS Code, or you opened the terminal before opening the folder.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary><code>BrokenProcessPool</code>, or the opening log prints twice</summary>
+          <div class="body">
+            <p>The macOS spawn problem. Every line that actually runs the model must sit inside <code>if __name__ == "__main__":</code>. See the warning in step 8.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Stuck on "Calculating standalone SVF" for a very long time</summary>
+          <div class="body">
+            <p>Your domain is too large. Stop the run and cut a smaller subset — 500 &times; 500 pixels finishes in about a minute. Lowering <code>tile_size</code> will not help, because tiles divide the work rather than reduce it.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>The run fails immediately, complaining about the rasters</summary>
+          <div class="body">
+            <p>The three subsets are not aligned. Re-run <code>inspect_inputs.py</code> pointed at <code>Input_subset</code> — it must report ALIGNED. The usual cause is applying different windows, or editing one file and not the others.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>No metfile copied, or a date-related error</summary>
+          <div class="body">
+            <p><code>selected_date_str</code> does not match any date in the meteorological file. Open the file, read the first data row, and use that date in <code>YYYY-MM-DD</code> form.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary><code>Could not find ERA-5 file with roughness length</code></summary>
+          <div class="body">
+            <p>Normal when <code>use_own_met=True</code>. Not an error, and nothing is missing.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>The QGIS layer is entirely black</summary>
+          <div class="body">
+            <p>You are looking at Band 01, which is probably a night hour. Switch to a band near midday in Layer Properties &rarr; Symbology, and press Classify after changing it.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>SVF is 1 everywhere</summary>
+          <div class="body">
+            <p>Your subset landed on open ground with no buildings. Pick different offsets — <code>find_dense.py</code> gives you a starting point — and cut again.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>The inspection script reports NOT ALIGNED</summary>
+          <div class="body">
+            <p>Print each raster's CRS, resolution, width, and height and compare them by eye — the mismatch is usually one file in a different coordinate system, or a resolution that differs in the last decimal place. If the sample data as distributed reports this, say so rather than trying to fix it; it is worth knowing about.</p>
           </div>
         </details>
       </div>
     </section>
 
     <nav class="weeknav">
-      <a href="index.html"><span class="dir">Back to</span><span class="ttl">All weeks</span></a>
-      <a class="next" href="week02.html"><span class="dir">Next week</span><span class="ttl">JavaScript: four patterns</span></a>
+      <a href="week01.html"><span class="dir">Previous</span><span class="ttl">Week 1</span></a>
+      <a class="next" href="index.html"><span class="dir">Back to</span><span class="ttl">All weeks</span></a>
     </nav>
 
   </main>

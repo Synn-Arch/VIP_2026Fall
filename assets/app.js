@@ -79,6 +79,11 @@
       items.forEach(function (i) {
         if (i.target.getBoundingClientRect().top <= 150) current = i;
       });
+      // the last sections may be too short to ever reach the top of the
+      // viewport, so at the foot of the page select the final entry
+      var atBottom = window.innerHeight + window.scrollY >=
+                     document.documentElement.scrollHeight - 8;
+      if (atBottom) current = items[items.length - 1];
       items.forEach(function (i) {
         i.li.classList.toggle("active", i === current);
       });
