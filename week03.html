@@ -27,12 +27,12 @@
       <li><a href="#pace">PACE ICE + VS Code</a></li>
       <li><a href="#pace-data">Bring your Week 2 work</a></li>
       <li><a href="#pace-run">Run on GPU + compare</a></li>
-      <li><a href="#run">Where JavaScript runs</a></li>
-      <li><a href="#data">Pattern 1 · Data</a></li>
-      <li><a href="#change">Pattern 2 · Changing without changing</a></li>
-      <li><a href="#events">Pattern 3 · Events</a></li>
+      <li><a href="#js-setup">Build the visual sandbox</a></li>
+      <li><a href="#data">Pattern 1 · Data + map</a></li>
+      <li><a href="#change">Pattern 2 · Add without mutation</a></li>
+      <li><a href="#events">Pattern 3 · Events + filter</a></li>
       <li><a href="#async">Pattern 4 · Waiting</a></li>
-      <li><a href="#practice">The five exercises</a></li>
+      <li><a href="#practice">Finish the sandbox</a></li>
       <li><a href="#broken">When it breaks</a></li>
     </ol>
   </nav>
@@ -50,10 +50,10 @@
       <ul>
         <li>Start a GPU-backed VS Code session on PACE ICE</li>
         <li>Run the same SOLWEIG-GPU example from Week 2 and compare it with your local CPU run</li>
-        <li>Store a list of things as an array of objects — the shape all your data takes</li>
+        <li>Use JavaScript to make a real page update as you change data</li>
+        <li>Store and render a list with arrays, objects, and <code>map</code></li>
         <li>Add and remove items without modifying the original array</li>
-        <li>Run code in response to a click</li>
-        <li>Wait for something slow to finish, using <code>async</code> and <code>await</code></li>
+        <li>Run code in response to clicks and wait for slow work with <code>async</code>/<code>await</code></li>
       </ul>
     </div>
 
@@ -123,302 +123,298 @@ python -c "import solweig_gpu; print('solweig ok')"</code></pre>
 
     <div class="note">
       <span class="lbl">JavaScript starts here</span>
-      <p>The rest of Week 3 introduces the four JavaScript patterns we need for the web application. Classes, prototypes, closures, inheritance, modules, and <code>this</code> are deliberately left out because they are not needed for this course.</p>
+      <p>You are not learning HTML or CSS this week. Copy the provided <code>index.html</code> and <code>style.css</code> exactly as they are. Your work is in <code>app.js</code>, and every exercise changes something you can see in the browser.</p>
     </div>
 
     <!-- ============================================ -->
-    <section id="run">
-      <h2><span class="n">04</span> Where JavaScript runs</h2>
+    <section id="js-setup">
+      <h2><span class="n">04</span> Build the visual sandbox</h2>
       <hr class="h2-rule">
-      <p>The same language runs in two places, and this week you use both.</p>
-      <p><strong>In the browser</strong>, where it can change what is on the page. Press <strong>F12</strong> on any web page and pick the Console tab — you can type JavaScript there and see it run immediately. It is the fastest way to test one line.</p>
-      <p><strong>In your terminal</strong>, through Node — the thing you installed last week. This runs a file top to bottom with no page involved, and it is how you will check your exercises:</p>
+      <p>Create a folder called <code>week03-js</code> with three files. Keep all three in the same folder:</p>
 
-      <figure class="code term" data-file="terminal">
-<pre><code><span class="pr">$</span> node practice.js</code></pre>
+      <figure class="code term" data-file="folder">
+<pre><code>week03-js/
+├── index.html
+├── style.css
+└── app.js</code></pre>
       </figure>
 
-      <p>Same language, same rules. The only difference is what is available around it: the browser has a page, Node has your file system.</p>
+      <h3>1 · Copy this HTML — do not edit it</h3>
+      <figure class="code" data-file="index.html">
+<pre><code>&lt;!doctype html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8" /&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0" /&gt;
+  &lt;title&gt;Placement Sandbox&lt;/title&gt;
+  &lt;link rel="stylesheet" href="style.css" /&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;main class="app"&gt;
+    &lt;p class="eyebrow"&gt;Week 3 · JavaScript&lt;/p&gt;
+    &lt;h1&gt;Placement Sandbox&lt;/h1&gt;
+    &lt;p id="count" class="count"&gt;&lt;/p&gt;
+
+    &lt;div class="controls"&gt;
+      &lt;button id="add-park"&gt;Add a park&lt;/button&gt;
+      &lt;button id="load-server"&gt;Load from server&lt;/button&gt;
+    &lt;/div&gt;
+
+    &lt;ul id="placement-list" class="placement-list"&gt;&lt;/ul&gt;
+    &lt;p id="server-status" class="status"&gt;Server: idle&lt;/p&gt;
+  &lt;/main&gt;
+
+  &lt;script src="app.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      </figure>
+
+      <h3>2 · Copy this CSS — do not edit it</h3>
+      <figure class="code" data-file="style.css">
+<pre><code>* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: #f4f6f8;
+  color: #17242c;
+  font-family: Arial, sans-serif;
+}
+
+.app {
+  width: min(680px, calc(100% - 32px));
+  background: white;
+  border: 1px solid #d8e0e5;
+  border-radius: 16px;
+  padding: 28px;
+}
+
+.eyebrow, .count, .status { color: #61727d; }
+.controls { display: flex; gap: 10px; margin: 20px 0; }
+button { padding: 9px 13px; cursor: pointer; }
+.placement-list { list-style: none; padding: 0; }
+
+.placement {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-top: 1px solid #e5eaed;
+}
+
+.placement span { color: #61727d; margin-left: 8px; }
+.remove-button { font-size: 0.85rem; }</code></pre>
+      </figure>
+
+      <h3>3 · Start with this JavaScript</h3>
+      <p>This starter already knows how to draw the current data. Open <code>index.html</code> in your browser. You should immediately see two placements. From this point on, edit only <code>app.js</code>, save, and refresh the browser.</p>
+
+      <figure class="code" data-file="app.js">
+<pre><code>let placements = [
+  { id: 1, type: "station", lng: 127.00, lat: 37.50 },
+  { id: 2, type: "park",    lng: 127.05, lat: 37.55 }
+];
+
+const listEl = document.querySelector("#placement-list");
+const countEl = document.querySelector("#count");
+const addParkButton = document.querySelector("#add-park");
+const loadButton = document.querySelector("#load-server");
+const statusEl = document.querySelector("#server-status");
+
+function render() {
+  countEl.textContent = `${placements.length} placements`;
+
+  listEl.innerHTML = placements.map((p) =&gt; `
+    &lt;li class="placement"&gt;
+      &lt;div&gt;
+        &lt;strong&gt;${p.type}&lt;/strong&gt;
+        &lt;span&gt;${p.lng.toFixed(2)}, ${p.lat.toFixed(2)}&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;button class="remove-button" data-id="${p.id}"&gt;Remove&lt;/button&gt;
+    &lt;/li&gt;
+  `).join("");
+}
+
+render();</code></pre>
+      </figure>
+
+      <div class="warn">
+        <span class="lbl">The feedback loop for every exercise</span>
+        <p>Edit <code>app.js</code> → save → refresh <code>index.html</code> → click something → watch the page change. Keep the browser Console open with <strong>F12</strong>; syntax errors will appear there.</p>
+      </div>
     </section>
 
     <!-- ============================================ -->
     <section id="data">
       <h2><span class="n">05</span> Pattern 1 · Data as an array of objects</h2>
       <hr class="h2-rule">
-      <p>An <strong>object</strong> is a labelled bundle of values. You read and write its parts by name:</p>
+      <p>The page is not storing separate HTML for every placement. Its state is this array:</p>
 
-      <figure class="code" data-file="console">
-<pre><code>const station = { id: 1, type: "station", lng: 127.0, lat: 37.5 };
-
-station.type        <span class="cm">// "station"</span>
-station.lng         <span class="cm">// 127.0</span>
-station.lat = 37.6  <span class="cm">// change one field, leave the rest alone</span></code></pre>
-      </figure>
-
-      <p>An <strong>array</strong> is an ordered list. Put objects in an array and you have the shape that every piece of data in this application takes:</p>
-
-      <figure class="code" data-file="console">
-<pre><code>const placements = [
+      <figure class="code" data-file="app.js">
+<pre><code>let placements = [
   { id: 1, type: "station", lng: 127.00, lat: 37.50 },
-  { id: 2, type: "park",    lng: 127.05, lat: 37.55 },
-  { id: 3, type: "shop",    lng: 127.02, lat: 37.48 }
-];
-
-placements.length   <span class="cm">// 3</span>
-placements[0]       <span class="cm">// the first object — counting starts at 0</span>
-placements[0].type  <span class="cm">// "station"</span></code></pre>
+  { id: 2, type: "park",    lng: 127.05, lat: 37.55 }
+];</code></pre>
       </figure>
 
-      <div class="warn">
-        <span class="lbl">Memorise this shape</span>
-        <p><code>{ id, type, lng, lat }</code> is the object your entire application is built around. Week 4 stores it in React, Week 6 fills it from map clicks, Week 7 receives it in Python, Week 10 analyzes it. It does not change. Every field has a job: <code>id</code> identifies one placement uniquely, <code>type</code> says which component it is, and <code>lng</code>/<code>lat</code> say where it sits.</p>
+      <p>Each object has the same shape: <code>{ id, type, lng, lat }</code>. The <code>render()</code> function uses <code>map</code> to turn every object into one visible list item. <code>map</code> returns a new array, then <code>join("")</code> combines those strings into the HTML shown on screen.</p>
+
+      <h3>Exercise 1 · Change the data</h3>
+      <p>Add a third object to <code>placements</code> yourself. Give it <code>id: 3</code>, choose any <code>type</code>, and choose coordinates. Refresh the browser.</p>
+
+      <div class="note">
+        <span class="lbl">What you should see</span>
+        <p>The count changes from <strong>2 placements</strong> to <strong>3 placements</strong>, and your new object appears as a third row. You changed only the data; <code>render()</code> handled the page.</p>
       </div>
 
-      <h3>Reading a whole array with <code>map</code></h3>
-      <p><code>map</code> runs a function on every item and hands back a new array of the answers. Same length, one result per item:</p>
-
-      <figure class="code" data-file="console">
-<pre><code>const types = placements.map(function (p) {
-  return p.type;
-});
-<span class="cm">// ["station", "park", "shop"]</span>
-
-<span class="cm">// the same thing, written with an arrow function</span>
-const types2 = placements.map((p) =&gt; p.type);</code></pre>
-      </figure>
-
-      <p>Both forms appear everywhere in real code, so read both. Arrow functions are shorter and are what you will mostly see from Week 3 onward.</p>
+      <h3>Exercise 2 · Change what <code>map</code> renders</h3>
+      <p>Inside <code>render()</code>, change the visible label so each row also shows its id, for example <code>#2 park</code>. Do not add new HTML by hand. Make the change inside the <code>map</code> template.</p>
     </section>
 
     <!-- ============================================ -->
     <section id="change">
-      <h2><span class="n">06</span> Pattern 2 · Changing without changing</h2>
+      <h2><span class="n">06</span> Pattern 2 · Add without changing the old array</h2>
       <hr class="h2-rule">
-      <p>This is the pattern that trips people up, and it is worth slowing down for. From Week 4, React only redraws the screen when it notices that your data was <em>replaced</em>. If you modify an array in place, React sees the same array it already had and nothing happens on screen — your code is correct and the page is frozen.</p>
-      <p>So the rule is: never change an array. Build a new one.</p>
+      <p>Now make the <strong>Add a park</strong> button work. Add this after <code>render();</code> in <code>app.js</code>:</p>
 
-      <h3>Adding — the spread operator</h3>
-      <p>Three dots in front of an array means "pour all of its items in here":</p>
+      <figure class="code" data-file="app.js">
+<pre><code>addParkButton.addEventListener("click", () =&gt; {
+  const newPlacement = {
+    id: Date.now(),
+    type: "park",
+    lng: 127.10,
+    lat: 37.60
+  };
 
-      <figure class="code" data-file="console">
-<pre><code>const newOne = { id: 4, type: "park", lng: 127.1, lat: 37.6 };
+  <span class="todo">// TODO 3: replace placements with a NEW array</span>
 
-<span class="cm">// YES — a brand new array, original untouched</span>
-const next = [...placements, newOne];
-
-<span class="cm">// NO — this modifies the original in place</span>
-placements.push(newOne);</code></pre>
+  render();
+});</code></pre>
       </figure>
 
-      <p><code>push</code> is not wrong in general JavaScript. It is wrong <em>here</em>, because of how React decides when to redraw. Get into the habit now and Week 4 will be much shorter.</p>
+      <p>Your missing line uses the spread operator. Three dots mean “put every item from the old array here”, so the pattern is:</p>
 
-      <h3>Removing — <code>filter</code></h3>
-      <p><code>filter</code> keeps every item for which your function answers true, and returns those as a new array:</p>
-
-      <figure class="code" data-file="console">
-<pre><code><span class="cm">// keep everything whose id is NOT 2</span>
-const without2 = placements.filter((p) =&gt; p.id !== 2);
-
-<span class="cm">// keep only the parks</span>
-const parks = placements.filter((p) =&gt; p.type === "park");</code></pre>
+      <figure class="code" data-file="pattern">
+<pre><code>const next = [...oldList, newItem];</code></pre>
       </figure>
 
-      <div class="note">
-        <span class="lbl">Two equals signs or three?</span>
-        <p>Always three. <code>===</code> compares value and type strictly. <code>==</code> performs conversions behind your back — <code>"1" == 1</code> is true — and produces bugs that are genuinely hard to find. Use <code>===</code> and <code>!==</code> without exception.</p>
+      <p>Use that pattern to replace <code>placements</code>. Save, refresh, and click <strong>Add a park</strong> several times. The count and list should grow immediately.</p>
+
+      <div class="warn">
+        <span class="lbl">Do not use <code>push</code> here</span>
+        <p><code>push</code> modifies the existing array. From Week 4 onward, React expects you to replace state with a new array. Practice that rule now: <code>placements = [...placements, newPlacement]</code>.</p>
       </div>
-
-      <h3>Changing one item</h3>
-      <p>Week 6 needs this when a marker is dragged to a new position. Map over the list, replace only the one that matches, and keep the rest as they are:</p>
-
-      <figure class="code" data-file="console">
-<pre><code>const moved = placements.map((p) =&gt;
-  p.id === 2 ? { ...p, lng: 127.9, lat: 37.9 } : p
-);</code></pre>
-      </figure>
-
-      <p><code>{ ...p, lng: 127.9 }</code> means "a new object with everything <code>p</code> had, except these fields". The <code>condition ? a : b</code> form is a compact <code>if</code>: if the condition holds use <code>a</code>, otherwise use <code>b</code>.</p>
     </section>
 
     <!-- ============================================ -->
     <section id="events">
-      <h2><span class="n">07</span> Pattern 3 · Events</h2>
+      <h2><span class="n">07</span> Pattern 3 · Events + removing with <code>filter</code></h2>
       <hr class="h2-rule">
-      <p>An event is something that happened — a click, a keystroke, a drag. You respond by handing over a function to be called when it happens.</p>
+      <p>The Add button already demonstrates an event: you give the browser a function, and the browser calls it later when the click happens.</p>
 
-      <figure class="code" data-file="console">
-<pre><code>const button = document.querySelector(".item");
-
-button.addEventListener("click", function (event) {
-  console.log("clicked");
+      <figure class="code" data-file="pattern">
+<pre><code>button.addEventListener("click", () =&gt; {
+  <span class="cm">// code that runs after the click</span>
 });</code></pre>
       </figure>
 
-      <p>Notice what you are <em>not</em> doing: you never call that function yourself. You give it away and the browser calls it later, possibly many times, possibly never. That inversion is the whole idea, and it is exactly how React works too — in Week 4 you will write <code>onClick={handleAdd}</code>, which is the same move in different clothing.</p>
+      <p>Now make every <strong>Remove</strong> button work. Add this below your Add-button code:</p>
 
-      <p>The <code>event</code> argument carries details about what happened. You will not need much from it until Week 6, when a map click hands you the coordinates you clicked at.</p>
+      <figure class="code" data-file="app.js">
+<pre><code>listEl.addEventListener("click", (event) =&gt; {
+  if (!event.target.matches(".remove-button")) return;
+
+  const id = Number(event.target.dataset.id);
+
+  <span class="todo">// TODO 4: keep every placement whose id is NOT this id</span>
+
+  render();
+});</code></pre>
+      </figure>
+
+      <p><code>filter</code> keeps the items for which its condition is true:</p>
+
+      <figure class="code" data-file="pattern">
+<pre><code>const parks = placements.filter((p) =&gt; p.type === "park");</code></pre>
+      </figure>
+
+      <p>Adapt that pattern using <code>p.id !== id</code>. Save, refresh, then remove different rows. The correct row should disappear and the count should decrease.</p>
 
       <div class="note">
-        <span class="lbl"><code>console.log</code> is your main debugging tool</span>
-        <p>When something does not behave, print the value and look at it. Most bugs in this course are not broken logic — they are a value being a different shape than you assumed. <code>console.log(placements)</code> answers that question in one second.</p>
+        <span class="lbl">Why the listener is on the list</span>
+        <p>The Remove buttons are recreated every time <code>render()</code> runs. The list itself stays in the page, so one listener on <code>listEl</code> can handle clicks from any current or future Remove button.</p>
       </div>
     </section>
 
     <!-- ============================================ -->
     <section id="async">
-      <h2><span class="n">08</span> Pattern 4 · Waiting for slow things</h2>
+      <h2><span class="n">08</span> Pattern 4 · Waiting with <code>async</code> and <code>await</code></h2>
       <hr class="h2-rule">
-      <p>Asking a server for something takes time — maybe 50 milliseconds, maybe two seconds. JavaScript refuses to freeze while it waits, so slow operations hand back a <strong>Promise</strong>: a receipt that says "an answer will exist here later".</p>
-      <p><code>await</code> pauses your function until that receipt is honoured. Any function containing <code>await</code> must be marked <code>async</code>:</p>
+      <p>A real server does not answer immediately. For now, use a fake server that waits one second and then returns one placement. Add this to the bottom of <code>app.js</code>:</p>
 
-      <figure class="code" data-file="console">
-<pre><code>async function loadResult() {
-  const response = await fetch("http://127.0.0.1:8000/analyze");
-  const data = await response.json();
-  console.log(data.score);
-}</code></pre>
+      <figure class="code" data-file="app.js">
+<pre><code>function fakeServer() {
+  return new Promise((resolve) =&gt; {
+    setTimeout(() =&gt; {
+      resolve({
+        id: Date.now(),
+        type: "server result",
+        lng: 127.20,
+        lat: 37.70
+      });
+    }, 1000);
+  });
+}
+
+loadButton.addEventListener("click", async () =&gt; {
+  statusEl.textContent = "Server: waiting...";
+
+  <span class="todo">// TODO 5: wait for fakeServer() and store its answer</span>
+  <span class="todo">// TODO 6: add that answer to placements as a NEW array</span>
+
+  render();
+  statusEl.textContent = "Server: result added";
+});</code></pre>
       </figure>
 
-      <p>Two awaits, because there are two waits: one for the server to reply at all, and one for the reply's body to be read and turned into a JavaScript object. This exact pair of lines is what you write in Week 8.</p>
+      <p>Use <code>await</code> for the first TODO. Because the event function contains <code>await</code>, it is marked <code>async</code>. For the second TODO, reuse the spread pattern from Exercise 3.</p>
 
-      <h3>JSON</h3>
-      <p>Servers cannot send objects — they send text. <strong>JSON</strong> is the agreed way of writing an object as text, and it looks almost identical to what you already write:</p>
-
-      <figure class="code" data-file="console">
-<pre><code>{ "id": 1, "type": "station", "lng": 127.0, "lat": 37.5 }</code></pre>
-      </figure>
-
-      <p>The only visible difference is that every key is quoted. <code>response.json()</code> turns that text back into a real object; <code>JSON.stringify(x)</code> goes the other way when you need to send something. Python speaks the same format, which is why the two halves of your application can understand each other at all.</p>
+      <div class="note">
+        <span class="lbl">Watch the page while it waits</span>
+        <p>Click <strong>Load from server</strong>. The status should first change to <strong>Server: waiting...</strong>. About one second later, a new row appears and the status changes to <strong>Server: result added</strong>. That visible pause is what <code>await</code> is managing.</p>
+      </div>
     </section>
 
     <!-- ============================================ -->
     <section id="practice">
-      <h2><span class="n">09</span> The five exercises</h2>
+      <h2><span class="n">09</span> Finish the sandbox</h2>
       <hr class="h2-rule">
-      <p>Create a file called <code>practice.js</code> in your <code>spatial-app</code> folder and paste this in. Five functions are empty. Fill each one in, then run the file — it marks itself.</p>
+      <p>By the end, your page should support all four interactions below without editing the HTML or CSS:</p>
+      <ul>
+        <li>The initial array appears as visible rows.</li>
+        <li><strong>Add a park</strong> adds a new row without reloading the page.</li>
+        <li><strong>Remove</strong> deletes only the row you clicked.</li>
+        <li><strong>Load from server</strong> shows a waiting state, then adds a new row about one second later.</li>
+      </ul>
 
-      <figure class="code" data-file="practice.js">
-<pre><code><span class="cm">/* =========================================================
-   Week 3 — practice
-   Run with:  node practice.js
-   Fill in each TODO until all seven checks print PASS.
-   ========================================================= */</span>
+      <p>Before moving on, explain these four lines in your own words:</p>
 
-<span class="cm">/* --- Exercise 1 ------------------------------------------
-   Return a placement object with exactly these four keys:
-   id, type, lng, lat
---------------------------------------------------------- */</span>
-function makePlacement(id, type, lng, lat) {
-  <span class="todo">// TODO 1</span>
-}
-
-<span class="cm">/* --- Exercise 2 ------------------------------------------
-   Return a NEW array with `placement` added to the end.
-   `list` itself must come out unchanged.
---------------------------------------------------------- */</span>
-function addPlacement(list, placement) {
-  <span class="todo">// TODO 2</span>
-}
-
-<span class="cm">/* --- Exercise 3 ------------------------------------------
-   Return a NEW array without the placement whose id matches.
-   `list` itself must come out unchanged.
---------------------------------------------------------- */</span>
-function removePlacement(list, id) {
-  <span class="todo">// TODO 3</span>
-}
-
-<span class="cm">/* --- Exercise 4 ------------------------------------------
-   Return an array of the `type` values, one per placement,
-   in the same order.
---------------------------------------------------------- */</span>
-function typeList(list) {
-  <span class="todo">// TODO 4</span>
-}
-
-<span class="cm">/* --- Exercise 5 ------------------------------------------
-   `fakeServer()` below returns a Promise that resolves to
-   an object. Wait for it and return its `count` field.
---------------------------------------------------------- */</span>
-async function countFromServer() {
-  <span class="todo">// TODO 5</span>
-}
-
-<span class="cm">// pretends to be a slow server — do not edit</span>
-function fakeServer() {
-  return new Promise((resolve) =&gt; {
-    setTimeout(() =&gt; resolve({ count: 3, center: [127.0, 37.5] }), 300);
-  });
-}
-
-<span class="cm">/* ========== checks — do not edit below this line ========= */</span>
-async function run() {
-  let pass = 0;
-  let fail = 0;
-
-  const check = (label, got, want) =&gt; {
-    const ok = JSON.stringify(got) === JSON.stringify(want);
-    ok ? pass++ : fail++;
-    console.log(
-      (ok ? "PASS  " : "FAIL  ") + label +
-      (ok ? "" : "\n        expected " + JSON.stringify(want) +
-                 "\n        received " + JSON.stringify(got))
-    );
-  };
-
-  const sample = [
-    { id: 1, type: "station", lng: 127.0, lat: 37.5 },
-    { id: 2, type: "park",    lng: 127.1, lat: 37.6 }
-  ];
-  const untouched = JSON.stringify(sample);
-
-  check("1  makePlacement builds the right shape",
-        makePlacement(7, "shop", 1, 2),
-        { id: 7, type: "shop", lng: 1, lat: 2 });
-
-  check("2  addPlacement returns a longer list",
-        addPlacement(sample, { id: 3, type: "shop", lng: 0, lat: 0 }).length,
-        3);
-
-  check("2  addPlacement left the original alone",
-        JSON.stringify(sample), untouched);
-
-  check("3  removePlacement drops the right one",
-        removePlacement(sample, 1),
-        [{ id: 2, type: "park", lng: 127.1, lat: 37.6 }]);
-
-  check("3  removePlacement left the original alone",
-        JSON.stringify(sample), untouched);
-
-  check("4  typeList reads every type in order",
-        typeList(sample), ["station", "park"]);
-
-  check("5  countFromServer waited for the answer",
-        await countFromServer(), 3);
-
-  console.log("\n" + pass + " passed, " + fail + " failed");
-}
-
-run();</code></pre>
+      <figure class="code" data-file="four patterns">
+<pre><code>placements.map((p) =&gt; ...)
+placements = [...placements, newPlacement]
+placements = placements.filter((p) =&gt; p.id !== id)
+const result = await fakeServer()</code></pre>
       </figure>
 
-      <p>Run it from the terminal, inside your <code>spatial-app</code> folder:</p>
-
-      <figure class="code term" data-file="terminal">
-<pre><code><span class="pr">$</span> node practice.js</code></pre>
-      </figure>
-
-      <p>Every failure prints what it expected and what it got. That difference is usually enough to tell you what is wrong without any further hunting.</p>
-
-      <div class="warn">
-        <span class="lbl">Exercises 2 and 3 are the ones that matter</span>
-        <p>Each has two checks: one that your answer is right, and one that you did not damage the original array. If the first passes and the second fails, you used <code>push</code> or <code>splice</code> instead of building something new. That exact mistake, made inside React, produces a page that silently refuses to update — and it is the single most common bug in Week 4.</p>
-      </div>
+      <p>These are the same ideas we will use in React. React changes how the page is rendered, but the array, spread, filter, event, and async patterns stay the same.</p>
 
       <h3>Save your work</h3>
       <figure class="code term" data-file="terminal">
 <pre><code><span class="pr">$</span> git add .
-<span class="pr">$</span> git commit -m "Week 3: JavaScript practice"
+<span class="pr">$</span> git commit -m "Week 3: JavaScript placement sandbox"
 <span class="pr">$</span> git push</code></pre>
       </figure>
     </section>
@@ -430,44 +426,44 @@ run();</code></pre>
 
       <div class="trouble">
         <details>
-          <summary>Cannot find module 'practice.js'</summary>
+          <summary>The page opens, but the list is empty</summary>
           <div class="body">
-            <p>Your terminal is in a different folder than the file. Run <code>ls</code> (or <code>dir</code> on Windows) to see what is around you — if <code>practice.js</code> is not in that list, use <code>cd spatial-app</code> to move into the right folder and try again.</p>
+            <p>Open the browser Console with <strong>F12</strong>. A syntax error in <code>app.js</code> stops the file before <code>render()</code> runs. Also check that <code>index.html</code>, <code>style.css</code>, and <code>app.js</code> are in the same folder.</p>
           </div>
         </details>
 
         <details>
-          <summary>Every check prints <code>received undefined</code></summary>
+          <summary>I changed <code>placements</code>, but the page did not change</summary>
           <div class="body">
-            <p>The function has no <code>return</code>. A JavaScript function that does not explicitly return something returns <code>undefined</code>. Calculating the answer is not enough — you have to hand it back.</p>
+            <p>Changing the array does not redraw the screen by itself. Call <code>render()</code> after the change. In this exercise, every Add, Remove, or server result should end by rendering again.</p>
           </div>
         </details>
 
         <details>
-          <summary>Check 2 or 3 passes but "left the original alone" fails</summary>
+          <summary>Add works, but everything disappears after refresh</summary>
           <div class="body">
-            <p>You modified <code>list</code> instead of building a new array. <code>push</code>, <code>splice</code>, <code>sort</code>, and <code>reverse</code> all change the array they are called on. Use <code>[...list, item]</code> to add and <code>list.filter(...)</code> to remove — both return something new and leave the original as it was.</p>
+            <p>That is expected. The array exists only in browser memory. Refreshing reloads <code>app.js</code> from the top and recreates the original two placements. Persistent storage comes later.</p>
           </div>
         </details>
 
         <details>
-          <summary>Check 5 returns a Promise instead of 3</summary>
+          <summary>Remove does nothing</summary>
           <div class="body">
-            <p>The <code>await</code> is missing. Without it you are returning the receipt rather than the thing the receipt was for. Write <code>const data = await fakeServer();</code> and then return <code>data.count</code>.</p>
+            <p>Check the Console, then inspect the two important values: <code>event.target</code> and <code>event.target.dataset.id</code>. The dataset value arrives as text, which is why the starter converts it with <code>Number(...)</code> before comparing ids.</p>
           </div>
         </details>
 
         <details>
-          <summary>SyntaxError: Unexpected token</summary>
+          <summary>The server button immediately adds <code>undefined</code></summary>
           <div class="body">
-            <p>A bracket, brace, or quote is unbalanced. The error message names a line number — the real problem is usually on that line or the one just above it. In VS Code, clicking next to a bracket highlights its partner, which finds the gap quickly.</p>
+            <p>You are probably using the Promise instead of waiting for its result. The value returned by <code>fakeServer()</code> becomes the placement only after <code>await</code> resolves it.</p>
           </div>
         </details>
 
         <details>
-          <summary>My arrow function returns nothing</summary>
+          <summary><code>Unexpected token</code> or the rest of the file stops running</summary>
           <div class="body">
-            <p><code>(p) =&gt; p.type</code> returns <code>p.type</code>, but <code>(p) =&gt; { p.type }</code> returns <code>undefined</code>. Adding braces turns the arrow into a normal function body, which then needs an explicit <code>return</code>. Either drop the braces or write <code>return</code> inside them.</p>
+            <p>Look at the first red error in the Console. The real problem is usually on that line or immediately above it: a missing quote, parenthesis, brace, backtick, or comma.</p>
           </div>
         </details>
       </div>
