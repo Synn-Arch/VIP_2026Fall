@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Week 2 — JavaScript: Four Essential Patterns</title>
+<title>Week 3 — PACE ICE + JavaScript</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -14,13 +14,7 @@
 <header class="topbar">
   <div class="topbar-inner">
     <a class="brand" href="index.html">Spatial App · Tutorials</a>
-    <div class="ticks">
-      <span class="tick done"></span><span class="tick now"></span><span class="tick"></span><span class="tick"></span>
-      <span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
-      <span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
-      <span class="tick"></span><span class="tick"></span>
-    </div>
-    <span class="ticks-label">Week 2 of 14</span>
+    <span class="ticks-label">Week 3 of 14</span>
   </div>
 </header>
 
@@ -30,6 +24,9 @@
   <nav class="spine" aria-label="On this page">
     <p class="spine-title">This week</p>
     <ol>
+      <li><a href="#pace">PACE ICE + VS Code</a></li>
+      <li><a href="#pace-data">Bring your Week 2 work</a></li>
+      <li><a href="#pace-run">Run on GPU + compare</a></li>
       <li><a href="#run">Where JavaScript runs</a></li>
       <li><a href="#data">Pattern 1 · Data</a></li>
       <li><a href="#change">Pattern 2 · Changing without changing</a></li>
@@ -37,26 +34,22 @@
       <li><a href="#async">Pattern 4 · Waiting</a></li>
       <li><a href="#practice">The five exercises</a></li>
       <li><a href="#broken">When it breaks</a></li>
-      <li><a href="#submit">Hand it in</a></li>
     </ol>
   </nav>
 
   <main class="content">
 
     <div class="page-head">
-      <p class="eyebrow">Week 2 · Jan 27 – Feb 3</p>
-      <h1>JavaScript: four essential patterns</h1>
-      <p class="dek">Almost every line of frontend code you write this semester is one of four moves. Learn those four properly and skip the rest of the language for now.</p>
-      <div class="meta">
-        <span class="chip">≈2 hours</span>
-        <span class="chip">5 exercises, self-marking</span>
-        <span class="chip">No React yet</span>
-      </div>
+      <p class="eyebrow">Week 3 · Sep 8 – Sep 15</p>
+      <h1>SOLWEIG-GPU on PACE ICE + JavaScript: four essential patterns</h1>
+      <p class="dek">First, rerun last week's SOLWEIG-GPU example on an ICE GPU. Then move into the JavaScript patterns we will use in the web application.</p>
     </div>
 
     <div class="goals">
       <h2>By the end of this week you will</h2>
       <ul>
+        <li>Start a GPU-backed VS Code session on PACE ICE</li>
+        <li>Run the same SOLWEIG-GPU example from Week 2 and compare it with your local CPU run</li>
         <li>Store a list of things as an array of objects — the shape all your data takes</li>
         <li>Add and remove items without modifying the original array</li>
         <li>Run code in response to a click</li>
@@ -64,14 +57,78 @@
       </ul>
     </div>
 
+    <!-- ============================================ -->
+    <section id="pace">
+      <h2><span class="n">01</span> PACE ICE + VS Code</h2>
+      <hr class="h2-rule">
+      <p>PACE ICE gives you access to Georgia Tech compute nodes, including NVIDIA GPUs. We will use the <strong>browser-based Microsoft VS Code app</strong> in ICE OnDemand, not SSH.</p>
+
+      <ol>
+        <li>If you are off campus, connect through <a href="https://gatech.service-now.com/home?id=kb_article_view&amp;sysparm_article=KB0026837" target="_blank" rel="noopener">GlobalProtect VPN</a>.</li>
+        <li>Open the <a href="https://ondemand-ice.pace.gatech.edu/pun/sys/dashboard" target="_blank" rel="noopener">ICE OnDemand portal</a> and choose <strong>Interactive Apps → Microsoft VS Code</strong>.</li>
+        <li>Request a short GPU session using the settings below, submit the job, and launch VS Code when it starts.</li>
+      </ol>
+
+      <table style="width:100%;border-collapse:collapse;font-size:0.96rem;margin:16px 0 22px">
+        <tr style="background:#E8EAED">
+          <th style="text-align:left;padding:9px 12px;border:1px solid #CBD8DC;font-family:var(--font-display);font-size:0.86rem">Setting</th>
+          <th style="text-align:left;padding:9px 12px;border:1px solid #CBD8DC;font-family:var(--font-display);font-size:0.86rem">Use for this exercise</th>
+        </tr>
+        <tr><td style="padding:9px 12px;border:1px solid #CBD8DC">Environment setup</td><td style="padding:9px 12px;border:1px solid #CBD8DC">Default modules</td></tr>
+        <tr style="background:#F7F8F9"><td style="padding:9px 12px;border:1px solid #CBD8DC">Quality of Service</td><td style="padding:9px 12px;border:1px solid #CBD8DC">Default (none)</td></tr>
+        <tr><td style="padding:9px 12px;border:1px solid #CBD8DC">Node Type</td><td style="padding:9px 12px;border:1px solid #CBD8DC">NVIDIA GPU, first available with CUDA 12 or 13 drivers</td></tr>
+        <tr style="background:#F7F8F9"><td style="padding:9px 12px;border:1px solid #CBD8DC">CPUs / GPUs</td><td style="padding:9px 12px;border:1px solid #CBD8DC">8 CPUs / 1 GPU</td></tr>
+        <tr><td style="padding:9px 12px;border:1px solid #CBD8DC">Memory / time</td><td style="padding:9px 12px;border:1px solid #CBD8DC">16 GB / 2 hours</td></tr>
+      </table>
+
+      <p>PACE documentation: <a href="https://gatech.service-now.com/home?id=kb_article_view&amp;sysparm_article=KB0042102" target="_blank" rel="noopener">ICE overview</a> · <a href="https://gatech.service-now.com/home?id=kb_article_view&amp;sysparm_article=KB0044712" target="_blank" rel="noopener">VS Code on ICE</a> · <a href="https://gatech.service-now.com/home?id=kb_article_view&amp;sysparm_article=KB0045058" target="_blank" rel="noopener">CUDA compatibility</a></p>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="pace-data">
+      <h2><span class="n">02</span> Bring your Week 2 work to ICE</h2>
+      <hr class="h2-rule">
+      <p>Use the <strong>same input data, subset, meteorological file, and <code>run_test.py</code> from Week 2</strong>. If the files are still on your computer, upload/copy that Week 2 working folder into your ICE storage and open it in VS Code. If you no longer have the data, download the <a href="https://zenodo.org/records/21081622" target="_blank" rel="noopener">sample dataset</a> again and recreate the same Week 2 subset.</p>
+
+      <p>Open a terminal inside the ICE VS Code session and set up a Python environment by following the <a href="https://gatech.service-now.com/home?id=kb_article_view&amp;sysparm_article=KB0044520" target="_blank" rel="noopener">PACE Python virtual-environment guide</a>. Install the same SOLWEIG-GPU dependencies you used in Week 2.</p>
+
+      <div class="note">
+        <span class="lbl">Before you run</span>
+        <p>Check that the GPU is visible from Python. <code>torch.cuda.is_available()</code> should print <code>True</code>.</p>
+      </div>
+
+      <figure class="code term" data-file="terminal">
+<pre><code>python -c "import torch; print('cuda:', torch.cuda.is_available())"
+python -c "import solweig_gpu; print('solweig ok')"</code></pre>
+      </figure>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="pace-run">
+      <h2><span class="n">03</span> Run on the GPU and compare</h2>
+      <hr class="h2-rule">
+      <p>Do <strong>not</strong> change the Week 2 model code or subset. Run the same <code>run_test.py</code> on ICE so the hardware is the main thing that changes. Record the wall-clock time:</p>
+
+      <figure class="code term" data-file="terminal">
+<pre><code>time python run_test.py</code></pre>
+      </figure>
+
+      <div class="warn">
+        <span class="lbl">Compare with your Week 2 local CPU run</span>
+        <p>Check whether the ICE output agrees with your local result, especially the spatial pattern and representative values in SVF/Tmrt. Small floating-point differences are fine; the results do not need to be byte-for-byte identical. Then compare the total runtime and briefly explain how much faster or slower the ICE GPU run was.</p>
+      </div>
+
+      <p><strong>Write down three things:</strong> your local CPU time, your ICE GPU time, and one sentence about whether the outputs agree.</p>
+    </section>
+
     <div class="note">
-      <span class="lbl">What is deliberately missing</span>
-      <p>Classes, prototypes, closures, inheritance, modules, <code>this</code>. These are real parts of JavaScript and you will meet them eventually. You will not need any of them in this course, and learning them now costs you the time you need for the four patterns that matter.</p>
+      <span class="lbl">JavaScript starts here</span>
+      <p>The rest of Week 3 introduces the four JavaScript patterns we need for the web application. Classes, prototypes, closures, inheritance, modules, and <code>this</code> are deliberately left out because they are not needed for this course.</p>
     </div>
 
     <!-- ============================================ -->
     <section id="run">
-      <h2><span class="n">01</span> Where JavaScript runs</h2>
+      <h2><span class="n">04</span> Where JavaScript runs</h2>
       <hr class="h2-rule">
       <p>The same language runs in two places, and this week you use both.</p>
       <p><strong>In the browser</strong>, where it can change what is on the page. Press <strong>F12</strong> on any web page and pick the Console tab — you can type JavaScript there and see it run immediately. It is the fastest way to test one line.</p>
@@ -86,7 +143,7 @@
 
     <!-- ============================================ -->
     <section id="data">
-      <h2><span class="n">02</span> Pattern 1 · Data as an array of objects</h2>
+      <h2><span class="n">05</span> Pattern 1 · Data as an array of objects</h2>
       <hr class="h2-rule">
       <p>An <strong>object</strong> is a labelled bundle of values. You read and write its parts by name:</p>
 
@@ -135,7 +192,7 @@ const types2 = placements.map((p) =&gt; p.type);</code></pre>
 
     <!-- ============================================ -->
     <section id="change">
-      <h2><span class="n">03</span> Pattern 2 · Changing without changing</h2>
+      <h2><span class="n">06</span> Pattern 2 · Changing without changing</h2>
       <hr class="h2-rule">
       <p>This is the pattern that trips people up, and it is worth slowing down for. From Week 4, React only redraws the screen when it notices that your data was <em>replaced</em>. If you modify an array in place, React sees the same array it already had and nothing happens on screen — your code is correct and the page is frozen.</p>
       <p>So the rule is: never change an array. Build a new one.</p>
@@ -185,7 +242,7 @@ const parks = placements.filter((p) =&gt; p.type === "park");</code></pre>
 
     <!-- ============================================ -->
     <section id="events">
-      <h2><span class="n">04</span> Pattern 3 · Events</h2>
+      <h2><span class="n">07</span> Pattern 3 · Events</h2>
       <hr class="h2-rule">
       <p>An event is something that happened — a click, a keystroke, a drag. You respond by handing over a function to be called when it happens.</p>
 
@@ -209,7 +266,7 @@ button.addEventListener("click", function (event) {
 
     <!-- ============================================ -->
     <section id="async">
-      <h2><span class="n">05</span> Pattern 4 · Waiting for slow things</h2>
+      <h2><span class="n">08</span> Pattern 4 · Waiting for slow things</h2>
       <hr class="h2-rule">
       <p>Asking a server for something takes time — maybe 50 milliseconds, maybe two seconds. JavaScript refuses to freeze while it waits, so slow operations hand back a <strong>Promise</strong>: a receipt that says "an answer will exist here later".</p>
       <p><code>await</code> pauses your function until that receipt is honoured. Any function containing <code>await</code> must be marked <code>async</code>:</p>
@@ -236,13 +293,13 @@ button.addEventListener("click", function (event) {
 
     <!-- ============================================ -->
     <section id="practice">
-      <h2><span class="n">06</span> The five exercises</h2>
+      <h2><span class="n">09</span> The five exercises</h2>
       <hr class="h2-rule">
       <p>Create a file called <code>practice.js</code> in your <code>spatial-app</code> folder and paste this in. Five functions are empty. Fill each one in, then run the file — it marks itself.</p>
 
       <figure class="code" data-file="practice.js">
 <pre><code><span class="cm">/* =========================================================
-   Week 2 — practice
+   Week 3 — practice
    Run with:  node practice.js
    Fill in each TODO until all seven checks print PASS.
    ========================================================= */</span>
@@ -361,14 +418,14 @@ run();</code></pre>
       <h3>Save your work</h3>
       <figure class="code term" data-file="terminal">
 <pre><code><span class="pr">$</span> git add .
-<span class="pr">$</span> git commit -m "Week 2: JavaScript practice"
+<span class="pr">$</span> git commit -m "Week 3: JavaScript practice"
 <span class="pr">$</span> git push</code></pre>
       </figure>
     </section>
 
     <!-- ============================================ -->
     <section id="broken">
-      <h2><span class="n">07</span> When it breaks</h2>
+      <h2><span class="n">10</span> When it breaks</h2>
       <hr class="h2-rule">
 
       <div class="trouble">
@@ -416,21 +473,9 @@ run();</code></pre>
       </div>
     </section>
 
-    <!-- ============================================ -->
-    <section id="submit" class="submit">
-      <h2>Hand it in</h2>
-      <hr class="h2-rule">
-      <ul class="check">
-        <li><label><input type="checkbox"> <code>practice.js</code> committed with all five functions written</label></li>
-        <li><label><input type="checkbox"> A screenshot of the terminal showing <strong>7 passed, 0 failed</strong></label></li>
-        <li><label><input type="checkbox"> A commit message naming which exercise you found hardest, in one or two sentences</label></li>
-        <li><label><input type="checkbox"> If Week 1's layout was unfinished, it is finished and committed now</label></li>
-      </ul>
-    </section>
-
     <nav class="weeknav">
-      <a href="week01.html"><span class="dir">Previous</span><span class="ttl">Environment and shell</span></a>
-      <a class="next" href="week03.html"><span class="dir">Next week</span><span class="ttl">React: components and props</span></a>
+      <a href="week02.html"><span class="dir">Previous</span><span class="ttl">Research setup + local SOLWEIG</span></a>
+      <a class="next" href="week04.html"><span class="dir">Next week</span><span class="ttl">React: components and props</span></a>
     </nav>
 
   </main>

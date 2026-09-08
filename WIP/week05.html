@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Week 5 — Rendering a Mapbox Map</title>
+<title>Week 4 — React State and List Rendering</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -15,12 +15,12 @@
   <div class="topbar-inner">
     <a class="brand" href="index.html">Spatial App · Tutorials</a>
     <div class="ticks">
-      <span class="tick done"></span><span class="tick done"></span><span class="tick done"></span><span class="tick done"></span>
-      <span class="tick now"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
+      <span class="tick done"></span><span class="tick done"></span><span class="tick done"></span><span class="tick now"></span>
+      <span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
       <span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
       <span class="tick"></span><span class="tick"></span>
     </div>
-    <span class="ticks-label">Week 5 of 14</span>
+    <span class="ticks-label">Week 4 of 14</span>
   </div>
 </header>
 
@@ -30,13 +30,12 @@
   <nav class="spine" aria-label="On this page">
     <p class="spine-title">This week</p>
     <ol>
-      <li><a href="#token">Get a token</a></li>
-      <li><a href="#protect">Protect it first</a></li>
-      <li><a href="#install">Install the libraries</a></li>
-      <li><a href="#render">Render the map</a></li>
-      <li><a href="#three">Three things that break</a></li>
-      <li><a href="#marker">Add a marker</a></li>
-      <li><a href="#studio">Optional: your own style</a></li>
+      <li><a href="#state">What state is</a></li>
+      <li><a href="#usestate">useState</a></li>
+      <li><a href="#where">Who holds the data</a></li>
+      <li><a href="#build">Build it</a></li>
+      <li><a href="#keys">Why keys matter</a></li>
+      <li><a href="#styles">Style the new parts</a></li>
       <li><a href="#broken">When it breaks</a></li>
       <li><a href="#submit">Hand it in</a></li>
     </ol>
@@ -45,280 +44,378 @@
   <main class="content">
 
     <div class="page-head">
-      <p class="eyebrow">Week 5 · Feb 17 – Feb 24</p>
-      <h1>Rendering a Mapbox map</h1>
-      <p class="dek">Replace the gray placeholder with a real, interactive, zoomable map — and learn how to keep a secret out of your source code while doing it.</p>
+      <p class="eyebrow">Week 4 · Feb 10 – Feb 17</p>
+      <h1>React state and list rendering</h1>
+      <p class="dek">Make the page respond. Select a component type, add it to a growing list, remove it again — the interaction the entire application is built on.</p>
       <div class="meta">
-        <span class="chip hot">Milestone 1</span>
         <span class="chip">≈2 hours</span>
-        <span class="chip">Free Mapbox account required</span>
+        <span class="chip">Week 2's patterns, used for real</span>
+        <span class="chip">Coordinates are fake until Week 6</span>
       </div>
     </div>
 
     <div class="goals">
       <h2>By the end of this week you will</h2>
       <ul>
-        <li>Have a Mapbox account and a public access token</li>
-        <li>Keep that token in an environment file, out of your repository</li>
-        <li>Have a live map filling the center of your application</li>
-        <li>Have one marker drawn at a coordinate you chose</li>
+        <li>Store changing data in a component with <code>useState</code></li>
+        <li>Render a list from an array, and know why React insists on a <code>key</code></li>
+        <li>Pass a function down to a child so the child can report back</li>
+        <li>Have a working palette: select, add, delete</li>
       </ul>
     </div>
 
     <!-- ============================================ -->
-    <section id="token">
-      <h2><span class="n">01</span> Get a token</h2>
+    <section id="state">
+      <h2><span class="n">01</span> What state is</h2>
       <hr class="h2-rule">
-      <p>Mapbox draws the map, and it needs to know who is asking. That identification is a <strong>token</strong> — a long string beginning with <code>pk.</code> that your application sends with every request for map tiles.</p>
-      <p>Sign up for a free account at <a href="https://account.mapbox.com/auth/signup/" target="_blank" rel="noopener">account.mapbox.com</a>. Once you are in, the account page shows a <strong>default public token</strong>. Copy it.</p>
-
-      <div class="warn">
-        <span class="lbl">Public token only</span>
-        <p>Mapbox issues two kinds. Public tokens begin with <code>pk.</code> and are meant to be sent to browsers — that is the one you want. Secret tokens begin with <code>sk.</code> and must never appear in frontend code, because anything the browser receives can be read by anyone. If you ever create a token yourself, check the first two characters.</p>
-        <p>Do not paste your token into a chat message, a shared document, or a screenshot without blurring it. In Week 12 you will lock it to your own domain; until then, treat it as a password.</p>
-      </div>
-    </section>
-
-    <!-- ============================================ -->
-    <section id="protect">
-      <h2><span class="n">02</span> Protect it first</h2>
-      <hr class="h2-rule">
-      <p>The order of the next two steps is deliberate. Set up the exclusion <em>before</em> the file exists, and it becomes impossible to commit it by accident.</p>
-
-      <h3>First — tell Git to ignore it</h3>
-      <p>Open <code>frontend/.gitignore</code> and add this line at the end:</p>
-
-      <figure class="code" data-file="frontend/.gitignore">
-<pre><code>.env</code></pre>
-      </figure>
-
-      <h3>Then — create the file</h3>
-      <p>Make a new file called <code>.env</code> in the <code>frontend</code> folder — the same level as <code>package.json</code>, not inside <code>src</code>. One line, your token after the equals sign, no quotes and no spaces around it:</p>
-
-      <figure class="code" data-file="frontend/.env">
-<pre><code>VITE_MAPBOX_TOKEN=pk.eyJ1IjoieW91ciIsImEiOiJja...</code></pre>
-      </figure>
-
-      <h3>Confirm it is invisible to Git</h3>
-      <figure class="code term" data-file="terminal">
-<pre><code><span class="pr">$</span> git status</code></pre>
-      </figure>
-
-      <p><code>.env</code> must not appear anywhere in that output. If it does, the <code>.gitignore</code> line is in the wrong file or misspelled — fix it before going any further.</p>
+      <p><strong>State is data that changes while the page is open.</strong> Which component type is currently selected. What has been placed so far. Whether a request is still loading. All of it is state.</p>
+      <p>The idea that makes React work is worth stating plainly, because it is the opposite of how you would do it by hand:</p>
 
       <div class="note">
-        <span class="lbl">Why an environment file</span>
-        <p>A secret in your source code is a secret in your repository, and a repository is public and permanent. An environment file keeps the value beside the code without being part of it, which also means each person and each server can hold a different value. In Week 12 the same variable is set through Vercel's settings instead of a file, and none of your code has to change.</p>
+        <span class="lbl">The whole model, in one sentence</span>
+        <p>You change the data, and React redraws whatever needs redrawing. You never touch the page.</p>
       </div>
+
+      <p>There is no code anywhere in this week that adds a list item to the screen. You add an object to an array, and the list on screen follows, because your component describes what the list should look like <em>for whatever the array currently holds</em>. React runs that description again whenever the array changes.</p>
     </section>
 
     <!-- ============================================ -->
-    <section id="install">
-      <h2><span class="n">03</span> Install the libraries</h2>
+    <section id="usestate">
+      <h2><span class="n">02</span> useState</h2>
       <hr class="h2-rule">
-      <p>Stop the dev server with <strong>Ctrl+C</strong>, then, from inside <code>frontend</code>:</p>
+      <p><code>useState</code> hands you two things: the current value, and a function for replacing it.</p>
 
-      <figure class="code term" data-file="terminal">
-<pre><code><span class="pr">$</span> npm install react-map-gl mapbox-gl</code></pre>
+      <figure class="code" data-file="jsx">
+<pre><code>import { useState } from "react";
+
+const [count, setCount] = useState(0);
+<span class="cm">//     ↑ value   ↑ how to replace it   ↑ starting value</span></code></pre>
       </figure>
 
-      <p>Two packages, because they do different jobs. <code>mapbox-gl</code> is the map engine itself — it knows nothing about React. <code>react-map-gl</code> is a thin wrapper that lets you write the map as JSX components alongside the rest of your interface.</p>
+      <p>The names are yours to choose; <code>setSomething</code> is the near-universal convention. Call the setter and React re-runs your component with the new value:</p>
+
+      <figure class="code" data-file="jsx">
+<pre><code>&lt;button onClick={() =&gt; setCount(count + 1)}&gt;
+  Clicked {count} times
+&lt;/button&gt;</code></pre>
+      </figure>
+
+      <p>Two rules, and both of them bite:</p>
+
+      <h3>Never assign to the value directly</h3>
+      <figure class="code" data-file="jsx">
+<pre><code>count = count + 1;      <span class="cm">// nothing happens on screen</span>
+setCount(count + 1);    <span class="cm">// correct</span></code></pre>
+      </figure>
+      <p>Assigning changes a variable that is about to be thrown away. Only the setter tells React that something is different.</p>
+
+      <h3>The setter replaces — it does not merge</h3>
+      <p>For an array, that means handing over a whole new array. This is exactly the pattern from Week 2, and now you can see why it mattered:</p>
+      <figure class="code" data-file="jsx">
+<pre><code>setPlacements([...placements, newOne]);          <span class="cm">// add</span>
+setPlacements(placements.filter((p) =&gt; p.id !== id));  <span class="cm">// remove</span></code></pre>
+      </figure>
 
       <div class="warn">
-        <span class="lbl">Restart the dev server after touching <code>.env</code></span>
-        <p>Vite reads environment files once, at startup. Create or edit <code>.env</code> while the server is running and it will not notice. Every time you change that file: Ctrl+C, then <code>npm run dev</code> again. Skipping this produces a token that is <code>undefined</code> for no apparent reason.</p>
+        <span class="lbl">The bug that wastes an hour</span>
+        <p><code>placements.push(newOne)</code> followed by <code>setPlacements(placements)</code> does nothing visible. The array now holds the new item, but it is the <em>same array object</em> React already had, so React concludes nothing changed and does not redraw. Your data is right and your screen is stale. If adding an item appears to do nothing, this is almost always why.</p>
       </div>
     </section>
 
     <!-- ============================================ -->
-    <section id="render">
-      <h2><span class="n">04</span> Render the map</h2>
+    <section id="where">
+      <h2><span class="n">03</span> Who holds the data</h2>
       <hr class="h2-rule">
+      <p>Both pieces of state live in <code>App</code>, not in <code>Sidebar</code>. That looks like extra work now — <code>Sidebar</code> is the only component using them this week — so it is worth knowing why before you write it.</p>
+      <p>In Week 6, <code>MapArea</code> needs the same list, to draw a marker for every placement. In Week 9, <code>ResultPanel</code> needs it, to send it to the server. Three components need one array, and a component cannot reach into a sibling. The only place all three can see is their shared parent.</p>
+      <p>Data flows down as props. To send something back <em>up</em>, the parent passes down a function, and the child calls it. That is the entire communication system:</p>
 
-      <h3>Give the map room</h3>
-      <p>Your <code>.map-area</code> currently centers its contents, which was right for a placeholder message and wrong for a map that needs to fill the space. Find it in <code>src/index.css</code> and replace the rule with this:</p>
+      <figure class="code" data-file="the shape of it">
+<pre><code>App                    holds selectedType and placements
+ │
+ ├─ props down ──────→ Sidebar gets the values, and functions
+ │                     like onAdd and onRemove
+ │
+ └─ ←── calls back ─── Sidebar calls onAdd(); App updates its state;
+                       React redraws whatever was affected</code></pre>
+      </figure>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="build">
+      <h2><span class="n">04</span> Build it</h2>
+      <hr class="h2-rule">
+      <p>Three files change. Start with <code>App.jsx</code>, which now owns everything.</p>
+
+      <figure class="code" data-file="src/App.jsx">
+<pre><code>import { useState } from "react";
+import Sidebar from "./components/Sidebar";
+import MapArea from "./components/MapArea";
+import ResultPanel from "./components/ResultPanel";
+
+const TYPES = ["station", "park", "shop"];
+
+export default function App() {
+  const [selectedType, setSelectedType] = useState(TYPES[0]);
+  const [placements, setPlacements] = useState([]);
+
+  function addPlacement() {
+    const next = {
+      id: Date.now(),      <span class="cm">// a unique-enough number, for now</span>
+      type: selectedType,
+      lng: 127.0,          <span class="cm">// placeholder — real coords in Week 6</span>
+      lat: 37.5
+    };
+    setPlacements([...placements, next]);
+  }
+
+  function removePlacement(id) {
+    setPlacements(placements.filter((p) =&gt; p.id !== id));
+  }
+
+  return (
+    &lt;div className="app"&gt;
+      &lt;div className="top"&gt;
+        &lt;Sidebar
+          types={TYPES}
+          selectedType={selectedType}
+          onSelect={setSelectedType}
+          placements={placements}
+          onAdd={addPlacement}
+          onRemove={removePlacement}
+        /&gt;
+        &lt;MapArea /&gt;
+      &lt;/div&gt;
+      &lt;ResultPanel count={placements.length} /&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+      </figure>
+
+      <p>Then <code>Sidebar.jsx</code>, which displays all of it and reports clicks back up.</p>
+
+      <figure class="code" data-file="src/components/Sidebar.jsx">
+<pre><code>export default function Sidebar({
+  types,
+  selectedType,
+  onSelect,
+  placements,
+  onAdd,
+  onRemove
+}) {
+  return (
+    &lt;aside className="palette"&gt;
+      &lt;h2&gt;Components&lt;/h2&gt;
+
+      {types.map((type) =&gt; (
+        &lt;button
+          key={type}
+          className={type === selectedType ? "item selected" : "item"}
+          onClick={() =&gt; onSelect(type)}
+        &gt;
+          {type}
+        &lt;/button&gt;
+      ))}
+
+      &lt;button className="add" onClick={onAdd}&gt;
+        Add {selectedType}
+      &lt;/button&gt;
+
+      &lt;h2&gt;Placed ({placements.length})&lt;/h2&gt;
+
+      {placements.length === 0 &amp;&amp; (
+        &lt;p className="placeholder"&gt;Nothing placed yet.&lt;/p&gt;
+      )}
+
+      &lt;ul className="placed"&gt;
+        {placements.map((p) =&gt; (
+          &lt;li key={p.id}&gt;
+            &lt;span&gt;{p.type}&lt;/span&gt;
+            &lt;button onClick={() =&gt; onRemove(p.id)}&gt;×&lt;/button&gt;
+          &lt;/li&gt;
+        ))}
+      &lt;/ul&gt;
+    &lt;/aside&gt;
+  );
+}</code></pre>
+      </figure>
+
+      <p>And <code>ResultPanel.jsx</code>, which now reports a real number.</p>
+
+      <figure class="code" data-file="src/components/ResultPanel.jsx">
+<pre><code>export default function ResultPanel({ count }) {
+  return (
+    &lt;section className="results"&gt;
+      &lt;h2&gt;Results&lt;/h2&gt;
+      &lt;p&gt;
+        {count} component{count === 1 ? "" : "s"} placed.
+        Nothing analyzed yet.
+      &lt;/p&gt;
+    &lt;/section&gt;
+  );
+}</code></pre>
+      </figure>
+
+      <h3>Three things in that code worth naming</h3>
+      <p><strong>Conditional rendering.</strong> <code>{placements.length === 0 &amp;&amp; &lt;p&gt;...&lt;/p&gt;}</code> shows the message only when the list is empty. In JavaScript, <code>false &amp;&amp; anything</code> is <code>false</code>, and React draws nothing for <code>false</code>. It reads as "when this is true, put that here".</p>
+
+      <p><strong>The arrow around the handler.</strong> This is the classic React trap:</p>
+      <figure class="code" data-file="jsx">
+<pre><code>onClick={() =&gt; onRemove(p.id)}   <span class="cm">// right — a function to call later</span>
+onClick={onRemove(p.id)}         <span class="cm">// wrong — calls it immediately, during render</span></code></pre>
+      </figure>
+      <p>The second version deletes every item the moment the list appears, then tries to redraw, then deletes again. You get an infinite loop and a frozen tab. <code>onClick</code> wants a function you have not called yet.</p>
+
+      <p><strong>Where the ids come from.</strong> <code>Date.now()</code> returns the current time in milliseconds, which is unique enough for one person clicking buttons. It would not be safe in a real multi-user system, and in Week 10 the backend takes over identity anyway.</p>
+
+      <p>Save and try it. Click a type — it should highlight. Click Add — an item appears in the list and the results count goes up. Click × — it disappears. If all three work, the interaction at the heart of your application is done.</p>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="keys">
+      <h2><span class="n">05</span> Why keys matter</h2>
+      <hr class="h2-rule">
+      <p>Every element produced by <code>map</code> needs a <code>key</code>, and React will warn you in the console if you forget. It is not a formality.</p>
+      <p>When your array changes, React compares the new list against the old one to work out the smallest possible edit. Keys are how it matches an old item to its new self. Without them it guesses by position, and positions shift whenever something is inserted or removed.</p>
+      <p>The consequence is invisible in a list of plain text and very visible once items hold state of their own — a half-typed input, a marker mid-drag, an open menu. Those things follow the key. If the key is the array index, deleting the first item shifts every other item's identity by one, and their state ends up attached to the wrong row.</p>
+
+      <figure class="code" data-file="jsx">
+<pre><code>&lt;li key={p.id}&gt;      <span class="cm">// right — travels with the item</span>
+&lt;li key={index}&gt;     <span class="cm">// wrong — describes a position, not a thing</span></code></pre>
+      </figure>
+
+      <p>A key must be unique among its siblings and must not change between renders. Your <code>id</code> field is exactly that, which is why it is in the object shape.</p>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="styles">
+      <h2><span class="n">06</span> Style the new parts</h2>
+      <hr class="h2-rule">
+      <p>Add these to the end of <code>src/index.css</code>. Nothing here is new CSS — it just gives the selected state and the list something to look like.</p>
 
       <figure class="code" data-file="src/index.css">
-<pre><code>.map-area {
-  flex: 1;
-  min-width: 0;
-  background: #d7dcd8;
-  border: 2px solid #94a7ae;
-}</code></pre>
+<pre><code><span class="cm">/* ---------- selected palette item ---------- */</span>
+.item.selected {
+  background: #0f8b8d;
+  border-color: #0f8b8d;
+  color: #ffffff;
+}
+
+<span class="cm">/* ---------- the add button ---------- */</span>
+.add {
+  display: block;
+  width: 100%;
+  margin: 12px 0 20px;
+  padding: 9px;
+  font: inherit;
+  font-weight: 600;
+  color: #ffffff;
+  background: #14232b;
+  border: 0;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.add:hover { background: #24404f; }
+
+<span class="cm">/* ---------- the placed list ---------- */</span>
+.placed {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.placed li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 6px 6px 10px;
+  margin-bottom: 4px;
+  font-size: 14px;
+  background: #ffffff;
+  border: 1px solid #cbd8dc;
+  border-radius: 3px;
+}
+
+.placed li button {
+  font: inherit;
+  font-size: 16px;
+  line-height: 1;
+  color: #94a7ae;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.placed li button:hover { color: #b4211f; }</code></pre>
       </figure>
 
-      <p><code>display: grid</code> and <code>place-items: center</code> are gone. They would shrink the map to its content size and center it, leaving you with a small square in a large gray box.</p>
+      <h3>Check the shape of your data</h3>
+      <p>Add a few placements, then open the browser console and confirm the array looks the way it should. If you installed React DevTools you can inspect <code>App</code> directly; otherwise drop a <code>console.log(placements)</code> into <code>App</code> for a moment.</p>
 
-      <h3>Write the component</h3>
-      <p>Replace all of <code>src/components/MapArea.jsx</code>:</p>
-
-      <figure class="code" data-file="src/components/MapArea.jsx">
-<pre><code>import "mapbox-gl/dist/mapbox-gl.css";
-import Map from "react-map-gl/mapbox";
-
-const TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
-
-export default function MapArea() {
-  return (
-    &lt;main className="map-area"&gt;
-      &lt;Map
-        mapboxAccessToken={TOKEN}
-        initialViewState={{
-          longitude: 127.0,
-          latitude: 37.5,
-          zoom: 11
-        }}
-        style={{ width: "100%", height: "100%" }}
-        mapStyle="mapbox://styles/mapbox/streets-v12"
-      /&gt;
-    &lt;/main&gt;
-  );
-}</code></pre>
+      <figure class="code" data-file="console">
+<pre><code>[
+  { id: 1739... , type: "station", lng: 127, lat: 37.5 },
+  { id: 1739... , type: "park",    lng: 127, lat: 37.5 }
+]</code></pre>
       </figure>
 
-      <p>Start the server again with <code>npm run dev</code>. A real map should fill the middle of your application, and you should be able to drag it and scroll to zoom.</p>
+      <p>Four keys, correct names, nothing extra. Weeks 6 through 12 all assume exactly this.</p>
 
-      <h3>What each prop does</h3>
-      <ul>
-        <li><code>mapboxAccessToken</code> — your identification, read from the environment file</li>
-        <li><code>initialViewState</code> — where the map sits when it first appears. <strong>Initial</strong> is literal: after this, the user is in charge, and changing these numbers will not move a map that is already on screen unless you reload</li>
-        <li><code>style</code> — the size of the map element on the page, in CSS terms</li>
-        <li><code>mapStyle</code> — which cartography to draw. Mapbox provides several; <code>streets-v12</code> is a sensible default and <code>light-v11</code> is a good choice if your analysis colors need to stand out later</li>
-      </ul>
-
-      <p>Set the longitude and latitude to somewhere relevant to your study area rather than leaving the example values. You can read coordinates off any point in Google Maps by right-clicking it — but note that Google shows them <strong>latitude first</strong>, which is the reverse of what Mapbox wants.</p>
-    </section>
-
-    <!-- ============================================ -->
-    <section id="three">
-      <h2><span class="n">05</span> Three things that break</h2>
-      <hr class="h2-rule">
-      <p>Nearly every failure this week is one of these. Check them in order before investigating anything else.</p>
-
-      <h3>1 · The missing CSS import</h3>
-      <p>If the first line of <code>MapArea.jsx</code> is absent, the map still loads — it just renders as broken, misaligned fragments with controls in the wrong places. It looks like a catastrophic bug and is one missing line:</p>
-      <figure class="code" data-file="jsx">
-<pre><code>import "mapbox-gl/dist/mapbox-gl.css";</code></pre>
+      <h3>Save your work</h3>
+      <figure class="code term" data-file="terminal">
+<pre><code><span class="pr">$</span> git add .
+<span class="pr">$</span> git commit -m "Week 4: state, selection, and the placement list"
+<span class="pr">$</span> git push</code></pre>
       </figure>
-
-      <h3>2 · The <code>VITE_</code> prefix</h3>
-      <p>Vite only exposes environment variables whose names start with <code>VITE_</code>. This is a safety feature — it stops server secrets from leaking into browser code by accident. Name your variable <code>MAPBOX_TOKEN</code> and it will silently be <code>undefined</code>, with no warning of any kind. To check what actually arrived:</p>
-      <figure class="code" data-file="jsx">
-<pre><code>console.log(import.meta.env.VITE_MAPBOX_TOKEN);</code></pre>
-      </figure>
-      <p>If that prints <code>undefined</code>: the prefix is wrong, the file is in the wrong folder, or you have not restarted the dev server.</p>
-
-      <h3>3 · Committing <code>.env</code></h3>
-      <p>If you created the file before adding the ignore line, Git may already be tracking it. Run <code>git status</code> and look. Removing a secret from a repository's history properly is genuinely difficult, so the reliable fix is to delete that token in your Mapbox account and generate a new one.</p>
-    </section>
-
-    <!-- ============================================ -->
-    <section id="marker">
-      <h2><span class="n">06</span> Add a marker</h2>
-      <hr class="h2-rule">
-      <p>One hard-coded marker, to prove that things can be drawn on top of the map. Next week it becomes one marker per placement, positioned by your clicks.</p>
-
-      <figure class="code" data-file="src/components/MapArea.jsx">
-<pre><code>import "mapbox-gl/dist/mapbox-gl.css";
-import Map, { Marker } from "react-map-gl/mapbox";
-
-const TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
-
-export default function MapArea() {
-  return (
-    &lt;main className="map-area"&gt;
-      &lt;Map
-        mapboxAccessToken={TOKEN}
-        initialViewState={{
-          longitude: 127.0,
-          latitude: 37.5,
-          zoom: 11
-        }}
-        style={{ width: "100%", height: "100%" }}
-        mapStyle="mapbox://styles/mapbox/streets-v12"
-      &gt;
-        &lt;Marker longitude={127.0} latitude={37.5} color="#0f8b8d" /&gt;
-      &lt;/Map&gt;
-    &lt;/main&gt;
-  );
-}</code></pre>
-      </figure>
-
-      <p>The marker goes <em>inside</em> the <code>&lt;Map&gt;</code> element, which is why the tag is no longer self-closing. Anything drawn on the map is a child of it.</p>
-
-      <div class="warn">
-        <span class="lbl">Longitude comes first</span>
-        <p>Mapbox writes coordinates as <strong>longitude, then latitude</strong>. Leaflet — the library most introductory mapping tutorials use — writes them the other way round, as <code>[lat, lng]</code>. Copy a coordinate pair from a Leaflet example without swapping it and your marker lands in the ocean, usually thousands of kilometres from where you meant.</p>
-        <p>This is the single most common error in the mapping half of this course, and it is the first thing to suspect whenever something appears somewhere absurd. Your data uses named fields — <code>lng</code> and <code>lat</code> — precisely so the order cannot be confused once the value is stored.</p>
-      </div>
-    </section>
-
-    <!-- ============================================ -->
-    <section id="studio">
-      <h2><span class="n">07</span> Optional: your own map style</h2>
-      <hr class="h2-rule">
-      <p>Worth thirty minutes if you have them, and requires no code.</p>
-      <p>Open <a href="https://studio.mapbox.com" target="_blank" rel="noopener">Mapbox Studio</a>, start a new style from one of the templates, and change what you like — road colors, label sizes, how prominent water and parks are. Publish it, copy its style URL, and use that instead of the Mapbox default:</p>
-
-      <figure class="code" data-file="jsx">
-<pre><code>mapStyle="mapbox://styles/YOUR-USERNAME/YOUR-STYLE-ID"</code></pre>
-      </figure>
-
-      <p>Beyond looking better, this pays off in Week 11. Your analysis will be drawn on top of this map in colored polygons, and a quiet base map with muted colors makes those results readable. A busy default style fights them.</p>
     </section>
 
     <!-- ============================================ -->
     <section id="broken">
-      <h2><span class="n">08</span> When it breaks</h2>
+      <h2><span class="n">07</span> When it breaks</h2>
       <hr class="h2-rule">
 
       <div class="trouble">
         <details>
-          <summary>The map area is blank or plain white</summary>
+          <summary>Clicking Add does nothing</summary>
           <div class="body">
-            <p>Almost always the token. Open the console with <strong>F12</strong> — an unauthorized or 401 error means Mapbox rejected it. Log <code>import.meta.env.VITE_MAPBOX_TOKEN</code>: if it is <code>undefined</code>, see the <code>VITE_</code> prefix section above; if it prints a token, copy a fresh one from your Mapbox account in case it was truncated when pasted.</p>
+            <p>Either you mutated the array instead of replacing it — <code>push</code> followed by <code>setPlacements(placements)</code> — or <code>onAdd</code> is not reaching the button. Put a <code>console.log("add")</code> as the first line of <code>addPlacement</code>: if it prints, the click is fine and the problem is the update; if it does not, the prop is not wired up.</p>
           </div>
         </details>
 
         <details>
-          <summary>The map renders as broken, overlapping fragments</summary>
+          <summary>The tab freezes as soon as items appear</summary>
           <div class="body">
-            <p>The stylesheet import is missing. Add <code>import "mapbox-gl/dist/mapbox-gl.css";</code> as the first line of <code>MapArea.jsx</code>.</p>
+            <p>You wrote <code>onClick={onRemove(p.id)}</code> without the arrow. That calls the function during rendering, which changes state, which triggers another render, forever. Add <code>() =&gt;</code> in front.</p>
           </div>
         </details>
 
         <details>
-          <summary>Failed to resolve import "react-map-gl/mapbox"</summary>
+          <summary>Warning: Each child in a list should have a unique "key" prop</summary>
           <div class="body">
-            <p>You have an older version of the library, where the import path had no suffix. Either change the line to <code>import Map, { Marker } from "react-map-gl";</code>, or install the current version with <code>npm install react-map-gl@latest mapbox-gl</code> and keep the path as written.</p>
+            <p>A <code>map</code> somewhere is producing elements without <code>key</code>. Both maps in <code>Sidebar</code> need one — <code>key={type}</code> on the palette buttons and <code>key={p.id}</code> on the list items.</p>
           </div>
         </details>
 
         <details>
-          <summary>The token is <code>undefined</code> even though <code>.env</code> looks right</summary>
+          <summary>Two items share the same id</summary>
           <div class="body">
-            <p>Three candidates, in order of likelihood. The dev server was not restarted after the file was created. The variable is not prefixed with <code>VITE_</code>. Or the file is in the wrong folder — it belongs beside <code>package.json</code> in <code>frontend</code>, not inside <code>src</code> and not at the top of <code>spatial-app</code>.</p>
+            <p><code>Date.now()</code> returns the same millisecond if two placements are created in the same instant — possible if you ever add several at once. For this course, clicking by hand, it is fine. If you want to be safe, use <code>Date.now() + Math.random()</code>.</p>
           </div>
         </details>
 
         <details>
-          <summary>The map is a small square instead of filling the area</summary>
+          <summary>Cannot read properties of undefined</summary>
           <div class="body">
-            <p><code>.map-area</code> still has <code>display: grid</code> and <code>place-items: center</code> from Week 1. Replace that rule with the version in step 4.</p>
+            <p>A prop did not arrive. Check that the name in the parent matches the name in the child exactly — <code>onRemove</code> passed but <code>onDelete</code> expected produces this. Console-log the props object at the top of the child to see what actually came through.</p>
           </div>
         </details>
 
         <details>
-          <summary>The marker is not where I put it</summary>
+          <summary>The selected button does not highlight</summary>
           <div class="body">
-            <p>Longitude and latitude are swapped. In most of the world <code>lat</code> is a smaller number than <code>lng</code>, so a quick glance at which value is larger often catches it. Verify the point in Google Maps, remembering that Google prints latitude first and Mapbox wants longitude first.</p>
-          </div>
-        </details>
-
-        <details>
-          <summary><code>.env</code> shows up in <code>git status</code></summary>
-          <div class="body">
-            <p>The ignore rule is not taking effect. Confirm the line is in <code>frontend/.gitignore</code> and is exactly <code>.env</code>. If the file was committed before the rule existed, run <code>git rm --cached .env</code>, commit that, and then generate a replacement token — assume the old one is compromised.</p>
+            <p>Either <code>.item.selected</code> is missing from your CSS, or the comparison is failing. The className expression must produce the string <code>"item selected"</code> — log <code>type</code> and <code>selectedType</code> side by side and confirm they are identical strings when they should match.</p>
           </div>
         </details>
       </div>
@@ -328,24 +425,18 @@ export default function MapArea() {
     <section id="submit" class="submit">
       <h2>Hand it in</h2>
       <hr class="h2-rule">
-      <p>This is a milestone week. Everything below is graded.</p>
       <ul class="check">
-        <li><label><input type="checkbox"> A screenshot of your Mapbox account page showing the token exists, with the trailing characters blurred out</label></li>
-        <li><label><input type="checkbox"> A screenshot of the interactive map filling the center of your three-panel layout, with one visible marker</label></li>
-        <li><label><input type="checkbox"> A screenshot of your GitHub repository file list, confirming <code>.env</code> is <strong>not</strong> there</label></li>
-        <li><label><input type="checkbox"> <code>.gitignore</code> committed, containing both <code>node_modules</code> and <code>.env</code></label></li>
-        <li><label><input type="checkbox"> The map is centered on a location relevant to your study area, not the example coordinates</label></li>
+        <li><label><input type="checkbox"> Selecting a type highlights it, in the browser</label></li>
+        <li><label><input type="checkbox"> Add appends an item of the selected type; × removes that item only</label></li>
+        <li><label><input type="checkbox"> A short screen recording or GIF showing all three behaviours</label></li>
+        <li><label><input type="checkbox"> A screenshot of the placements array — four keys, correct names, correct types</label></li>
+        <li><label><input type="checkbox"> No key warnings in the browser console</label></li>
       </ul>
-
-      <div class="note" style="margin-bottom:0">
-        <span class="lbl">What is coming next</span>
-        <p>Week 6 connects the map to the state you built in Week 4. Clicking the map will create a placement at the coordinates you clicked, markers will be draggable, and your frontend will be functionally complete. Everything from Week 7 onward is the Python half.</p>
-      </div>
     </section>
 
     <nav class="weeknav">
-      <a href="week04.html"><span class="dir">Previous</span><span class="ttl">React state and list rendering</span></a>
-      <a class="next" href="index.html"><span class="dir">Back to</span><span class="ttl">All weeks</span></a>
+      <a href="week03.html"><span class="dir">Previous</span><span class="ttl">React components and props</span></a>
+      <a class="next" href="week05.html"><span class="dir">Next week</span><span class="ttl">Rendering a Mapbox map</span></a>
     </nav>
 
   </main>

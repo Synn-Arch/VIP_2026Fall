@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Week 5 — Rendering a Mapbox Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">Spatial App · Tutorials</a>
+    <div class="ticks">
+      <span class="tick done"></span><span class="tick done"></span><span class="tick done"></span><span class="tick done"></span>
+      <span class="tick now"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
+      <span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
+      <span class="tick"></span><span class="tick"></span>
+    </div>
+    <span class="ticks-label">Week 5 of 14</span>
+  </div>
+</header>
+
+<div class="shell">
+<div class="layout">
+
+  <nav class="spine" aria-label="On this page">
+    <p class="spine-title">This week</p>
+    <ol>
+      <li><a href="#token">Get a token</a></li>
+      <li><a href="#protect">Protect it first</a></li>
+      <li><a href="#install">Install the libraries</a></li>
+      <li><a href="#render">Render the map</a></li>
+      <li><a href="#three">Three things that break</a></li>
+      <li><a href="#marker">Add a marker</a></li>
+      <li><a href="#studio">Optional: your own style</a></li>
+      <li><a href="#broken">When it breaks</a></li>
+      <li><a href="#submit">Hand it in</a></li>
+    </ol>
+  </nav>
+
+  <main class="content">
+
+    <div class="page-head">
+      <p class="eyebrow">Week 5 · Feb 17 – Feb 24</p>
+      <h1>Rendering a Mapbox map</h1>
+      <p class="dek">Replace the gray placeholder with a real, interactive, zoomable map — and learn how to keep a secret out of your source code while doing it.</p>
+      <div class="meta">
+        <span class="chip hot">Milestone 1</span>
+        <span class="chip">≈2 hours</span>
+        <span class="chip">Free Mapbox account required</span>
+      </div>
+    </div>
+
+    <div class="goals">
+      <h2>By the end of this week you will</h2>
+      <ul>
+        <li>Have a Mapbox account and a public access token</li>
+        <li>Keep that token in an environment file, out of your repository</li>
+        <li>Have a live map filling the center of your application</li>
+        <li>Have one marker drawn at a coordinate you chose</li>
+      </ul>
+    </div>
+
+    <!-- ============================================ -->
+    <section id="token">
+      <h2><span class="n">01</span> Get a token</h2>
+      <hr class="h2-rule">
+      <p>Mapbox draws the map, and it needs to know who is asking. That identification is a <strong>token</strong> — a long string beginning with <code>pk.</code> that your application sends with every request for map tiles.</p>
+      <p>Sign up for a free account at <a href="https://account.mapbox.com/auth/signup/" target="_blank" rel="noopener">account.mapbox.com</a>. Once you are in, the account page shows a <strong>default public token</strong>. Copy it.</p>
+
+      <div class="warn">
+        <span class="lbl">Public token only</span>
+        <p>Mapbox issues two kinds. Public tokens begin with <code>pk.</code> and are meant to be sent to browsers — that is the one you want. Secret tokens begin with <code>sk.</code> and must never appear in frontend code, because anything the browser receives can be read by anyone. If you ever create a token yourself, check the first two characters.</p>
+        <p>Do not paste your token into a chat message, a shared document, or a screenshot without blurring it. In Week 12 you will lock it to your own domain; until then, treat it as a password.</p>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="protect">
+      <h2><span class="n">02</span> Protect it first</h2>
+      <hr class="h2-rule">
+      <p>The order of the next two steps is deliberate. Set up the exclusion <em>before</em> the file exists, and it becomes impossible to commit it by accident.</p>
+
+      <h3>First — tell Git to ignore it</h3>
+      <p>Open <code>frontend/.gitignore</code> and add this line at the end:</p>
+
+      <figure class="code" data-file="frontend/.gitignore">
+<pre><code>.env</code></pre>
+      </figure>
+
+      <h3>Then — create the file</h3>
+      <p>Make a new file called <code>.env</code> in the <code>frontend</code> folder — the same level as <code>package.json</code>, not inside <code>src</code>. One line, your token after the equals sign, no quotes and no spaces around it:</p>
+
+      <figure class="code" data-file="frontend/.env">
+<pre><code>VITE_MAPBOX_TOKEN=pk.eyJ1IjoieW91ciIsImEiOiJja...</code></pre>
+      </figure>
+
+      <h3>Confirm it is invisible to Git</h3>
+      <figure class="code term" data-file="terminal">
+<pre><code><span class="pr">$</span> git status</code></pre>
+      </figure>
+
+      <p><code>.env</code> must not appear anywhere in that output. If it does, the <code>.gitignore</code> line is in the wrong file or misspelled — fix it before going any further.</p>
+
+      <div class="note">
+        <span class="lbl">Why an environment file</span>
+        <p>A secret in your source code is a secret in your repository, and a repository is public and permanent. An environment file keeps the value beside the code without being part of it, which also means each person and each server can hold a different value. In Week 12 the same variable is set through Vercel's settings instead of a file, and none of your code has to change.</p>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="install">
+      <h2><span class="n">03</span> Install the libraries</h2>
+      <hr class="h2-rule">
+      <p>Stop the dev server with <strong>Ctrl+C</strong>, then, from inside <code>frontend</code>:</p>
+
+      <figure class="code term" data-file="terminal">
+<pre><code><span class="pr">$</span> npm install react-map-gl mapbox-gl</code></pre>
+      </figure>
+
+      <p>Two packages, because they do different jobs. <code>mapbox-gl</code> is the map engine itself — it knows nothing about React. <code>react-map-gl</code> is a thin wrapper that lets you write the map as JSX components alongside the rest of your interface.</p>
+
+      <div class="warn">
+        <span class="lbl">Restart the dev server after touching <code>.env</code></span>
+        <p>Vite reads environment files once, at startup. Create or edit <code>.env</code> while the server is running and it will not notice. Every time you change that file: Ctrl+C, then <code>npm run dev</code> again. Skipping this produces a token that is <code>undefined</code> for no apparent reason.</p>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="render">
+      <h2><span class="n">04</span> Render the map</h2>
+      <hr class="h2-rule">
+
+      <h3>Give the map room</h3>
+      <p>Your <code>.map-area</code> currently centers its contents, which was right for a placeholder message and wrong for a map that needs to fill the space. Find it in <code>src/index.css</code> and replace the rule with this:</p>
+
+      <figure class="code" data-file="src/index.css">
+<pre><code>.map-area {
+  flex: 1;
+  min-width: 0;
+  background: #d7dcd8;
+  border: 2px solid #94a7ae;
+}</code></pre>
+      </figure>
+
+      <p><code>display: grid</code> and <code>place-items: center</code> are gone. They would shrink the map to its content size and center it, leaving you with a small square in a large gray box.</p>
+
+      <h3>Write the component</h3>
+      <p>Replace all of <code>src/components/MapArea.jsx</code>:</p>
+
+      <figure class="code" data-file="src/components/MapArea.jsx">
+<pre><code>import "mapbox-gl/dist/mapbox-gl.css";
+import Map from "react-map-gl/mapbox";
+
+const TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
+
+export default function MapArea() {
+  return (
+    &lt;main className="map-area"&gt;
+      &lt;Map
+        mapboxAccessToken={TOKEN}
+        initialViewState={{
+          longitude: 127.0,
+          latitude: 37.5,
+          zoom: 11
+        }}
+        style={{ width: "100%", height: "100%" }}
+        mapStyle="mapbox://styles/mapbox/streets-v12"
+      /&gt;
+    &lt;/main&gt;
+  );
+}</code></pre>
+      </figure>
+
+      <p>Start the server again with <code>npm run dev</code>. A real map should fill the middle of your application, and you should be able to drag it and scroll to zoom.</p>
+
+      <h3>What each prop does</h3>
+      <ul>
+        <li><code>mapboxAccessToken</code> — your identification, read from the environment file</li>
+        <li><code>initialViewState</code> — where the map sits when it first appears. <strong>Initial</strong> is literal: after this, the user is in charge, and changing these numbers will not move a map that is already on screen unless you reload</li>
+        <li><code>style</code> — the size of the map element on the page, in CSS terms</li>
+        <li><code>mapStyle</code> — which cartography to draw. Mapbox provides several; <code>streets-v12</code> is a sensible default and <code>light-v11</code> is a good choice if your analysis colors need to stand out later</li>
+      </ul>
+
+      <p>Set the longitude and latitude to somewhere relevant to your study area rather than leaving the example values. You can read coordinates off any point in Google Maps by right-clicking it — but note that Google shows them <strong>latitude first</strong>, which is the reverse of what Mapbox wants.</p>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="three">
+      <h2><span class="n">05</span> Three things that break</h2>
+      <hr class="h2-rule">
+      <p>Nearly every failure this week is one of these. Check them in order before investigating anything else.</p>
+
+      <h3>1 · The missing CSS import</h3>
+      <p>If the first line of <code>MapArea.jsx</code> is absent, the map still loads — it just renders as broken, misaligned fragments with controls in the wrong places. It looks like a catastrophic bug and is one missing line:</p>
+      <figure class="code" data-file="jsx">
+<pre><code>import "mapbox-gl/dist/mapbox-gl.css";</code></pre>
+      </figure>
+
+      <h3>2 · The <code>VITE_</code> prefix</h3>
+      <p>Vite only exposes environment variables whose names start with <code>VITE_</code>. This is a safety feature — it stops server secrets from leaking into browser code by accident. Name your variable <code>MAPBOX_TOKEN</code> and it will silently be <code>undefined</code>, with no warning of any kind. To check what actually arrived:</p>
+      <figure class="code" data-file="jsx">
+<pre><code>console.log(import.meta.env.VITE_MAPBOX_TOKEN);</code></pre>
+      </figure>
+      <p>If that prints <code>undefined</code>: the prefix is wrong, the file is in the wrong folder, or you have not restarted the dev server.</p>
+
+      <h3>3 · Committing <code>.env</code></h3>
+      <p>If you created the file before adding the ignore line, Git may already be tracking it. Run <code>git status</code> and look. Removing a secret from a repository's history properly is genuinely difficult, so the reliable fix is to delete that token in your Mapbox account and generate a new one.</p>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="marker">
+      <h2><span class="n">06</span> Add a marker</h2>
+      <hr class="h2-rule">
+      <p>One hard-coded marker, to prove that things can be drawn on top of the map. Next week it becomes one marker per placement, positioned by your clicks.</p>
+
+      <figure class="code" data-file="src/components/MapArea.jsx">
+<pre><code>import "mapbox-gl/dist/mapbox-gl.css";
+import Map, { Marker } from "react-map-gl/mapbox";
+
+const TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
+
+export default function MapArea() {
+  return (
+    &lt;main className="map-area"&gt;
+      &lt;Map
+        mapboxAccessToken={TOKEN}
+        initialViewState={{
+          longitude: 127.0,
+          latitude: 37.5,
+          zoom: 11
+        }}
+        style={{ width: "100%", height: "100%" }}
+        mapStyle="mapbox://styles/mapbox/streets-v12"
+      &gt;
+        &lt;Marker longitude={127.0} latitude={37.5} color="#0f8b8d" /&gt;
+      &lt;/Map&gt;
+    &lt;/main&gt;
+  );
+}</code></pre>
+      </figure>
+
+      <p>The marker goes <em>inside</em> the <code>&lt;Map&gt;</code> element, which is why the tag is no longer self-closing. Anything drawn on the map is a child of it.</p>
+
+      <div class="warn">
+        <span class="lbl">Longitude comes first</span>
+        <p>Mapbox writes coordinates as <strong>longitude, then latitude</strong>. Leaflet — the library most introductory mapping tutorials use — writes them the other way round, as <code>[lat, lng]</code>. Copy a coordinate pair from a Leaflet example without swapping it and your marker lands in the ocean, usually thousands of kilometres from where you meant.</p>
+        <p>This is the single most common error in the mapping half of this course, and it is the first thing to suspect whenever something appears somewhere absurd. Your data uses named fields — <code>lng</code> and <code>lat</code> — precisely so the order cannot be confused once the value is stored.</p>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="studio">
+      <h2><span class="n">07</span> Optional: your own map style</h2>
+      <hr class="h2-rule">
+      <p>Worth thirty minutes if you have them, and requires no code.</p>
+      <p>Open <a href="https://studio.mapbox.com" target="_blank" rel="noopener">Mapbox Studio</a>, start a new style from one of the templates, and change what you like — road colors, label sizes, how prominent water and parks are. Publish it, copy its style URL, and use that instead of the Mapbox default:</p>
+
+      <figure class="code" data-file="jsx">
+<pre><code>mapStyle="mapbox://styles/YOUR-USERNAME/YOUR-STYLE-ID"</code></pre>
+      </figure>
+
+      <p>Beyond looking better, this pays off in Week 11. Your analysis will be drawn on top of this map in colored polygons, and a quiet base map with muted colors makes those results readable. A busy default style fights them.</p>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="broken">
+      <h2><span class="n">08</span> When it breaks</h2>
+      <hr class="h2-rule">
+
+      <div class="trouble">
+        <details>
+          <summary>The map area is blank or plain white</summary>
+          <div class="body">
+            <p>Almost always the token. Open the console with <strong>F12</strong> — an unauthorized or 401 error means Mapbox rejected it. Log <code>import.meta.env.VITE_MAPBOX_TOKEN</code>: if it is <code>undefined</code>, see the <code>VITE_</code> prefix section above; if it prints a token, copy a fresh one from your Mapbox account in case it was truncated when pasted.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>The map renders as broken, overlapping fragments</summary>
+          <div class="body">
+            <p>The stylesheet import is missing. Add <code>import "mapbox-gl/dist/mapbox-gl.css";</code> as the first line of <code>MapArea.jsx</code>.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Failed to resolve import "react-map-gl/mapbox"</summary>
+          <div class="body">
+            <p>You have an older version of the library, where the import path had no suffix. Either change the line to <code>import Map, { Marker } from "react-map-gl";</code>, or install the current version with <code>npm install react-map-gl@latest mapbox-gl</code> and keep the path as written.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>The token is <code>undefined</code> even though <code>.env</code> looks right</summary>
+          <div class="body">
+            <p>Three candidates, in order of likelihood. The dev server was not restarted after the file was created. The variable is not prefixed with <code>VITE_</code>. Or the file is in the wrong folder — it belongs beside <code>package.json</code> in <code>frontend</code>, not inside <code>src</code> and not at the top of <code>spatial-app</code>.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>The map is a small square instead of filling the area</summary>
+          <div class="body">
+            <p><code>.map-area</code> still has <code>display: grid</code> and <code>place-items: center</code> from Week 1. Replace that rule with the version in step 4.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>The marker is not where I put it</summary>
+          <div class="body">
+            <p>Longitude and latitude are swapped. In most of the world <code>lat</code> is a smaller number than <code>lng</code>, so a quick glance at which value is larger often catches it. Verify the point in Google Maps, remembering that Google prints latitude first and Mapbox wants longitude first.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary><code>.env</code> shows up in <code>git status</code></summary>
+          <div class="body">
+            <p>The ignore rule is not taking effect. Confirm the line is in <code>frontend/.gitignore</code> and is exactly <code>.env</code>. If the file was committed before the rule existed, run <code>git rm --cached .env</code>, commit that, and then generate a replacement token — assume the old one is compromised.</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="submit" class="submit">
+      <h2>Hand it in</h2>
+      <hr class="h2-rule">
+      <p>This is a milestone week. Everything below is graded.</p>
+      <ul class="check">
+        <li><label><input type="checkbox"> A screenshot of your Mapbox account page showing the token exists, with the trailing characters blurred out</label></li>
+        <li><label><input type="checkbox"> A screenshot of the interactive map filling the center of your three-panel layout, with one visible marker</label></li>
+        <li><label><input type="checkbox"> A screenshot of your GitHub repository file list, confirming <code>.env</code> is <strong>not</strong> there</label></li>
+        <li><label><input type="checkbox"> <code>.gitignore</code> committed, containing both <code>node_modules</code> and <code>.env</code></label></li>
+        <li><label><input type="checkbox"> The map is centered on a location relevant to your study area, not the example coordinates</label></li>
+      </ul>
+
+      <div class="note" style="margin-bottom:0">
+        <span class="lbl">What is coming next</span>
+        <p>Week 6 connects the map to the state you built in Week 4. Clicking the map will create a placement at the coordinates you clicked, markers will be draggable, and your frontend will be functionally complete. Everything from Week 7 onward is the Python half.</p>
+      </div>
+    </section>
+
+    <nav class="weeknav">
+      <a href="week04.html"><span class="dir">Previous</span><span class="ttl">React state and list rendering</span></a>
+      <a class="next" href="index.html"><span class="dir">Back to</span><span class="ttl">All weeks</span></a>
+    </nav>
+
+  </main>
+</div>
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>
