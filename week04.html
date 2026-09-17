@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Week 4 — React and the Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">Spatial App · Tutorials</a>
+    <div class="ticks">
+      <span class="tick done"></span><span class="tick done"></span><span class="tick done"></span><span class="tick now"></span>
+      <span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
+      <span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
+      <span class="tick"></span><span class="tick"></span>
+    </div>
+    <span class="ticks-label">Week 4 of 14</span>
+  </div>
+</header>
+
+<div class="shell">
+<div class="layout">
+
+  <nav class="spine" aria-label="On this page">
+    <p class="spine-title">This week</p>
+    <ol>
+      <li><a href="#why">Why React</a></li>
+      <li><a href="#create">Create the project</a></li>
+      <li><a href="#jsx">Reading JSX</a></li>
+      <li><a href="#components">Three components</a></li>
+      <li><a href="#props">Props</a></li>
+      <li><a href="#state">State and lists</a></li>
+      <li><a href="#token">Get a Mapbox token</a></li>
+      <li><a href="#render">Render the map</a></li>
+      <li><a href="#markers">Markers from your state</a></li>
+      <li><a href="#broken">When it breaks</a></li>
+      <li><a href="#submit">Hand it in</a></li>
+    </ol>
+  </nav>
+
+  <main class="content">
+
+    <div class="page-head">
+      <p class="eyebrow">Week 4 · Sep 13 – Sep 19</p>
+      <h1>React and the map</h1>
+      <p class="dek">Build the interface you will spend the rest of the semester filling in — a component palette, a live list, and a real interactive map, all driven by one piece of data.</p>
+    </div>
+
+    <div class="goals">
+      <h2>Week 4 Tasks</h2>
+      <ul>
+        <li>Create a React project and split the page into three components</li>
+        <li>Store changing data with <code>useState</code> and render a list from it</li>
+        <li>Get a Mapbox token and keep it out of your repository</li>
+        <li>Put a real map on the page, with a marker for every item in your list</li>
+      </ul>
+    </div>
+
+    <div class="note">
+      <span class="lbl">Where this is going</span>
+      <p>By Week 14 you will demonstrate a working site where someone places trees on the Georgia Tech campus and sees how the thermal environment responds. Everything in this page is the shell that holds that. Nothing here talks to SOLWEIG yet — that comes later.</p>
+    </div>
+
+    <!-- ============================================ -->
+    <section id="why">
+      <h2><span class="n">01</span> Why React</h2>
+      <hr class="h2-rule">
+      <p>A plain HTML page is fixed. Nothing on it changes. What you are building is the opposite: markers appear when clicked, a list grows and shrinks, results arrive from a server and get drawn.</p>
+      <p>You could do that by hand — find an element, create another, insert it, remember to remove it later. That works for ten lines and becomes unmanageable at a hundred, because you end up tracking what is currently on screen as well as what <em>should</em> be.</p>
+      <p>React removes the second job. <strong>You describe what the page should look like for the current data, and React works out what to change on screen.</strong> Add an item to an array and the list redraws itself. You never touch the page directly again.</p>
+      <p>A <strong>component</strong> is one reusable piece of that description: a function that returns some markup. Your page becomes three of them, and each can be opened and understood on its own.</p>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="create">
+      <h2><span class="n">02</span> Create the project</h2>
+      <hr class="h2-rule">
+      <p>In a terminal, from wherever you keep your coursework:</p>
+
+      <figure class="code term" data-file="terminal">
+<pre><code>npm create vite@latest frontend -- --template react
+cd frontend
+npm install
+npm run dev</code></pre>
+      </figure>
+
+      <p>The first line creates a folder called <code>frontend</code> holding a ready-made React project. The second moves into it, the third downloads its dependencies, and the fourth starts a development server at <code>http://localhost:5173</code>. Open it and you will see the default Vite welcome page.</p>
+
+      <div class="note">
+        <span class="lbl">Leave it running</span>
+        <p><code>npm run dev</code> does not finish. It watches your files and updates the browser every time you save. Leave that terminal alone and open a second one when you need to type other commands. <strong>Ctrl+C</strong> stops it.</p>
+      </div>
+
+      <p>Only one folder matters. <strong>You work inside <code>src/</code></strong>; everything else is scaffolding that runs itself. Two things worth knowing about the rest:</p>
+      <ul>
+        <li><code>node_modules/</code> holds every downloaded library. Never edit it, never commit it. Vite already excluded it in <code>.gitignore</code> — check that it is there before your first commit.</li>
+        <li><code>index.html</code> is a nearly empty shell. React fills it in at runtime.</li>
+      </ul>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="jsx">
+      <h2><span class="n">03</span> Reading JSX</h2>
+      <hr class="h2-rule">
+      <p>React components return something that looks like HTML but is written inside JavaScript. It is called JSX, and four rules catch everyone once.</p>
+
+      <h3>1 &middot; <code>class</code> becomes <code>className</code></h3>
+      <p><code>class</code> is a reserved word in JavaScript. This is the most annoying JSX mistake because nothing breaks — your styles simply do not apply.</p>
+      <figure class="code" data-file="jsx">
+<pre><code>&lt;aside class="palette"&gt;      <span class="cm">// wrong — silently ignored</span>
+&lt;aside className="palette"&gt;  <span class="cm">// right</span></code></pre>
+      </figure>
+
+      <h3>2 &middot; Every tag closes</h3>
+      <figure class="code" data-file="jsx">
+<pre><code>&lt;br /&gt;   &lt;img src="x.png" /&gt;   &lt;input type="text" /&gt;</code></pre>
+      </figure>
+
+      <h3>3 &middot; One outer element</h3>
+      <p>A component returns exactly one thing. If you need two side by side, wrap them — in a real element, or in <code>&lt;&gt;</code> and <code>&lt;/&gt;</code> when you do not want an extra <code>div</code>.</p>
+
+      <h3>4 &middot; Curly braces escape back into JavaScript</h3>
+      <p>Inside JSX, <code>{ }</code> means "stop writing markup, evaluate this, put the result here".</p>
+      <figure class="code" data-file="jsx">
+<pre><code>const name = "Tree";
+
+&lt;h2&gt;{name}&lt;/h2&gt;     <span class="cm">// → Tree</span>
+&lt;h2&gt;{2 + 2}&lt;/h2&gt;    <span class="cm">// → 4</span>
+&lt;h2&gt;name&lt;/h2&gt;       <span class="cm">// → the literal word "name"</span></code></pre>
+      </figure>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="components">
+      <h2><span class="n">04</span> Three components</h2>
+      <hr class="h2-rule">
+      <p>Make a folder <code>src/components/</code> and create three files in it. Each returns one region of the interface.</p>
+
+      <figure class="code" data-file="src/components/Sidebar.jsx">
+<pre><code>export default function Sidebar() {
+  return (
+    &lt;aside className="palette"&gt;
+      &lt;h2&gt;Components&lt;/h2&gt;
+      &lt;button className="item"&gt;tree&lt;/button&gt;
+      &lt;button className="item"&gt;canopy&lt;/button&gt;
+      &lt;button className="item"&gt;building&lt;/button&gt;
+    &lt;/aside&gt;
+  );
+}</code></pre>
+      </figure>
+
+      <figure class="code" data-file="src/components/MapArea.jsx">
+<pre><code>export default function MapArea() {
+  return (
+    &lt;main className="map-area"&gt;
+      &lt;p className="placeholder"&gt;Map goes here&lt;/p&gt;
+    &lt;/main&gt;
+  );
+}</code></pre>
+      </figure>
+
+      <figure class="code" data-file="src/components/ResultPanel.jsx">
+<pre><code>export default function ResultPanel() {
+  return (
+    &lt;section className="results"&gt;
+      &lt;h2&gt;Results&lt;/h2&gt;
+      &lt;p&gt;Nothing analyzed yet.&lt;/p&gt;
+    &lt;/section&gt;
+  );
+}</code></pre>
+      </figure>
+
+      <p><code>export default</code> makes the function available to other files. Component names start with a capital letter — that is not style, it is how React tells your components apart from ordinary HTML tags.</p>
+
+      <h3>Assemble them</h3>
+      <p>Replace everything in <code>src/App.jsx</code>:</p>
+
+      <figure class="code" data-file="src/App.jsx">
+<pre><code>import Sidebar from "./components/Sidebar";
+import MapArea from "./components/MapArea";
+import ResultPanel from "./components/ResultPanel";
+
+export default function App() {
+  return (
+    &lt;div className="app"&gt;
+      &lt;div className="top"&gt;
+        &lt;Sidebar /&gt;
+        &lt;MapArea /&gt;
+      &lt;/div&gt;
+      &lt;ResultPanel /&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+      </figure>
+
+      <h3>The styles</h3>
+      <p>Replace everything in <code>src/index.css</code> with this. It is given rather than explained — the layout is not the point of this course, and you can change it later.</p>
+
+      <figure class="code" data-file="src/index.css">
+<pre><code><span class="cm">/* React mounts inside #root, so it needs a height too */</span>
+html, body, #root { height: 100%; }
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  color: #14232b;
+}
+
+.app { display: flex; flex-direction: column; height: 100%; }
+.top { display: flex; flex: 1; min-height: 0; }
+
+.palette {
+  width: 220px;
+  flex: none;
+  padding: 16px;
+  overflow-y: auto;
+  background: #f2f4f5;
+  border-right: 2px solid #94a7ae;
+}
+
+.map-area {
+  flex: 1;
+  min-width: 0;
+  background: #d7dcd8;
+  border: 2px solid #94a7ae;
+}
+
+.results {
+  height: 150px;
+  flex: none;
+  padding: 12px 16px;
+  overflow-y: auto;
+  background: #fff;
+  border-top: 2px solid #94a7ae;
+}
+
+h2 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: #5b6f77;
+  margin: 0 0 12px;
+}
+
+.item {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 6px;
+  font: inherit;
+  text-align: left;
+  background: #fff;
+  border: 1px solid #94a7ae;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.item:hover { background: #e8edee; }
+.item.selected { background: #0f8b8d; border-color: #0f8b8d; color: #fff; }
+
+.add {
+  display: block;
+  width: 100%;
+  margin: 12px 0 20px;
+  padding: 9px;
+  font: inherit;
+  font-weight: 600;
+  color: #fff;
+  background: #14232b;
+  border: 0;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.add:hover { background: #24404f; }
+
+.placed { list-style: none; margin: 0; padding: 0; }
+
+.placed li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 6px 6px 10px;
+  margin-bottom: 4px;
+  font-size: 14px;
+  background: #fff;
+  border: 1px solid #cbd8dc;
+  border-radius: 3px;
+}
+
+.placed li button {
+  font: inherit;
+  font-size: 16px;
+  line-height: 1;
+  color: #94a7ae;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.placed li button:hover { color: #b4211f; }
+.placeholder { color: #5b6f77; padding: 16px; }</code></pre>
+      </figure>
+
+      <p>Delete the <code>import "./App.css"</code> line from <code>App.jsx</code> if it is still there. Save, and the three regions should appear.</p>
+
+      <div class="warn">
+        <span class="lbl">If everything is squashed into a strip at the top</span>
+        <p><code>html, body, #root { height: 100%; }</code> is missing. <code>.app</code> asks for full height but sits inside a <code>#root</code> element that React inserts and that has no height of its own.</p>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="props">
+      <h2><span class="n">05</span> Props</h2>
+      <hr class="h2-rule">
+      <p>Right now <code>Sidebar</code> has its heading baked in. A parent should decide that. Values passed from parent to child are called <strong>props</strong>, written like HTML attributes.</p>
+
+      <figure class="code" data-file="src/App.jsx">
+<pre><code>&lt;Sidebar title="Components" /&gt;</code></pre>
+      </figure>
+
+      <figure class="code" data-file="src/components/Sidebar.jsx">
+<pre><code>export default function Sidebar({ title }) {
+  return (
+    &lt;aside className="palette"&gt;
+      &lt;h2&gt;{title}&lt;/h2&gt;
+      ...</code></pre>
+      </figure>
+
+      <p>Change the string in <code>App.jsx</code> and the heading follows. That is all props are — but it is the only mechanism by which data reaches a component, so everything from here runs on it.</p>
+      <p>Props always flow <strong>from parent to child</strong>. A child can never reach up and change its parent's data directly, which is exactly what makes a React application possible to reason about.</p>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="state">
+      <h2><span class="n">06</span> State and lists</h2>
+      <hr class="h2-rule">
+      <p><strong>State is data that changes while the page is open.</strong> Which component type is selected. What has been placed so far. <code>useState</code> hands you two things: the current value, and a function that replaces it.</p>
+
+      <figure class="code" data-file="jsx">
+<pre><code>import { useState } from "react";
+
+const [count, setCount] = useState(0);
+<span class="cm">//     ↑ value   ↑ how to replace it   ↑ starting value</span></code></pre>
+      </figure>
+
+      <p>Two rules, and both of them bite.</p>
+
+      <h3>Never assign directly</h3>
+      <figure class="code" data-file="jsx">
+<pre><code>count = count + 1;      <span class="cm">// nothing happens on screen</span>
+setCount(count + 1);    <span class="cm">// correct</span></code></pre>
+      </figure>
+      <p>Assigning changes a variable that is about to be thrown away. Only the setter tells React something is different.</p>
+
+      <h3>The setter replaces — it does not merge</h3>
+      <p>For an array, that means handing over a whole new array:</p>
+      <figure class="code" data-file="jsx">
+<pre><code>setPlacements([...placements, newOne]);                 <span class="cm">// add</span>
+setPlacements(placements.filter((p) =&gt; p.id !== id));   <span class="cm">// remove</span></code></pre>
+      </figure>
+
+      <div class="warn">
+        <span class="lbl">The bug that wastes an hour</span>
+        <p><code>placements.push(newOne)</code> followed by <code>setPlacements(placements)</code> does nothing visible. The array now holds the new item, but it is the <em>same array object</em> React already had, so React concludes nothing changed and does not redraw. Your data is right and your screen is stale.</p>
+      </div>
+
+      <h3>Who holds the data</h3>
+      <p>Both pieces of state go in <code>App</code>, not in <code>Sidebar</code>. That looks like extra work now, but in a moment <code>MapArea</code> needs the same list to draw markers, and later <code>ResultPanel</code> needs it to send to the server. A component cannot reach into a sibling; the only place all three can see is their shared parent.</p>
+      <p>Data flows down as props. To send something back <em>up</em>, the parent passes down a function and the child calls it.</p>
+
+      <h3>Build it</h3>
+      <p>First, a small file for the two values that more than one component needs. Keeping them here rather than in <code>App.jsx</code> avoids two files importing each other, which is a tangle worth not starting.</p>
+
+      <figure class="code" data-file="src/config.js">
+<pre><code>export const TYPES = ["tree", "canopy", "building"];
+
+<span class="cm">// Georgia Tech campus</span>
+export const CENTER = { lng: -84.3963, lat: 33.7756 };</code></pre>
+      </figure>
+
+      <figure class="code" data-file="src/App.jsx">
+<pre><code>import { useState } from "react";
+import Sidebar from "./components/Sidebar";
+import MapArea from "./components/MapArea";
+import ResultPanel from "./components/ResultPanel";
+import { TYPES, CENTER } from "./config";
+
+export default function App() {
+  const [selectedType, setSelectedType] = useState(TYPES[0]);
+  const [placements, setPlacements] = useState([]);
+
+  function addPlacement() {
+    const next = {
+      id: Date.now(),
+      type: selectedType,
+      <span class="cm">// scattered near campus for now —</span>
+      <span class="cm">// next week the map click supplies the real position</span>
+      lng: CENTER.lng + (Math.random() - 0.5) * 0.004,
+      lat: CENTER.lat + (Math.random() - 0.5) * 0.004
+    };
+    setPlacements([...placements, next]);
+  }
+
+  function removePlacement(id) {
+    setPlacements(placements.filter((p) =&gt; p.id !== id));
+  }
+
+  return (
+    &lt;div className="app"&gt;
+      &lt;div className="top"&gt;
+        &lt;Sidebar
+          title="Components"
+          types={TYPES}
+          selectedType={selectedType}
+          onSelect={setSelectedType}
+          placements={placements}
+          onAdd={addPlacement}
+          onRemove={removePlacement}
+        /&gt;
+        &lt;MapArea placements={placements} /&gt;
+      &lt;/div&gt;
+      &lt;ResultPanel count={placements.length} /&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+      </figure>
+
+      <figure class="code" data-file="src/components/Sidebar.jsx">
+<pre><code>export default function Sidebar({
+  title, types, selectedType, onSelect,
+  placements, onAdd, onRemove
+}) {
+  return (
+    &lt;aside className="palette"&gt;
+      &lt;h2&gt;{title}&lt;/h2&gt;
+
+      {types.map((type) =&gt; (
+        &lt;button
+          key={type}
+          className={type === selectedType ? "item selected" : "item"}
+          onClick={() =&gt; onSelect(type)}
+        &gt;
+          {type}
+        &lt;/button&gt;
+      ))}
+
+      &lt;button className="add" onClick={onAdd}&gt;
+        Add {selectedType}
+      &lt;/button&gt;
+
+      &lt;h2&gt;Placed ({placements.length})&lt;/h2&gt;
+
+      {placements.length === 0 &amp;&amp; (
+        &lt;p className="placeholder"&gt;Nothing placed yet.&lt;/p&gt;
+      )}
+
+      &lt;ul className="placed"&gt;
+        {placements.map((p) =&gt; (
+          &lt;li key={p.id}&gt;
+            &lt;span&gt;{p.type}&lt;/span&gt;
+            &lt;button onClick={() =&gt; onRemove(p.id)}&gt;×&lt;/button&gt;
+          &lt;/li&gt;
+        ))}
+      &lt;/ul&gt;
+    &lt;/aside&gt;
+  );
+}</code></pre>
+      </figure>
+
+      <figure class="code" data-file="src/components/ResultPanel.jsx">
+<pre><code>export default function ResultPanel({ count }) {
+  return (
+    &lt;section className="results"&gt;
+      &lt;h2&gt;Results&lt;/h2&gt;
+      &lt;p&gt;{count} component{count === 1 ? "" : "s"} placed.&lt;/p&gt;
+    &lt;/section&gt;
+  );
+}</code></pre>
+      </figure>
+
+      <h3>Three things in that code worth naming</h3>
+
+      <p><strong>Conditional rendering.</strong> <code>{placements.length === 0 &amp;&amp; &lt;p&gt;…&lt;/p&gt;}</code> shows the message only when the list is empty. In JavaScript <code>false &amp;&amp; anything</code> is <code>false</code>, and React draws nothing for <code>false</code>.</p>
+
+      <p><strong>The arrow around the handler.</strong> This is the classic React trap:</p>
+      <figure class="code" data-file="jsx">
+<pre><code>onClick={() =&gt; onRemove(p.id)}   <span class="cm">// right — a function to call later</span>
+onClick={onRemove(p.id)}         <span class="cm">// wrong — calls it during render</span></code></pre>
+      </figure>
+      <p>The second version deletes every item the moment the list appears, then redraws, then deletes again. You get an infinite loop and a frozen tab.</p>
+
+      <p><strong>Keys.</strong> Every element produced by <code>map</code> needs a <code>key</code>. React uses it to match an old item to its new self when the array changes. Use the item's <code>id</code>, never the array index — an index describes a position, not a thing, and positions shift whenever something is removed.</p>
+
+      <p>Save and try it. Click a type, it highlights. Click Add, an item appears and the count goes up. Click ×, it disappears.</p>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="token">
+      <h2><span class="n">07</span> Get a Mapbox token</h2>
+      <hr class="h2-rule">
+      <p>Mapbox draws the map and needs to know who is asking. That identification is a <strong>token</strong> — a long string beginning with <code>pk.</code> sent with every request for map tiles.</p>
+      <p>Sign up free at <a href="https://account.mapbox.com/auth/signup/" target="_blank" rel="noopener">account.mapbox.com</a>. Your account page shows a <strong>default public token</strong>. Copy it.</p>
+
+      <div class="warn">
+        <span class="lbl">Public token only</span>
+        <p>Public tokens begin with <code>pk.</code> and are meant to be sent to browsers. Secret tokens begin with <code>sk.</code> and must never appear in frontend code, because anything the browser receives can be read by anyone.</p>
+        <p>Do not paste your token into a chat message, a shared document, or an unblurred screenshot. Treat it as a password.</p>
+      </div>
+
+      <h3>Protect it before you create it</h3>
+      <p>The order matters. Set up the exclusion first and it becomes impossible to commit the file by accident.</p>
+
+      <p>Add this line to the end of <code>frontend/.gitignore</code>:</p>
+      <figure class="code" data-file="frontend/.gitignore">
+<pre><code>.env</code></pre>
+      </figure>
+
+      <p>Then create <code>.env</code> in the <code>frontend</code> folder — the same level as <code>package.json</code>, not inside <code>src</code>. One line, no quotes, no spaces around the equals sign:</p>
+      <figure class="code" data-file="frontend/.env">
+<pre><code>VITE_MAPBOX_TOKEN=pk.eyJ1IjoieW91ciIsImEiOiJja...</code></pre>
+      </figure>
+
+      <p>Then confirm Git cannot see it:</p>
+      <figure class="code term" data-file="terminal">
+<pre><code>git status</code></pre>
+      </figure>
+      <p><code>.env</code> must not appear anywhere in that output.</p>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="render">
+      <h2><span class="n">08</span> Render the map</h2>
+      <hr class="h2-rule">
+      <p>Stop the dev server with <strong>Ctrl+C</strong>, then install the two map libraries:</p>
+
+      <figure class="code term" data-file="terminal">
+<pre><code>npm install react-map-gl mapbox-gl
+npm run dev</code></pre>
+      </figure>
+
+      <p>Two packages because they do different jobs. <code>mapbox-gl</code> is the map engine and knows nothing about React; <code>react-map-gl</code> is a thin wrapper that lets you write the map as JSX.</p>
+
+      <div class="warn">
+        <span class="lbl">Restart the dev server after touching <code>.env</code></span>
+        <p>Vite reads environment files once, at startup. Edit <code>.env</code> while the server is running and it will not notice — you get a token that is <code>undefined</code> for no apparent reason.</p>
+      </div>
+
+      <p>Replace <code>src/components/MapArea.jsx</code>:</p>
+
+      <figure class="code" data-file="src/components/MapArea.jsx">
+<pre><code>import "mapbox-gl/dist/mapbox-gl.css";
+import Map from "react-map-gl/mapbox";
+import { CENTER } from "../config";
+
+const TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
+
+export default function MapArea() {
+  return (
+    &lt;main className="map-area"&gt;
+      &lt;Map
+        mapboxAccessToken={TOKEN}
+        initialViewState={{ ...CENTER, zoom: 15 }}
+        style={{ width: "100%", height: "100%" }}
+        mapStyle="mapbox://styles/mapbox/light-v11"
+      /&gt;
+    &lt;/main&gt;
+  );
+}</code></pre>
+      </figure>
+
+      <p>A real map should now fill the middle of the interface, centred on campus. You can drag it and scroll to zoom.</p>
+
+      <h3>What each prop does</h3>
+      <ul>
+        <li><code>mapboxAccessToken</code> — your identification, read from the environment file</li>
+        <li><code>initialViewState</code> — where the map sits when it first appears. <strong>Initial</strong> is literal: after that the user is in charge, and changing these numbers will not move a map already on screen</li>
+        <li><code>style</code> — the size of the map element on the page, in CSS terms</li>
+        <li><code>mapStyle</code> — which cartography to draw. <code>light-v11</code> is chosen deliberately: your analysis results will be drawn on top in colour later, and a quiet base map lets them read</li>
+      </ul>
+
+      <h3>Three things that break</h3>
+      <p>Nearly every failure here is one of these. Check them in order.</p>
+      <ol>
+        <li><strong>The missing CSS import.</strong> Without the first line the map still loads, but renders as broken misaligned fragments with controls in the wrong places. It looks catastrophic and is one line.</li>
+        <li><strong>The <code>VITE_</code> prefix.</strong> Vite only exposes variables whose names start with <code>VITE_</code> — a safety feature that stops server secrets leaking into browser code. Name it <code>MAPBOX_TOKEN</code> and it is silently <code>undefined</code>. Check with <code>console.log(import.meta.env.VITE_MAPBOX_TOKEN)</code>.</li>
+        <li><strong>Committing <code>.env</code>.</strong> If you created the file before adding the ignore line, Git may already be tracking it. Removing a secret from history properly is difficult, so the reliable fix is to delete that token in your Mapbox account and generate a new one.</li>
+      </ol>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="markers">
+      <h2><span class="n">09</span> Markers from your state</h2>
+      <hr class="h2-rule">
+      <p>This is where the three halves of the week meet. The list in your sidebar and the markers on the map are about to become <strong>two views of one array</strong>.</p>
+
+      <figure class="code" data-file="src/components/MapArea.jsx">
+<pre><code>import "mapbox-gl/dist/mapbox-gl.css";
+import Map, { Marker } from "react-map-gl/mapbox";
+import { CENTER } from "../config";
+
+const TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
+
+const COLORS = {
+  tree:     "#2f8f4e",
+  canopy:   "#0f8b8d",
+  building: "#8a6d3b"
+};
+
+export default function MapArea({ placements }) {
+  return (
+    &lt;main className="map-area"&gt;
+      &lt;Map
+        mapboxAccessToken={TOKEN}
+        initialViewState={{ ...CENTER, zoom: 15 }}
+        style={{ width: "100%", height: "100%" }}
+        mapStyle="mapbox://styles/mapbox/light-v11"
+      &gt;
+        {placements.map((p) =&gt; (
+          &lt;Marker
+            key={p.id}
+            longitude={p.lng}
+            latitude={p.lat}
+            color={COLORS[p.type]}
+          /&gt;
+        ))}
+      &lt;/Map&gt;
+    &lt;/main&gt;
+  );
+}</code></pre>
+      </figure>
+
+      <p>Markers go <em>inside</em> the <code>&lt;Map&gt;</code> element, which is why the tag is no longer self-closing. Anything drawn on the map is a child of it.</p>
+
+      <p>Now press Add a few times. A marker appears on campus for each one. Delete an item with × and its marker vanishes. <strong>You never wrote code to add or remove a marker</strong> — you changed an array, and both the sidebar and the map followed. That is the whole idea of React, and it is worth pausing on for a second.</p>
+
+      <div class="warn">
+        <span class="lbl">Longitude comes first</span>
+        <p>Mapbox writes coordinates as <strong>longitude, then latitude</strong>. Leaflet — the library most introductory mapping tutorials use — writes them the other way round, as <code>[lat, lng]</code>. Copy a pair from a Leaflet example without swapping it and your marker lands in the ocean.</p>
+        <p>This is why the placement object uses named fields, <code>lng</code> and <code>lat</code>, rather than a two-element array. Once the value is stored the order cannot be confused.</p>
+      </div>
+
+      <h3>Commit your work</h3>
+      <figure class="code term" data-file="terminal">
+<pre><code>git add .
+git commit -m "Week 4: React interface with Mapbox"
+git push</code></pre>
+      </figure>
+      <p>Then check the repository page on GitHub. You should see <code>frontend</code>, and you should <strong>not</strong> see <code>node_modules</code> or <code>.env</code>.</p>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="broken">
+      <h2><span class="n">10</span> When it breaks</h2>
+      <hr class="h2-rule">
+
+      <div class="trouble">
+        <details>
+          <summary>The page is completely blank and white</summary>
+          <div class="body">
+            <p>A JavaScript error stopped React before it drew anything. Press <strong>F12</strong> and read the Console tab — the first red message names the file and line. A blank page always has an explanation waiting there.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Failed to resolve import "./components/Sidebar"</summary>
+          <div class="body">
+            <p>The path or filename does not match. Check spelling and the capital letter — <code>sidebar.jsx</code> and <code>Sidebar.jsx</code> are different files on the servers you will deploy to, even if your own computer is relaxed about it. Confirm the file is in <code>src/components/</code>, not <code>src/</code>.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>My styles are not applying</summary>
+          <div class="body">
+            <p>You wrote <code>class</code> instead of <code>className</code>. React ignores <code>class</code> without complaining. Search your components for <code>class=</code>.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Adjacent JSX elements must be wrapped in an enclosing tag</summary>
+          <div class="body">
+            <p>A component returns two things at the top level. Wrap them in a single element, or in <code>&lt;&gt;</code> and <code>&lt;/&gt;</code>.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Clicking Add does nothing</summary>
+          <div class="body">
+            <p>Either you mutated the array instead of replacing it, or <code>onAdd</code> is not reaching the button. Put <code>console.log("add")</code> as the first line of <code>addPlacement</code>: if it prints, the click is fine and the problem is the update; if not, the prop is not wired up.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>The tab freezes as soon as items appear</summary>
+          <div class="body">
+            <p>You wrote <code>onClick={onRemove(p.id)}</code> without the arrow. That calls the function during rendering, which changes state, which triggers another render, forever. Add <code>() =&gt;</code> in front.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Warning: Each child in a list should have a unique "key" prop</summary>
+          <div class="body">
+            <p>A <code>map</code> is producing elements without <code>key</code>. All three maps need one — <code>key={type}</code> on the palette buttons, <code>key={p.id}</code> on the list items and on the markers.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>The map area is blank or plain white</summary>
+          <div class="body">
+            <p>Almost always the token. Open the console — an unauthorized or 401 error means Mapbox rejected it. Log <code>import.meta.env.VITE_MAPBOX_TOKEN</code>: if it is <code>undefined</code>, see the <code>VITE_</code> prefix note; if it prints a token, copy a fresh one in case it was truncated when pasted.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>The map renders as broken, overlapping fragments</summary>
+          <div class="body">
+            <p>The stylesheet import is missing. Add <code>import "mapbox-gl/dist/mapbox-gl.css";</code> as the first line of <code>MapArea.jsx</code>.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Failed to resolve import "react-map-gl/mapbox"</summary>
+          <div class="body">
+            <p>You have an older version of the library, where the import path had no suffix. Either change the line to <code>import Map, { Marker } from "react-map-gl";</code>, or install the current version with <code>npm install react-map-gl@latest mapbox-gl</code>.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>The token is <code>undefined</code> even though <code>.env</code> looks right</summary>
+          <div class="body">
+            <p>Three candidates, in order of likelihood. The dev server was not restarted after the file was created. The variable is not prefixed with <code>VITE_</code>. Or the file is in the wrong folder — it belongs beside <code>package.json</code>, not inside <code>src</code>.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Markers do not appear, or they all sit on top of each other</summary>
+          <div class="body">
+            <p>If none appear, <code>placements</code> is not reaching <code>MapArea</code> — check that <code>App.jsx</code> passes it and that <code>MapArea</code> receives it in its parameter braces. If they stack in one spot, your <code>addPlacement</code> is using fixed coordinates rather than the random offset.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Port 5173 is already in use</summary>
+          <div class="body">
+            <p>An earlier <code>npm run dev</code> is still running in a terminal you closed the window on. Vite will usually offer the next port, which is fine.</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="submit" class="submit">
+      <h2>Show us your work!</h2>
+      <hr class="h2-rule">
+      <ul class="check">
+        <li><label><input type="checkbox"> Demo Website Screenshots</label></li>
+      </ul>
+    </section>
+
+    <nav class="weeknav">
+      <a href="index.html"><span class="dir">Back to</span><span class="ttl">All weeks</span></a>
+      <a class="next" href="index.html"><span class="dir">Next week</span><span class="ttl">Placing components on the map</span></a>
+    </nav>
+
+  </main>
+</div>
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>
