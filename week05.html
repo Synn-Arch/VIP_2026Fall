@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Week 5 — SOLWEIG-light and the project skeleton</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">Cool Choices · Tutorials</a>
+    <div class="ticks">
+      <span class="tick done"></span><span class="tick done"></span><span class="tick done"></span><span class="tick done"></span>
+      <span class="tick now"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
+      <span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
+      <span class="tick"></span><span class="tick"></span>
+    </div>
+    <span class="ticks-label">Week 5 of 14</span>
+  </div>
+</header>
+
+<div class="shell">
+<div class="layout">
+
+  <nav class="spine" aria-label="On this page">
+    <p class="spine-title">This week</p>
+    <ol>
+      <li><a href="#plan">Where we are heading</a></li>
+      <li><a href="#tracks">Split the work</a></li>
+      <li><a href="#track-a">Track A · SOLWEIG-light</a></li>
+      <li><a href="#track-b">Track B · Skeleton + backend</a></li>
+      <li><a href="#track-c">Track C · The interface</a></li>
+      <li><a href="#track-d">Track D · Features</a></li>
+      <li><a href="#together">Put it together</a></li>
+    </ol>
+  </nav>
+
+  <main class="content">
+
+    <div class="page-head">
+      <p class="eyebrow">Week 5 · Sep 22 – Sep 28</p>
+      <h1>SOLWEIG-light and the project skeleton</h1>
+      <p class="dek">Four weeks of setup are done: the model runs, JavaScript makes pages move, React draws a map. This week the real project starts, and it starts in parallel. Split into tracks, build one piece each, and put them together.</p>
+      <p class="dek">A personal note first. I built a light version of SOLWEIG! (It took a while. Sorry about that.) It runs the same model on an ordinary CPU, with no PyTorch and no GPU, and it is what lets our website run the model on a small server. (FYI, GPU Server for publishing Websites is really expensive. Sadly, We cannot afford it.) This week, one of you gets to check my work.</p>
+    </div>
+
+    <div class="goals">
+      <h2>Week 5 Tasks</h2>
+      <ul>
+        <li><strong>Track A</strong> — Run SOLWEIG-light on the Week 2 subset and compare it with SOLWEIG-GPU: runtime and results</li>
+        <li><strong>Track B</strong> — Create the project folder structure and a first FastAPI backend (add / multiply) that React buttons call</li>
+        <li><strong>Track C</strong> — Rebuild the frontend so it looks and behaves like the Cool Choices prototype: click to place, drag, delete, hour slider, overlay</li>
+        <li><strong>Track D</strong> — Everyone, together: decide which interventions and features the site will offer, and write them down</li>
+      </ul>
+    </div>
+
+    <!-- ============================================ -->
+    <section id="plan">
+      <h2><span class="n">01</span> Where we are heading</h2>
+      <hr class="h2-rule">
+      <p>Here is the finish line for the first half of the semester.</p>
+
+      <div class="note">
+        <span class="lbl">Midterm presentation · Week 9 (Oct 20)</span>
+        <p>A passing demo looks like this. The map shows the baseline heat result as a translucent layer. Someone places a few things on it. They press <strong>Run analysis</strong>, the request travels to your backend. You don't have to make the website actually run the backend model yet (But if you can, that would be great!).</p>
+      </div>
+
+      <p>This is the prototype I built to see whether the whole idea works. I confirmed that we can actually build live-analysis website. But I will not share the full code of this (but will share some parts of it). You will work on building your own version, but please refer to this image!</p>
+
+      <figure style="margin:18px 0 8px">
+        <img src="assets/img/week05-cool-choices.webp" alt="The Cool Choices prototype: a floating control panel over a map of Austin, with an hourly mean radiant temperature overlay and two placed trees" style="width:100%;border:1px solid #CBD8DC;border-radius:6px">
+        <figcaption style="font-size:0.86rem;color:#3B5866;margin-top:8px">The Cool Choices prototype. Left: the panel with an hour slider, an opacity slider, a tree list and the Run button. Right: mean radiant temperature at 14:00 drawn over Austin, and two placed trees. A live link will be added here once it is deployed.</figcaption>
+      </figure>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="tracks">
+      <h2><span class="n">02</span> Split the work</h2>
+      <hr class="h2-rule">
+      <h3>Step 0 · Together, before you split</h3>
+      <p>Tracks B and C both work inside the project folder, so make the folder first, together, and push it. Work in the shared course repository, inside our folder:</p>
+
+      <figure class="code" data-file="folder">
+<pre><code>no-heat-vip/2026_Fall/Cool_Choices/
+└── cool-choices/                ← the team project (one folder, shared by everyone)
+    ├── backend/
+    │   ├── app/
+    │   │   └── __init__.py      ← empty file; Track B fills the rest
+    │   └── requirements.txt     ← empty for now
+    ├── frontend/                ← a fresh Vite project, made below
+    └── docs/
+        └── features.md          ← empty for now; Track D fills it</code></pre>
+      </figure>
+
+      <p>The frontend is created the same way as in Week 4, with Vite, but fresh, so the team starts from one clean project instead of one person's homework. From inside <code>cool-choices/</code>:</p>
+
+      <figure class="code term" data-file="terminal">
+<pre><code>npm create vite@latest frontend -- --template react
+cd frontend
+npm install
+npm install react-map-gl mapbox-gl</code></pre>
+      </figure>
+
+      <p>Vite writes the whole project for you: <code>package.json</code>, <code>index.html</code>, <code>vite.config.js</code>, <code>src/main.jsx</code>, <code>src/App.jsx</code>, <code>src/index.css</code> and a <code>.gitignore</code> that already excludes <code>node_modules</code>. Two things it does not do, and you must, before the first commit:</p>
+      <ul>
+        <li>Add a line <code>.env</code> to the end of <code>frontend/.gitignore</code>, then create <code>frontend/.env</code> with one line, <code>VITE_MAPBOX_TOKEN=pk.your_token</code>, exactly as in Week 4. Each person can use their own token; the file never leaves their computer.</li>
+        <li>Run <code>git status</code> and check that neither <code>.env</code> nor <code>node_modules</code> is listed. This repository is shared; a token committed here is a token everyone has.</li>
+      </ul>
+      <p>Start it once with <code>npm run dev</code> to see the Vite welcome page, then stop it. Create the empty <code>backend/app/__init__.py</code>, <code>backend/requirements.txt</code> and <code>docs/features.md</code>, commit, push. Then everyone else pulls, runs <code>npm install</code> inside <code>frontend/</code> on their own machine, and the tracks start.</p>
+
+      <h3>The four tracks</h3>
+      <p>Each one has its own section below with everything you need, including the code. Pick by interest, but make sure every track has an owner, and adjust the sizes to however many of you there are. Once Step 0 is pushed, the tracks are independent: A needs nothing from the others, B and C need only the skeleton, and C picks up A's overlay folder whenever it is ready.</p>
+
+      <table style="width:100%;border-collapse:collapse;font-size:0.96rem;margin:16px 0 22px">
+        <tr style="background:#E8EAED">
+          <th style="text-align:left;padding:9px 12px;border:1px solid #CBD8DC;font-family:var(--font-display);font-size:0.86rem">Track</th>
+          <th style="text-align:left;padding:9px 12px;border:1px solid #CBD8DC;font-family:var(--font-display);font-size:0.86rem">You build</th>
+          <th style="text-align:left;padding:9px 12px;border:1px solid #CBD8DC;font-family:var(--font-display);font-size:0.86rem">You hand over</th>
+          <th style="text-align:left;padding:9px 12px;border:1px solid #CBD8DC;font-family:var(--font-display);font-size:0.86rem">People</th>
+        </tr>
+        <tr>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC"><strong>A</strong> · Model</td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC">SOLWEIG-light installed and run on the Week 2 subset; timed against your Week 2 run of the original package; outputs compared</td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC">A filled-in timing table, <code>comparison_14h.png</code>, a short note; the <code>overlays/</code> folder for Track C</td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC">1 (2 if you can time it on two different laptops)</td>
+        </tr>
+        <tr style="background:#F7F8F9">
+          <td style="padding:9px 12px;border:1px solid #CBD8DC"><strong>B</strong> · Backend</td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC">A FastAPI server with <code>/api/calc</code>; React buttons that call it through the Vite proxy</td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC">Screenshots of <code>/docs</code> and the Results panel working</td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC">1</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC"><strong>C</strong> · Frontend</td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC">The panel-over-map layout; click to place, drag to move, delete; hour and opacity sliders; the overlay from Track A</td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC">Screenshots with placed markers and the 14:00 overlay</td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC">1–2</td>
+        </tr>
+        <tr style="background:#F7F8F9">
+          <td style="padding:9px 12px;border:1px solid #CBD8DC"><strong>D</strong> · Features</td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC">One meeting with everyone: which interventions, which features, what is out of scope</td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC"><code>docs/features.md</code> in the repository</td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC">everyone</td>
+        </tr>
+      </table>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="track-a">
+      <h2><span class="n">03</span> Track A · SOLWEIG-light against SOLWEIG-GPU</h2>
+      <hr class="h2-rule">
+      <p>SOLWEIG-GPU needs PyTorch, and on a laptop without an NVIDIA card it runs PyTorch on the CPU. SOLWEIG-light is the same model rewritten with NumPy and Numba, so it needs neither PyTorch nor a GPU. Same inputs, same outputs, a much lighter install. Your job is to check that claim on your own machine: does it produce the same numbers as your Week 2 run, and how long does it take?</p>
+
+      <div class="note">
+        <span class="lbl">It is about to get faster</span>
+        <p>SOLWEIG-light will get one more update next week, and it will be faster. (My repository will be updated next week!)</p>
+      </div>
+
+      <h3>1 · Get the code</h3>
+      <p>Clone <a href="https://github.com/Synn-Arch/SolweigLight" target="_blank" rel="noopener">github.com/Synn-Arch/SolweigLight</a>. Put it somewhere you can find, for example <code>Documents/SolweigLight</code>, not inside the course repository.</p>
+
+      <h3>2 · A second environment</h3>
+      <p>SOLWEIG-light needs Python 3.11, GDAL 3.13 and NumPy 2.4. Your Week 2 environment has Python 3.10 and PyTorch, so it gets its own environment. Two environments, one per package; never install both into one.</p>
+
+      <figure class="code term" data-file="terminal">
+<pre><code>conda create -n solweig-light -c conda-forge python=3.11 "gdal&gt;=3.13,&lt;3.14" "numpy=2.4" "scipy=1.17" "numba=0.67" pytz timezonefinder matplotlib
+conda activate solweig-light
+cd Documents/SolweigLight
+pip install .</code></pre>
+      </figure>
+
+      <p>If conda cannot find one of those versions, drop the <code>numpy</code>, <code>scipy</code> and <code>numba</code> pins from the first line and let <code>pip install .</code> fetch them; it knows the exact versions the package wants. The <code>gdal</code> pin is the one that matters, because pip cannot build GDAL for you.</p>
+
+      <p>Then the three checks, in that order:</p>
+      <figure class="code term" data-file="terminal">
+<pre><code>python -c "import solweig_light; print(solweig_light.__version__)"
+python -c "from osgeo import gdal, gdal_array; print('gdal', gdal.__version__)"
+python -c "import numba; print('numba', numba.__version__)"</code></pre>
+      </figure>
+      <p>The first prints a version. The second must print <code>gdal 3.13.x</code> without complaining about <code>_gdal_array</code>. The third proves the compiler that makes the light version fast is present.</p>
+
+      <h3>3 · The reference: your Week 2 run</h3>
+      <p>The original package is your side of the comparison, and you already know how to run it: it is Week 2, section 10, and your <code>Input_subset/output_folder/0_0/TMRT_0_0.tif</code> is probably still there. Run <code>run_test.py</code> once more in the <code>solweig</code> environment, on the same subset, and time it however you like; a phone stopwatch from pressing Enter to the prompt coming back is fine. Write the number down. No new code for this part.</p>
+
+      <h3>4 · A second copy of the subset</h3>
+      <p>SOLWEIG-light writes its working files (<code>processed_inputs/</code>, <code>output_folder/</code>) inside the folder you hand it, exactly like the original does. Point it at Week 2's <code>Input_subset</code> and it would overwrite the reference you just made. So it gets a copy of the inputs, cut from the same window.</p>
+
+      <figure class="code" data-file="folder">
+<pre><code>week05-model/                   ← or simply your Week 2 folder
+├── Input_rasters/              ← the full Austin rasters from Week 2
+├── ownmet_Forcing_data.txt
+├── Input_subset/               ← Week 2: rasters + the original package's outputs
+├── Input_subset_light/         ← same window, only the inputs, for SOLWEIG-light
+├── make_subset.py
+├── run_light.py
+├── compare_outputs.py
+└── render_overlay.py</code></pre>
+      </figure>
+
+      <p>This is Week 2's <code>make_subset.py</code> rewritten with GDAL (which the new environment has) instead of rasterio (which it does not). It also copies <code>Landcover.tif</code> if it exists and the meteorological file. Use the same offsets you used in Week 2, or copying the three <code>.tif</code> files out of <code>Input_subset</code> by hand does the same thing.</p>
+
+      <figure class="code" data-file="make_subset.py">
+<pre><code>"""Cut a small square out of the Austin sample so one run takes minutes, not hours.
+
+    python make_subset.py                              <span class="cm"># defaults below</span>
+    python make_subset.py --xoff 1700 --yoff 1400 --size 500 --out Input_subset
+
+Use the offsets you found with find_dense.py in Week 2. The same window is applied
+to every raster, so the outputs stay perfectly aligned.
+"""
+import argparse
+import shutil
+from pathlib import Path
+
+from osgeo import gdal
+
+gdal.UseExceptions()
+
+RASTERS = ["Building_DSM.tif", "DEM.tif", "Trees.tif", "Landcover.tif"]   <span class="cm"># Landcover is optional</span>
+MET_FILE = "ownmet_Forcing_data.txt"
+
+
+def main():
+    p = argparse.ArgumentParser()
+    p.add_argument("--src", default="Input_rasters", help="folder with the full Austin rasters")
+    p.add_argument("--out", default="Input_subset", help="folder to write the cut rasters into")
+    p.add_argument("--xoff", type=int, default=1700, help="left pixel of the window (from find_dense.py)")
+    p.add_argument("--yoff", type=int, default=1400, help="top pixel of the window")
+    p.add_argument("--size", type=int, default=500, help="window size in pixels (500 px x 2 m = 1 km)")
+    a = p.parse_args()
+
+    src, out = Path(a.src), Path(a.out)
+    out.mkdir(parents=True, exist_ok=True)
+
+    ref = gdal.Open(str(src / RASTERS[0]))
+    if a.xoff + a.size &gt; ref.RasterXSize or a.yoff + a.size &gt; ref.RasterYSize:
+        raise SystemExit(f"window runs past the edge ({ref.RasterXSize} x {ref.RasterYSize} px); "
+                         "reduce --size or move --xoff/--yoff")
+
+    for name in RASTERS:
+        if not (src / name).exists():
+            print(f"[skip] {name} not found (that is fine for Landcover)")
+            continue
+        gdal.Translate(str(out / name), str(src / name), srcWin=[a.xoff, a.yoff, a.size, a.size])
+        ds = gdal.Open(str(out / name))
+        print(f"[ok]   {name}: {ds.RasterXSize} x {ds.RasterYSize} px")
+
+    <span class="cm"># the met file may sit next to the rasters or next to this script</span>
+    for candidate in (src / MET_FILE, Path(MET_FILE)):
+        if candidate.exists():
+            shutil.copy2(candidate, out / MET_FILE)
+            print(f"[ok]   copied {MET_FILE}")
+            break
+    else:
+        print(f"[!]    {MET_FILE} not found; copy it into {out} yourself")
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+</figure>
+
+      <figure class="code term" data-file="terminal">
+<pre><code>conda activate solweig-light
+python make_subset.py --xoff 1700 --yoff 1400 --size 500 --out Input_subset_light</code></pre>
+      </figure>
+
+      <p>Every raster should report <code>500 x 500 px</code>, the same size as your Week 2 subset.</p>
+
+      <h3>5 · Run SOLWEIG-light, with a stopwatch</h3>
+      <p>This is Week 2's <code>run_test.py</code> with two changes: the import comes from <code>solweig_light</code>, and there is a stopwatch around the call. Everything passed to <code>thermal_comfort</code> is identical, which is the whole point.</p>
+
+      <figure class="code" data-file="run_light.py">
+<pre><code>"""SOLWEIG-light, timed. Same arguments as Week 2's run_test.py, different import.
+
+Run inside the new environment:   conda activate solweig-light
+Run it TWICE: the first run also compiles the numerical kernels (Numba), the second
+run is the number to report.
+"""
+import os
+import time
+
+from solweig_light import RuntimeOptions, runtime_options, thermal_comfort
+
+SCENE = os.path.abspath("Input_subset_light")          # a COPY of the inputs; never Week 2's Input_subset itself
+MET = os.path.abspath("ownmet_Forcing_data.txt")
+THREADS = min(4, os.cpu_count() or 1)                  <span class="cm"># SOLWEIG-light runs single-threaded unless you ask</span>
+
+
+def main():
+    t0 = time.perf_counter()
+    options = RuntimeOptions(cpu_budget=THREADS, threads_per_worker=THREADS, block_pixels=1024)
+    with runtime_options(options):
+        thermal_comfort(
+            base_path=SCENE,
+            selected_date_str="2020-08-13",
+            building_dsm_filename="Building_DSM.tif",
+            dem_filename="DEM.tif",
+            trees_filename="Trees.tif",
+            landcover_filename=None,
+            tile_size=600,
+            overlap=20,
+            use_own_met=True,
+            own_met_file=MET,
+            save_tmrt=True,
+            save_svf=True,
+            save_shadow=True,
+        )
+    print(f"[DONE] SOLWEIG-light: {time.perf_counter() - t0:.1f} s using {THREADS} threads")
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+</figure>
+
+      <p>The one real addition is <code>RuntimeOptions</code>. SOLWEIG-light runs on a single core unless you tell it otherwise; the script asks for up to four threads, capped at what your laptop has.</p>
+
+      <figure class="code term" data-file="terminal">
+<pre><code>conda activate solweig-light
+python run_light.py
+python run_light.py</code></pre>
+      </figure>
+
+      <div class="warn">
+        <span class="lbl">Run the light version twice</span>
+        <p>The first run also compiles its numerical kernels (that is what Numba does), which can add a minute or more. The compiled code is cached, so the second run is the honest number. Report both.</p>
+      </div>
+
+      <h3>What a healthy light run looks like</h3>
+      <figure class="code term" data-file="expected output">
+<pre><code>Creating tiles for Building_DSM...
+Created single tile: .../processed_inputs/Building_DSM/Building_DSM_0_0.tif
+...
+Copied to .../processed_inputs/metfiles/metfile_0_0.txt
+Wind coefficient not used; skipping WindCoeff tiles.
+[INFO] Found 1 matching SVF tiles.
+[INFO] Writing outputs to: .../Input_subset_light/processed_inputs/SVF
+[INFO] Standalone SVF calculation complete.
+Running Solweig ...
+[DONE] SOLWEIG-light: 187.4 s using 4 threads</code></pre>
+      </figure>
+
+      <p>The number on the last line is yours to find out; on the machines I tried, a 500 × 500 subset takes a few minutes. Outputs land in <code>Input_subset_light/output_folder/0_0/</code> as <code>TMRT_0_0.tif</code>, <code>UTCI_0_0.tif</code> and <code>Shadow_0_0.tif</code>, the same names the GPU package uses. One difference to know about: the light version keeps sky view factor in <code>processed_inputs/SVF/SkyViewFactor_0_0.tif</code> rather than writing a second copy into the output folder.</p>
+
+      <h3>6 · Compare the numbers</h3>
+      <p>Two GeoTIFFs with 24 bands each, one per hour: Week 2's in <code>Input_subset</code>, today's in <code>Input_subset_light</code>. The script subtracts them band by band, skips building pixels (which are empty in both), and prints one row per hour. It then draws 14:00 side by side, with the difference in the third panel.</p>
+
+      <figure class="code" data-file="compare_outputs.py">
+<pre><code>"""Compare the two runs pixel by pixel, hour by hour, and draw one hour side by side.
+
+    python compare_outputs.py                 <span class="cm"># writes comparison_14h.png next to this file</span>
+"""
+import numpy as np
+from osgeo import gdal
+
+gdal.UseExceptions()
+
+GPU = "Input_subset/output_folder/0_0/TMRT_0_0.tif"           <span class="cm"># SOLWEIG-GPU, your Week 2 run</span>
+LIGHT = "Input_subset_light/output_folder/0_0/TMRT_0_0.tif"   <span class="cm"># SOLWEIG-light</span>
+HOUR = 14                                                     <span class="cm"># band 15 = 14:00, the met file starts at midnight</span>
+
+
+def read(path):
+    """Return (bands, rows, cols) float32 with nodata as NaN, plus each band's timestamp."""
+    ds = gdal.Open(path)
+    data = ds.ReadAsArray().astype("float32")
+    nodata = ds.GetRasterBand(1).GetNoDataValue()
+    if nodata is not None:
+        data[data == nodata] = np.nan
+    times = [ds.GetRasterBand(i + 1).GetMetadataItem("Time") or f"band {i + 1}" for i in range(ds.RasterCount)]
+    return data, times
+
+
+gpu, hours = read(GPU)
+light, _ = read(LIGHT)
+if gpu.shape != light.shape:
+    raise SystemExit(f"shapes differ: {gpu.shape} vs {light.shape} - did you cut the same window?")
+
+print(f"{'hour':&gt;19} {'GPU mean':&gt;9} {'light mean':&gt;11} {'max |diff|':&gt;11} {'pixels &gt;0.5C':&gt;13}")
+for h in range(gpu.shape[0]):
+    both = np.isfinite(gpu[h]) &amp; np.isfinite(light[h])       <span class="cm"># buildings are NaN in both; skip them</span><!--B1-->
+    diff = light[h][both] - gpu[h][both]<!--B1-->
+    print(f"{hours[h]:&gt;19} {np.nanmean(gpu[h]):9.2f} {np.nanmean(light[h]):11.2f} "
+          f"{np.abs(diff).max():11.3f} {int((np.abs(diff) &gt; 0.5).sum()):13d}")
+
+only_one = np.isfinite(gpu[HOUR]) != np.isfinite(light[HOUR])
+print(f"\npixels valid in one run but not the other at {hours[HOUR]}: {int(only_one.sum())}")
+
+<span class="cm"># --- picture: GPU, light, and the difference at one hour -------------------</span>
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+
+fig, axes = plt.subplots(1, 3, figsize=(13, 4.2))
+panels = [(gpu[HOUR], "SOLWEIG-GPU", "inferno", 20, 75),
+          (light[HOUR], "SOLWEIG-light", "inferno", 20, 75),
+          (light[HOUR] - gpu[HOUR], "light - GPU", "coolwarm", -2, 2)]
+for ax, (img, title, cmap, lo, hi) in zip(axes, panels):
+    im = ax.imshow(img, cmap=cmap, vmin=lo, vmax=hi)
+    ax.set_title(f"{title} - {hours[HOUR]}")
+    ax.axis("off")
+    fig.colorbar(im, ax=ax, shrink=0.8)
+fig.tight_layout()
+fig.savefig("comparison_14h.png", dpi=120)
+print("wrote comparison_14h.png")</code></pre>
+</figure>
+
+      <figure class="code term" data-file="terminal">
+<pre><code>python compare_outputs.py</code></pre>
+      </figure>
+
+      <p>What you are looking for: the two <em>mean</em> columns should agree to a decimal place or two, and <em>max |diff|</em> should be small, a fraction of a degree. If it is tens of degrees at every hour, the two folders do not hold the same window, or one run used a different meteorological file. If it is large at only one or two hours, look at the picture; the difference panel will show you where.</p>
+
+      <p>Fill this in and put it in your hand-in:</p>
+      <table style="width:100%;border-collapse:collapse;font-size:0.96rem;margin:16px 0 22px">
+        <tr style="background:#E8EAED">
+          <th style="text-align:left;padding:9px 12px;border:1px solid #CBD8DC;font-family:var(--font-display);font-size:0.86rem">Machine (chip, RAM)</th>
+          <th style="text-align:left;padding:9px 12px;border:1px solid #CBD8DC;font-family:var(--font-display);font-size:0.86rem">Original package (Week 2 script)</th>
+          <th style="text-align:left;padding:9px 12px;border:1px solid #CBD8DC;font-family:var(--font-display);font-size:0.86rem">SOLWEIG-light, 1st run</th>
+          <th style="text-align:left;padding:9px 12px;border:1px solid #CBD8DC;font-family:var(--font-display);font-size:0.86rem">SOLWEIG-light, 2nd run</th>
+          <th style="text-align:left;padding:9px 12px;border:1px solid #CBD8DC;font-family:var(--font-display);font-size:0.86rem">max |diff| at 14:00</th>
+        </tr>
+        <tr><td style="padding:9px 12px;border:1px solid #CBD8DC">&nbsp;</td><td style="padding:9px 12px;border:1px solid #CBD8DC">&nbsp;</td><td style="padding:9px 12px;border:1px solid #CBD8DC">&nbsp;</td><td style="padding:9px 12px;border:1px solid #CBD8DC">&nbsp;</td><td style="padding:9px 12px;border:1px solid #CBD8DC">&nbsp;</td></tr>
+      </table>
+      <p>Then add a few lines of your own impressions: whatever you noticed, found odd, or would want to ask about. There is no right answer here; I want to know what it was like to use.</p>
+
+      <h3>7 · Hand-off to Track C: the overlay</h3>
+      <p>Track C needs something to draw on the map. This script turns the 24 hourly TMRT bands into 24 PNG images and writes <code>scene.json</code> with the four corner coordinates in longitude/latitude, which is how Mapbox positions an image. Buildings become transparent, and every hour uses the same colour range so the slider is comparable from frame to frame. The Cool Choices backend does exactly this, with the same code.</p>
+
+      <figure class="code" data-file="render_overlay.py">
+<pre><code>"""Turn the 24 hourly TMRT bands into PNGs the web map can draw, plus scene.json with the corners.
+
+    python render_overlay.py
+
+Hand the resulting folder to Track C: it goes into  frontend/public/overlays/
+"""
+import json
+from pathlib import Path
+
+import numpy as np
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+from osgeo import gdal, osr
+
+gdal.UseExceptions()
+osr.UseExceptions()
+
+TIF = "Input_subset_light/output_folder/0_0/TMRT_0_0.tif"
+OUT = Path("overlays")                       <span class="cm"># copy this folder to frontend/public/overlays</span>
+VMIN, VMAX = 20.0, 75.0                      <span class="cm"># one fixed colour range, so every hour is comparable</span>
+CMAP = plt.get_cmap("RdYlBu_r")
+
+ds = gdal.Open(TIF)
+rows, cols = ds.RasterYSize, ds.RasterXSize
+gt = ds.GetGeoTransform()                    <span class="cm"># pixel -&gt; map coordinates (UTM metres)</span>
+
+<span class="cm"># map coordinates -&gt; longitude/latitude, which is what Mapbox wants</span>
+utm = osr.SpatialReference()
+utm.ImportFromWkt(ds.GetProjection())
+wgs84 = osr.SpatialReference()
+wgs84.ImportFromEPSG(4326)
+for srs in (utm, wgs84):
+    srs.SetAxisMappingStrategy(osr.OAMS_TRADITIONAL_GIS_ORDER)     <span class="cm"># always x=lon, y=lat</span>
+to_lonlat = osr.CoordinateTransformation(utm, wgs84)
+
+
+def corner(col, row):
+    x = gt[0] + col * gt[1] + row * gt[2]
+    y = gt[3] + col * gt[4] + row * gt[5]
+    lon, lat, _ = to_lonlat.TransformPoint(x, y)
+    return [lon, lat]
+
+
+<span class="cm"># Mapbox image sources want: top-left, top-right, bottom-right, bottom-left</span>
+corners = [corner(0, 0), corner(cols, 0), corner(cols, rows), corner(0, rows)]
+
+OUT.mkdir(parents=True, exist_ok=True)
+hours = []
+for i in range(ds.RasterCount):
+    band = ds.GetRasterBand(i + 1)
+    data = band.ReadAsArray().astype("float32")
+    nodata = band.GetNoDataValue()
+    if nodata is not None:
+        data[data == nodata] = np.nan
+    t = np.clip((data - VMIN) / (VMAX - VMIN), 0, 1)
+    rgba = CMAP(np.nan_to_num(t))
+    rgba[..., 3] = np.where(np.isfinite(data), 1.0, 0.0)          <span class="cm"># building pixels become transparent</span><!--B2-->
+    plt.imsave(OUT / f"tmrt_{i:02d}.png", rgba)
+    hours.append(band.GetMetadataItem("Time") or f"{i:02d}:00")
+
+scene = {
+    "variable": "tmrt",
+    "label": "Mean radiant temperature (°C)",
+    "vmin": VMIN,
+    "vmax": VMAX,
+    "corners": corners,
+    "center": [sum(c[0] for c in corners) / 4, sum(c[1] for c in corners) / 4],
+    "hours": hours,
+}
+(OUT / "scene.json").write_text(json.dumps(scene, indent=1))
+print(f"wrote {ds.RasterCount} PNGs and scene.json to {OUT.resolve()}")</code></pre>
+</figure>
+
+      <figure class="code term" data-file="terminal">
+<pre><code>python render_overlay.py</code></pre>
+      </figure>
+
+      <p>Copy the resulting <code>overlays/</code> folder to Track C, who puts it in <code>cool-choices/frontend/public/overlays/</code>. Open one of the PNGs first: if it is entirely one colour, the range is wrong for your subset; if the whole image is transparent, the nodata handling caught everything.</p>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="track-b">
+      <h2><span class="n">04</span> Track B · Project skeleton and a first backend</h2>
+      <hr class="h2-rule">
+      <p>You are building the first server. It does arithmetic. That sounds trivial, and it is; the point is that a button in the browser causes Python to run on a server and the answer comes back, with a real wait in between. Once that works, replacing arithmetic with SOLWEIG is a change inside one file.</p>
+
+      <h3>1 · The folder structure</h3>
+      <p>Step 0 made the skeleton; this is what it grows into this week. It mirrors the prototype's layout, so when you read the prototype's code later, everything is where you expect.</p>
+
+      <figure class="code" data-file="folder">
+<pre><code>cool-choices/
+├── backend/
+│   ├── app/
+│   │   ├── __init__.py          ← empty file; makes app/ importable
+│   │   ├── main.py              ← FastAPI routes: what URLs exist
+│   │   └── calc.py              ← plain Python: the "model" (for now, + and ×)
+│   └── requirements.txt
+├── frontend/                    ← your Week 4 Vite project, moved here
+│   ├── public/
+│   │   └── overlays/            ← Track A's PNGs land here
+│   ├── src/
+│   │   ├── App.jsx
+│   │   ├── api.js               ← every fetch() in the app, in one place
+│   │   ├── config.js
+│   │   ├── index.css
+│   │   └── components/
+│   ├── vite.config.js           ← forwards /api to the backend
+│   └── .env                     ← your Mapbox token (git-ignored)
+└── docs/
+    └── features.md              ← Track D</code></pre>
+      </figure>
+
+      <p>Pull first, so you have the skeleton from Step 0. Everything you add this week goes into <code>backend/</code>, plus the three frontend files named in section 02.</p>
+
+      <h3>2 · The backend</h3>
+      <p>Two Python files. Keep the arithmetic in its own file with no web code in it; that is the file Week 8 replaces with the model.</p>
+
+      <figure class="code" data-file="backend/app/calc.py">
+<pre><code>"""Plain Python. No web code in here on purpose.
+
+This file is the stand-in for the model: in Week 8 it is replaced by a function
+that paints trees into Trees.tif and runs SOLWEIG-light. Keeping the maths
+separate from the API means you can test it without starting a server.
+"""
+
+
+def add(a: float, b: float) -&gt; float:
+    return a + b
+
+
+def multiply(a: float, b: float) -&gt; float:
+    return a * b<!--B3-->
+
+
+<span class="cm"># the API looks operations up by name, so adding one is one line here</span>
+OPERATIONS = {
+    "add": add,
+    "multiply": multiply,<!--B3-->
+}</code></pre>
+</figure>
+
+      <figure class="code" data-file="backend/app/main.py">
+<pre><code>"""FastAPI service. Start it from the backend/ folder:
+
+    uvicorn app.main:app --reload --port 8000
+
+Then open http://localhost:8000/docs - FastAPI writes the documentation and a
+"Try it out" form for every route from the type hints below.
+"""
+import time
+from typing import Literal
+
+from fastapi import FastAPI
+from pydantic import BaseModel
+
+from .calc import OPERATIONS
+
+app = FastAPI(title="Cool Choices API (demo)")
+
+
+class CalcRequest(BaseModel):
+    """What the browser must send. Anything else is rejected with a 422 before our code runs."""
+    a: float
+    b: float
+    op: Literal["add", "multiply"]
+
+
+class CalcResponse(BaseModel):
+    op: str
+    a: float
+    b: float
+    result: float
+    seconds: float
+
+
+@app.get("/api/health")
+def health():
+    return {"ok": True}
+
+
+@app.post("/api/calc", response_model=CalcResponse)
+def calc(request: CalcRequest):
+    started = time.perf_counter()
+    time.sleep(1.0)                              <span class="cm"># pretend this is a slow model; the browser must wait politely</span>
+    function = OPERATIONS[request.op]<!--B4-->
+    result = function(request.a, request.b)<!--B4-->
+    return CalcResponse(op=request.op, a=request.a, b=request.b, result=result,
+                        seconds=round(time.perf_counter() - started, 2))</code></pre>
+</figure>
+
+      <figure class="code" data-file="backend/requirements.txt">
+<pre><code>fastapi&gt;=0.115,&lt;1
+uvicorn[standard]&gt;=0.30,&lt;1</code></pre>
+</figure>
+
+      <p>Install FastAPI into the <code>solweig-light</code> environment if Track A has made it, because that is where the backend will eventually run the model. Any Python 3.11 environment works for this week if they have not.</p>
+
+      <figure class="code term" data-file="terminal">
+<pre><code>conda activate solweig-light
+cd cool-choices/backend
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8000</code></pre>
+      </figure>
+
+      <p>Leave it running, like <code>npm run dev</code>. Then open <a href="http://localhost:8000/docs" target="_blank" rel="noopener">localhost:8000/docs</a>. FastAPI has written documentation for your two routes from the type hints, with a <strong>Try it out</strong> button on each. Send <code>{"a": 3, "b": 4, "op": "multiply"}</code> to <code>/api/calc</code>: after a one-second pause you get <code>"result": 12</code>. Now send <code>"op": "divide"</code>. You get a <strong>422</strong> and a sentence explaining that <code>op</code> should be <code>add</code> or <code>multiply</code>. You wrote no validation code; the <code>CalcRequest</code> class is the contract, and FastAPI enforces it before your function runs.</p>
+
+      <p>Screenshot both responses. Three things in that file worth naming:</p>
+      <ul>
+        <li><strong><code>CalcRequest</code></strong> describes what the browser must send. Later it will hold a list of placements instead of two numbers, and the same 422 will protect you from a broken frontend.</li>
+        <li><strong><code>time.sleep(1.0)</code></strong> is there on purpose. The real model takes minutes; the browser has to cope with waiting, and Track B's frontend piece below shows how.</li>
+        <li><strong><code>OPERATIONS[request.op]</code></strong> looks a function up by name. Adding an operation is one line in <code>calc.py</code> and one word in the <code>Literal</code>.</li>
+      </ul>
+
+      <h3>3 · Wire the buttons</h3>
+      <p>Three files on the frontend side, and they start in different states. <code>vite.config.js</code> already exists: Vite wrote it in Step 0, with nothing in it but <code>plugins: [react()]</code>. Replace its contents with the version below. <code>src/api.js</code> is new. <code>src/components/ResultPanel.jsx</code> is new too, and so is the <code>components</code> folder; create both.</p>
+      <p>The one addition to the Vite config is the <code>server.proxy</code> block. It forwards anything starting with <code>/api</code> to port 8000, so the browser only ever talks to one address and there is no cross-origin trouble. Restart <code>npm run dev</code> after editing it; Vite reads its config once.</p>
+
+      <figure class="code" data-file="frontend/vite.config.js">
+<pre><code>import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+
+<span class="cm">// Every request that starts with /api is forwarded to the FastAPI server.</span>
+<span class="cm">// The browser only ever talks to :5173, so there is no cross-origin problem.</span>
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    proxy: {
+      "/api": "http://localhost:8000",
+    },
+  },
+});</code></pre>
+</figure>
+
+      <p>All <code>fetch()</code> calls live in one file. Components ask for <code>api.calc(...)</code> and never see a URL. When the backend changes in Week 6, this is the only frontend file that changes with it.</p>
+
+      <figure class="code" data-file="frontend/src/api.js">
+<pre><code><span class="cm">// Every fetch() in the app lives here. Components never build URLs themselves.</span>
+
+async function request(path, options) {
+  const response = await fetch(path, options);
+  if (!response.ok) {
+    let detail = response.statusText;
+    try {
+      const body = await response.json();          <span class="cm">// FastAPI explains what was wrong</span>
+      detail = typeof body.detail === "string" ? body.detail : JSON.stringify(body.detail);
+    } catch {
+      <span class="cm">// not JSON, keep the status text</span>
+    }
+    throw new Error(detail);
+  }
+  return response.json();
+}
+
+export const api = {
+  health: () =&gt; request("/api/health"),
+
+  calc: (a, b, op) =&gt;
+    request("/api/calc", {
+      method: "POST",<!--B5-->
+      headers: { "Content-Type": "application/json" },<!--B5-->
+      body: JSON.stringify({ a, b, op }),<!--B5-->
+    }),
+
+  <span class="cm">// Track A writes this file; Track C reads it. No backend involved yet.</span>
+  scene: () =&gt; request("/overlays/scene.json"),
+};</code></pre>
+</figure>
+
+      <p>And the panel that uses it. It is Week 3's <em>Load from server</em> button grown up: mark the state as waiting, <code>await</code> the answer, show it. It keeps its own state on purpose, so Track C can drop it anywhere in the layout without wiring props.</p>
+
+      <figure class="code" data-file="frontend/src/components/ResultPanel.jsx">
+<pre><code>import { useState } from "react";
+import { api } from "../api";
+
+<span class="cm">// Track B's piece: two numbers go to the server, one answer comes back.</span>
+<span class="cm">// It keeps its own state, so it works no matter where the panel puts it.</span>
+export default function ResultPanel() {
+  const [a, setA] = useState(3);
+  const [b, setB] = useState(4);
+  const [status, setStatus] = useState("idle");      <span class="cm">// idle | waiting | done | error</span>
+  const [answer, setAnswer] = useState(null);
+  const [error, setError] = useState(null);
+
+  async function run(op) {
+    setStatus("waiting");
+    setError(null);
+    try {
+      const data = await api.calc(Number(a), Number(b), op);   <span class="cm">// the browser waits here, politely</span><!--B6-->
+      setAnswer(data);<!--B6-->
+      setStatus("done");<!--B6-->
+    } catch (e) {
+      setError(e.message);
+      setStatus("error");
+    }
+  }
+
+  return (
+    &lt;section className="results"&gt;
+      &lt;h2&gt;Results&lt;/h2&gt;
+      &lt;div className="row"&gt;
+        &lt;label&gt;
+          a
+          &lt;input type="number" value={a} onChange={(e) =&gt; setA(e.target.value)} /&gt;
+        &lt;/label&gt;
+        &lt;label&gt;
+          b
+          &lt;input type="number" value={b} onChange={(e) =&gt; setB(e.target.value)} /&gt;
+        &lt;/label&gt;
+      &lt;/div&gt;
+      &lt;div className="row"&gt;
+        &lt;button onClick={() =&gt; run("add")} disabled={status === "waiting"}&gt;Add&lt;/button&gt;
+        &lt;button onClick={() =&gt; run("multiply")} disabled={status === "waiting"}&gt;Multiply&lt;/button&gt;
+      &lt;/div&gt;
+      {status === "waiting" &amp;&amp; &lt;p className="muted small"&gt;Server: waiting…&lt;/p&gt;}
+      {status === "done" &amp;&amp; (
+        &lt;p className="small"&gt;
+          {answer.a} {answer.op === "add" ? "+" : "×"} {answer.b} = &lt;strong&gt;{answer.result}&lt;/strong&gt;
+          &lt;span className="muted"&gt; · {answer.seconds} s on the server&lt;/span&gt;
+        &lt;/p&gt;
+      )}
+      {status === "error" &amp;&amp; &lt;p className="error small"&gt;{error}&lt;/p&gt;}
+    &lt;/section&gt;
+  );
+}</code></pre>
+</figure>
+
+      <p>To see it before Track C's layout is ready, open the <code>App.jsx</code> Vite generated, add <code>import ResultPanel from "./components/ResultPanel";</code> at the top and <code>&lt;ResultPanel /&gt;</code> anywhere inside what it returns. Track C's <code>App.jsx</code> will overwrite that file later, and their panel already includes it, so nothing is lost.</p>
+
+      <div class="note">
+        <span class="lbl">What you should see</span>
+        <p>Type 6 and 7, click <strong>Multiply</strong>. The panel says <em>Server: waiting…</em> for about a second, then <em>6 × 7 = 42 · 1 s on the server</em>. Now stop the backend with Ctrl+C and click again: a red error line appears instead of a frozen page. That error path matters as much as the happy one.</p>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="track-c">
+      <h2><span class="n">05</span> Track C · The interface</h2>
+      <hr class="h2-rule">
+      <p>Week 4 gave you a palette, a list and a map, each in its own box. This week they become one screen: the map fills the window, a panel floats over it, and the placements you make on the map are the same objects as the rows in the list. It is the prototype's layout, simplified to what you need right now.</p>
+
+      <h3>What it has to do</h3>
+      <ul>
+        <li>The map fills the window; the panel floats on the left.</li>
+        <li>Choose a tool (tree, shelter). Press <strong>Add</strong>, then click the map: a marker appears where you clicked, and a row appears in the list. Press the button again to stop placing.</li>
+        <li>Drag a marker: its coordinates in the list update.</li>
+        <li>Press × on a row: the marker disappears.</li>
+        <li>An hour slider and a play button; an opacity slider.</li>
+        <li>If Track A's <code>overlays/</code> folder is present, the hour's PNG is drawn over the map and the slider changes it. If not, everything else still works.</li>
+        <li>A <strong>Run analysis</strong> button that does nothing yet, and Track B's Results panel at the bottom.</li>
+      </ul>
+
+      <h3>Five files</h3>
+      <p>Pull the Step 0 skeleton first; you work in its <code>frontend/src</code>, and you do not need anything else from Track B to start. <code>App.jsx</code> and <code>index.css</code> already exist from Vite: replace their contents. <code>config.js</code> and the <code>components/</code> folder with <code>Panel.jsx</code> and <code>MapArea.jsx</code> are new. <code>main.jsx</code> stays exactly as Vite made it; check that it imports <code>./index.css</code>. Vite's <code>App.css</code> is no longer used and can be deleted. If you want to reuse pieces of your Week 4 <code>Sidebar.jsx</code>, copy them into <code>Panel.jsx</code> rather than adding the file itself.</p>
+
+      <figure class="code" data-file="frontend/src/config.js">
+<pre><code><span class="cm">// Tool types the palette offers. Track D decides what else belongs here.</span>
+export const TYPES = ["tree", "shelter"];
+
+export const COLORS = {
+  tree: "#2f8f4e",
+  shelter: "#8a6d3b",
+};
+
+<span class="cm">// Where the map starts when there is no overlay yet (Georgia Tech campus).</span>
+export const CENTER = { lng: -84.3963, lat: 33.7756 };</code></pre>
+</figure>
+
+      <p><code>App</code> owns every piece of state, as in Week 4, because the panel and the map both need all of it. Two new things here. The <code>useEffect</code> at the top loads <code>scene.json</code> once when the app starts; if the file is not there, it fails quietly and the map still works. The second <code>useEffect</code> is the play button: while <code>playing</code> is true it advances the hour every 0.7 seconds, and the function it <em>returns</em> stops the timer when playing turns off or the app closes. Forget that return and the timer runs forever.</p>
+
+      <figure class="code" data-file="frontend/src/App.jsx">
+<pre><code>import { useEffect, useState } from "react";
+import MapArea from "./components/MapArea";
+import Panel from "./components/Panel";
+import { api } from "./api";
+import { TYPES, CENTER } from "./config";
+
+export default function App() {
+  <span class="cm">// --- what the user is doing -------------------------------------------</span>
+  const [selectedType, setSelectedType] = useState(TYPES[0]);
+  const [placing, setPlacing] = useState(false);
+  const [placements, setPlacements] = useState([]);
+
+  <span class="cm">// --- what the map is showing -------------------------------------------</span>
+  const [scene, setScene] = useState(null);      <span class="cm">// /overlays/scene.json, if Track A has produced it</span>
+  const [ready, setReady] = useState(false);     <span class="cm">// don't draw the map until we know where to centre it</span>
+  const [hour, setHour] = useState(14);
+  const [opacity, setOpacity] = useState(0.65);
+  const [playing, setPlaying] = useState(false);
+
+  <span class="cm">// Load the overlay description once, when the app starts.</span>
+  useEffect(() =&gt; {
+    api
+      .scene()
+      .then(setScene)
+      .catch(() =&gt; setScene(null))               <span class="cm">// no overlays yet? the map still works</span>
+      .finally(() =&gt; setReady(true));
+  }, []);
+
+  <span class="cm">// Advance the hour every 0.7 s while "playing"; stop the timer when it turns off.</span>
+  useEffect(() =&gt; {
+    if (!playing) return;
+    const timer = setInterval(() =&gt; setHour((h) =&gt; (h + 1) % 24), 700);<!--B8-->
+    return () =&gt; clearInterval(timer);<!--B8-->
+  }, [playing]);
+
+  function addPlacement(lng, lat) {
+    const next = { id: Date.now(), type: selectedType, lng, lat };
+    setPlacements([...placements, next]);
+  }
+
+  function movePlacement(id, lng, lat) {
+    setPlacements(placements.map((p) =&gt; (p.id === id ? { ...p, lng, lat } : p)));<!--B7-->
+  }
+
+  function removePlacement(id) {
+    setPlacements(placements.filter((p) =&gt; p.id !== id));
+  }
+
+  <span class="cm">// Which PNG the map should show right now. null until Track A's overlays exist.</span>
+  const overlay = scene
+    ? { url: `/overlays/tmrt_${String(hour).padStart(2, "0")}.png`, coordinates: scene.corners }<!--B9-->
+    : null;
+
+  if (!ready) return &lt;p className="loading"&gt;Loading…&lt;/p&gt;;
+
+  return (
+    &lt;div className="app"&gt;
+      &lt;MapArea
+        center={scene ? { lng: scene.center[0], lat: scene.center[1] } : CENTER}
+        overlay={overlay}
+        opacity={opacity}
+        placements={placements}
+        placing={placing}
+        onPlace={addPlacement}
+        onMove={movePlacement}
+      /&gt;
+      &lt;Panel
+        scene={scene}
+        hour={hour}
+        onHour={setHour}
+        playing={playing}
+        onTogglePlay={() =&gt; setPlaying((p) =&gt; !p)}
+        opacity={opacity}
+        onOpacity={setOpacity}
+        types={TYPES}
+        selectedType={selectedType}
+        onSelect={setSelectedType}
+        placing={placing}
+        onTogglePlacing={() =&gt; setPlacing((p) =&gt; !p)}
+        placements={placements}
+        onRemove={removePlacement}
+      /&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+</figure>
+
+      <p>The panel is markup plus props. Nothing in it changes state directly; it calls the functions <code>App</code> handed down. Note the last line: Track B's Results panel simply sits at the bottom.</p>
+
+      <figure class="code" data-file="frontend/src/components/Panel.jsx">
+<pre><code>import ResultPanel from "./ResultPanel";
+
+export default function Panel({
+  scene, hour, onHour, playing, onTogglePlay, opacity, onOpacity,
+  types, selectedType, onSelect, placing, onTogglePlacing, placements, onRemove,
+}) {
+  const hourLabel = scene ? scene.hours[hour].replace("T", " ") : `${String(hour).padStart(2, "0")}:00`;
+
+  return (
+    &lt;aside className="panel"&gt;
+      &lt;header&gt;
+        &lt;h1&gt;Cool Choices&lt;/h1&gt;
+        &lt;p className="muted"&gt;
+          {scene ? `${scene.hours.length} hourly layers loaded` : "no overlay yet - waiting for Track A"}
+        &lt;/p&gt;
+      &lt;/header&gt;
+
+      &lt;section&gt;
+        &lt;h2&gt;Overlay&lt;/h2&gt;
+        &lt;label&gt;
+          Hour · {hourLabel}
+          &lt;div className="row"&gt;
+            &lt;button className="icon" onClick={onTogglePlay} title={playing ? "Pause" : "Play"}&gt;
+              {playing ? "❚❚" : "▶"}
+            &lt;/button&gt;
+            &lt;input type="range" min={0} max={23} step={1} value={hour} onChange={(e) =&gt; onHour(Number(e.target.value))} /&gt;
+          &lt;/div&gt;
+        &lt;/label&gt;
+        &lt;label&gt;
+          Opacity {Math.round(opacity * 100)}%
+          &lt;input type="range" min={0} max={1} step={0.05} value={opacity} onChange={(e) =&gt; onOpacity(Number(e.target.value))} /&gt;
+        &lt;/label&gt;
+        {scene &amp;&amp; (
+          &lt;div className="legend"&gt;
+            &lt;div className="legend-bar" /&gt;
+            &lt;div className="legend-labels"&gt;
+              &lt;span&gt;{scene.vmin}&lt;/span&gt;
+              &lt;span&gt;{scene.label}&lt;/span&gt;
+              &lt;span&gt;{scene.vmax}&lt;/span&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        )}
+      &lt;/section&gt;
+
+      &lt;section&gt;
+        &lt;h2&gt;Tools&lt;/h2&gt;
+        &lt;div className="row"&gt;
+          {types.map((type) =&gt; (
+            &lt;button
+              key={type}
+              className={type === selectedType ? "item selected" : "item"}
+              onClick={() =&gt; onSelect(type)}
+            &gt;
+              {type}
+            &lt;/button&gt;
+          ))}
+        &lt;/div&gt;
+        &lt;button className={placing ? "wide primary" : "wide"} onClick={onTogglePlacing}&gt;
+          {placing ? `Click the map to place a ${selectedType} · done` : `Add ${selectedType}`}
+        &lt;/button&gt;
+
+        &lt;h2&gt;Placed ({placements.length})&lt;/h2&gt;
+        {placements.length === 0 &amp;&amp; &lt;p className="muted small"&gt;Nothing placed yet.&lt;/p&gt;}
+        &lt;ul className="placed"&gt;
+          {placements.map((p, i) =&gt; (
+            &lt;li key={p.id}&gt;
+              &lt;span&gt;#{i + 1} {p.type}&lt;/span&gt;
+              &lt;span className="muted small"&gt;{p.lng.toFixed(5)}, {p.lat.toFixed(5)}&lt;/span&gt;
+              &lt;button onClick={() =&gt; onRemove(p.id)} title="Remove"&gt;×&lt;/button&gt;
+            &lt;/li&gt;
+          ))}
+        &lt;/ul&gt;
+        &lt;p className="muted small"&gt;Drag a marker on the map to move it.&lt;/p&gt;
+      &lt;/section&gt;
+
+      &lt;section&gt;
+        &lt;button className="wide primary" disabled title="Week 6: this sends your placements to the backend"&gt;
+          Run analysis
+        &lt;/button&gt;
+      &lt;/section&gt;
+
+      &lt;ResultPanel /&gt;
+    &lt;/aside&gt;
+  );
+}</code></pre>
+</figure>
+
+      <p>The map has three new ideas. <code>onClick</code> on the map gives you <code>event.lngLat</code>, the coordinates under the cursor; in placing mode that becomes a placement, otherwise the click is ignored. A <code>Marker</code> with <code>draggable</code> fires <code>onDragEnd</code> with its new position, and you write that position back into the array, which is what makes the list update too. And the overlay is a <code>Source</code> of type <code>image</code> plus a raster <code>Layer</code>: an image pinned to four corners. Changing the hour only changes the image URL; Mapbox swaps the picture.</p>
+
+      <figure class="code" data-file="frontend/src/components/MapArea.jsx">
+<pre><code>import "mapbox-gl/dist/mapbox-gl.css";
+import Map, { Marker, Source, Layer } from "react-map-gl/mapbox";
+import { COLORS } from "../config";
+
+const TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
+
+export default function MapArea({ center, overlay, opacity, placements, placing, onPlace, onMove }) {
+  return (
+    &lt;main className="map-area"&gt;
+      &lt;Map
+        mapboxAccessToken={TOKEN}
+        initialViewState={{ ...center, zoom: 15 }}
+        style={{ width: "100%", height: "100%" }}
+        mapStyle="mapbox://styles/mapbox/light-v11"
+        cursor={placing ? "crosshair" : "grab"}
+        onClick={(event) =&gt; {
+          if (!placing) return;                           <span class="cm">// clicks only place things in placing mode</span><!--B10-->
+          onPlace(event.lngLat.lng, event.lngLat.lat);<!--B10-->
+        }}
+      &gt;
+        {overlay &amp;&amp; (
+          &lt;Source id="overlay" type="image" url={overlay.url} coordinates={overlay.coordinates}&gt;
+            &lt;Layer
+              id="overlay-layer"
+              type="raster"
+              paint={{ "raster-opacity": opacity, "raster-fade-duration": 0 }}
+            /&gt;
+          &lt;/Source&gt;
+        )}
+
+        {placements.map((p) =&gt; (
+          &lt;Marker
+            key={p.id}
+            longitude={p.lng}
+            latitude={p.lat}
+            color={COLORS[p.type]}
+            draggable<!--B11-->
+            onDragEnd={(event) =&gt; onMove(p.id, event.lngLat.lng, event.lngLat.lat)}<!--B11-->
+          /&gt;
+        ))}
+      &lt;/Map&gt;
+    &lt;/main&gt;
+  );
+}</code></pre>
+</figure>
+
+      <p>The styles are given. The interesting lines are the first three rules: the map is <code>position: absolute; inset: 0</code> and the panel floats above it.</p>
+
+      <figure class="code" data-file="frontend/src/index.css">
+<pre><code><span class="cm">/* React mounts inside #root, so it needs a height too */</span>
+html, body, #root { height: 100%; }
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  color: #14232b;
+}
+
+<span class="cm">/* the map fills the window; the panel floats on top of it */</span>
+.app { position: relative; height: 100%; }
+.map-area { position: absolute; inset: 0; }
+
+.panel {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  bottom: 12px;
+  width: 340px;
+  overflow-y: auto;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
+}
+
+.panel header h1 { font-size: 17px; margin: 0 0 2px; }
+
+.panel section { border-top: 1px solid #d9d9d9; padding-top: 10px; }
+
+h2 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: #5b6f77;
+  margin: 0 0 8px;
+}
+
+label { display: block; font-size: 13px; margin-bottom: 8px; }
+label &gt; input[type="number"] {
+  display: block;
+  width: 100%;
+  margin-top: 3px;
+  padding: 5px 6px;
+  font: inherit;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+}
+input[type="range"] { width: 100%; margin-top: 4px; }
+
+.row { display: flex; gap: 8px; align-items: center; }
+.row &gt; label, .row &gt; input[type="range"] { flex: 1; }
+
+button {
+  font: inherit;
+  font-size: 13px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  border: 1px solid #d9d9d9;
+  background: #fff;
+  cursor: pointer;
+}
+button:disabled { opacity: .5; cursor: not-allowed; }
+button.wide { width: 100%; margin: 6px 0; padding: 10px; font-weight: 600; }
+button.primary { background: #1f4e79; border-color: #1f4e79; color: #fff; }
+button.icon { padding: 4px 9px; line-height: 1; }
+button.item { flex: 1; }
+button.item.selected { background: #0f8b8d; border-color: #0f8b8d; color: #fff; }
+
+.muted { color: #5b6f77; margin: 0; }
+.small { font-size: 12px; }
+.error { color: #b00020; }
+.loading { padding: 24px; color: #5b6f77; }
+
+.legend-bar {
+  height: 10px;
+  border-radius: 3px;
+  background: linear-gradient(to right, #313695, #74add1, #ffffbf, #f46d43, #a50026);
+}
+.legend-labels { display: flex; justify-content: space-between; font-size: 11px; color: #5b6f77; margin-top: 3px; }
+
+.placed { list-style: none; margin: 0; padding: 0; }
+.placed li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 6px 6px 10px;
+  margin-bottom: 4px;
+  font-size: 13px;
+  background: #fff;
+  border: 1px solid #cbd8dc;
+  border-radius: 3px;
+}
+.placed li button { font-size: 16px; line-height: 1; color: #94a7ae; background: none; border: 0; padding: 0 4px; }
+.placed li button:hover { color: #b4211f; }
+
+.results { padding-top: 10px; }</code></pre>
+</figure>
+
+      <p>If Track B's <code>ResultPanel.jsx</code> has not arrived when you start, create this placeholder so the import resolves, and delete it when theirs lands:</p>
+      <figure class="code" data-file="src/components/ResultPanel.jsx (placeholder)">
+<pre><code>export default function ResultPanel() {
+  return (
+    &lt;section className="results"&gt;
+      &lt;h2&gt;Results&lt;/h2&gt;
+      &lt;p className="muted small"&gt;Track B plugs in here.&lt;/p&gt;
+    &lt;/section&gt;
+  );
+}</code></pre>
+      </figure>
+
+      <h3>The overlay</h3>
+      <p>Put Track A's folder at <code>frontend/public/overlays/</code>. Vite serves everything in <code>public/</code> from the site root, so <code>scene.json</code> is at <a href="http://localhost:5173/overlays/scene.json" target="_blank" rel="noopener">localhost:5173/overlays/scene.json</a>; open that address in the browser to check the file is where the app expects it. No restart needed. The map recentres on Austin, the panel reports <em>24 hourly layers loaded</em>, and the slider walks through the day. Drag it to the night hours and watch the whole scene cool.</p>
+
+      <div class="note">
+        <span class="lbl">Why an image, not a data layer</span>
+        <p>Twenty-four hours of a 500 × 500 grid is six million numbers. Sending them to the browser and colouring each one there is possible, but slow to build and slow to load. Sending 24 small pictures that Python has already coloured is what the prototype does, and it is what your backend will produce in Week 8. The frontend never needs to know what a Tmrt is; it needs a URL and four corners.</p>
+      </div>
+
+      <h3>Try it</h3>
+      <ul>
+        <li>Placing mode off: clicking the map does nothing. On: the cursor is a crosshair and each click adds a row.</li>
+        <li>Place a tree and a shelter; they have different colours.</li>
+        <li>Drag a marker; the numbers in its row change.</li>
+        <li>Press ▶; the hour advances; press again and it stops.</li>
+        <li>Opacity to 0: the overlay vanishes, the markers stay.</li>
+      </ul>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="track-d">
+      <h2><span class="n">06</span> Track D · Decide the features</h2>
+      <hr class="h2-rule">
+      <p>This one is for the whole team, in one sitting, with the prototype screenshot on the table. Right now my prototype site can plant trees and run analysis. What else should it let someone do, and what should it show them? Discuss with your team.</p>
+
+      <h3>Some of the questions to consider:</h3>
+      <ol>
+        <li><strong>Who is the user?</strong> A campus planner? A resident wondering about their street? A student in a class like this one? The answer decides how much explanation the screen needs.</li>
+        <li><strong>What decision does the site support?</strong> "Where would a tree help most" is a different site from "how much cooler does this plaza get with a canopy".</li>
+        <li><strong>Which interventions?</strong> For each one, what does the model need to know? A tree is a canopy height in <code>Trees.tif</code>. A shade shelter is an opaque roof, which is a bump in <code>Building_DSM.tif</code>.</li>
+        <li><strong>What does the user see afterwards?</strong> The difference map? The number of degrees at one point? A curve across the day? Before/after at a chosen hour?</li>
+        <li><strong>Which area?</strong> The prototype uses Austin. Which regions are you interested in?</li>
+      </ol>
+
+      <p>Bring the discussion result to next week's session. Let's discuss together with Dr.Basu and me, and I (Sungho!) will help you to implement the features.</p>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="together">
+      <h2><span class="n">07</span> Put it together</h2>
+      <hr class="h2-rule">
+      <p>After finishing the individual tracks:</p>
+      <ul>
+        <li>The Step 0 <code>cool-choices/</code> folder is the base; Track B's <code>backend/</code> and three frontend files are in it.</li>
+        <li>Track C's five files go into <code>frontend/src/</code>. The only file both B and C might have touched is <code>App.jsx</code>; C's version wins, because it includes B's panel.</li>
+        <li>Track A's <code>overlays/</code> goes into <code>frontend/public/</code>.</li>
+      </ul>
+
+      <p>Then one of you runs the whole thing from a fresh pull, exactly as a stranger would:</p>
+      <figure class="code term" data-file="terminal 1 · backend">
+<pre><code>conda activate solweig-light
+cd cool-choices/backend
+uvicorn app.main:app --reload --port 8000</code></pre>
+      </figure>
+      <figure class="code term" data-file="terminal 2 · frontend">
+<pre><code>cd cool-choices/frontend
+npm install
+npm run dev</code></pre>
+      </figure>
+
+      <p>Open <code>localhost:5173</code>. Overlay at 14:00, two markers placed, 6 × 7 = 42 in the Results panel. Screenshot that screen; it is your Week 5.</p>
+
+      <figure class="code term" data-file="terminal">
+<pre><code>git add .
+git commit -m "Week 5 Final Update"
+git push</code></pre>
+      </figure>
+    </section>
+
+    <!-- ============================================ -->
+
+    <nav class="weeknav">
+      <a href="week04.html"><span class="dir">Previous</span><span class="ttl">React and the map</span></a>
+      <a class="next" href="index.html"><span class="dir">Next week</span><span class="ttl">The backend gets a job queue</span></a>
+    </nav>
+
+  </main>
+</div>
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>
