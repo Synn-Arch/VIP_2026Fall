@@ -89,6 +89,15 @@ the map switches to /api/jobs/3f9a1c2e77b0/tmrt_diff_14.png</code></pre>
     <section id="model">
       <h2><span class="n">02</span> Get the website's model</h2>
       <hr class="h2-rule">
+      <h3>Why install it on your own laptop?</h3>
+      <p>A website that runs a model needs a computer that actually runs the model: the <strong>server</strong>. Visitors' browsers only receive the page and the finished pictures; SOLWEIG-light itself runs on the server. When a site is deployed, the server gets the model installed automatically, from the same link you will use below. Until then, your own laptop plays the server, so your laptop needs the model too.</p>
+
+      <div class="note">
+        <span class="lbl">Why not on the web yet?</span>
+        <p>We cannot deploy to the web just yet. My prototype runs on a server I pay for myself. I have asked CURA for access to a free server we can use, and that will take a little while. So for now, let's build the website locally. (This is how it is usually done anyway: you build and test on your own computer first, and put it on the web once it works.)</p>
+      </div>
+
+      <h3>Install it</h3>
       <p>As promised, SOLWEIG-light got its update: the version that runs the Cool Choices website is faster and checks memory before it starts. It is the same model with the same results, and the same <code>thermal_comfort(...)</code> you called in Week 5, so your Week 5 scripts keep working. Everyone installs it once, into the <code>solweig-light</code> environment from Week 5. It replaces the old version there.</p>
 
       <p>It is published as <strong><a href="https://github.com/Synn-Arch/VIP_2026Fall/releases/download/solweiglight/solweig-light-web.zip">solweig-light-web.zip</a></strong> (click this link if you want to download it) on our course GitHub, and pip can install it straight from that link:</p>
