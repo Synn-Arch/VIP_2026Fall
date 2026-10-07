@@ -1,0 +1,2560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Week 7 — Tree sizes and your own features</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">Cool Choices · Tutorials</a>
+    <div class="ticks">
+      <span class="tick done"></span><span class="tick done"></span><span class="tick done"></span><span class="tick done"></span>
+      <span class="tick done"></span><span class="tick done"></span><span class="tick now"></span><span class="tick"></span>
+      <span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
+      <span class="tick"></span><span class="tick"></span>
+    </div>
+    <span class="ticks-label">Week 7 of 14</span>
+  </div>
+</header>
+
+<div class="shell">
+<div class="layout">
+
+  <nav class="spine" aria-label="On this page">
+    <p class="spine-title">This week</p>
+    <ol>
+      <li><a href="#flow">What happens on Run</a></li>
+      <li><a href="#model">Get the website's model</a></li>
+      <li><a href="#split">Who does what</a></li>
+      <li><a href="#backend">The backend</a></li>
+      <li><a href="#frontend">The frontend</a></li>
+      <li><a href="#local">Run it on your laptop</a></li>
+      <li><a href="#together">Put it together</a></li>
+      <li><a href="#sizes">New · Tree sizes</a></li>
+      <li><a href="#features">New · Features and layout</a></li>
+    </ol>
+  </nav>
+
+  <main class="content">
+
+    <div class="page-head">
+      <p class="eyebrow">Week 7 · Oct 6 – Oct 12</p>
+      <h1>Tree sizes and your own features</h1>
+      <div class="note">
+        <span class="lbl">Read this first</span>
+        <p>This page is exactly the same as Week 6 from section 01 to 07. Only the end is new: <strong>section 08</strong> (choosing tree sizes) and <strong>section 09</strong> (your features and layout, for the midterm), plus a few new entries in When it breaks. If you finished Week 6, jump straight to <a href="#sizes">section 08</a>!</p>
+      </div>
+      <p class="dek">Last week you built the pieces. This week the site does the real thing from start to finish: place trees, press <strong>Run analysis</strong>, watch a progress bar while SOLWEIG-light runs on your laptop, and see the result replace the baseline on the map. Everything runs locally: two terminals and the <code>localhost</code> address that <code>npm</code> gives you. No deployment yet.</p>
+    </div>
+
+    <div class="goals">
+      <h2>Week 6 Tasks</h2>
+      <ul>
+        <li>Install the website's version of SOLWEIG-light and run the whole project on your laptop: backend and frontend in two terminals, opened at the address <code>npm run dev</code> prints</li>
+        <li>Make your site look and work like the Cool Choices prototype: TMRT and UTCI, Baseline / Scenario / Difference layers, hourly statistics, trees placed on the map</li>
+        <li><strong>Run analysis → progress bar → the result replaces the baseline</strong>, with the backend planting your trees and running the real model</li>
+        <li><strong>New:</strong> let people choose each tree's height and crown size, like the prototype</li>
+        <li><strong>New:</strong> pick two or three features from your ideas, specify them in detail, and sketch the screen for the midterm</li>
+      </ul>
+    </div>
+
+    <!-- ============================================ -->
+    <section id="flow">
+      <h2><span class="n">01</span> What happens when you press Run</h2>
+      <hr class="h2-rule">
+      <p>In Week 5, the Results panel sent two numbers and waited one second for the answer. That works because one second is short. SOLWEIG takes <strong>minutes</strong>. A browser request that hangs for minutes is fragile, and while it hangs you cannot tell the user anything. So the real site, and yours from this week, splits the wait into small questions:</p>
+
+      <figure class="code" data-file="the conversation">
+<pre><code>browser                                   backend
+───────                                   ───────
+POST /api/jobs   {trees: [{lng, lat}, ...]}  →
+                                       ←  202  {id: "3f9a1c2e77b0", status: "queued"}
+                                          (plants the trees, starts SOLWEIG-light)
+GET  /api/jobs/3f9a1c2e77b0           →
+                                       ←  {status: "running", phase: "simulating", timesteps_done: 9}
+GET  /api/jobs/3f9a1c2e77b0           →   ... every 2 seconds ...
+                                       ←  {status: "done", result: {hourly statistics}}
+the map switches to /api/jobs/3f9a1c2e77b0/tmrt_diff_14.png</code></pre>
+      </figure>
+
+      <p>The first answer is a <strong>job id</strong>, not a result. After that the browser asks "how far are you?" every two seconds and moves the progress bar. When the answer is <code>done</code>, the map shows the new pictures and the panel the new numbers. This is exactly what the prototype does.</p>
+
+      <p>Behind <code>POST /api/jobs</code> the backend does what you did by hand in Week 5: copy the inputs into a fresh folder, raise the canopy in <code>Trees.tif</code> where each tree was placed, run SOLWEIG-light, and turn <code>TMRT_0_0.tif</code> and <code>UTCI_0_0.tif</code> into hourly PNGs, plus a <strong>difference</strong> picture against the baseline for every hour.</p>
+
+      <p>By the end of this week your site should look and behave like the prototype from Week 5: Variable (TMRT or UTCI), Layer (Baseline, Scenario, Difference), opacity, the hour slider, the statistics, the tree list and the Run button. One thing is simpler on purpose: every tree is the same size for now. Choosing tree sizes comes next week.</p>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="model">
+      <h2><span class="n">02</span> Get the website's model</h2>
+      <hr class="h2-rule">
+      <h3>Why install it on your own laptop?</h3>
+      <p>A website that runs a model needs a computer that actually runs the model: the <strong>server</strong>. Visitors' browsers only receive the page and the finished pictures; SOLWEIG-light itself runs on the server. When a site is deployed, the server gets the model installed automatically, from the same link you will use below. Until then, your own laptop plays the server, so your laptop needs the model too.</p>
+
+      <div class="note">
+        <span class="lbl">Why not on the web yet?</span>
+        <p>We cannot deploy to the web just yet. My prototype runs on a server I pay for myself. I have asked CURA for access to a free server we can use, and that will take a little while. So for now, let's build the website locally. (This is how it is usually done anyway: you build and test on your own computer first, and put it on the web once it works.)</p>
+      </div>
+
+      <h3>Install it</h3>
+      <p>As promised, SOLWEIG-light got its update: the version that runs the Cool Choices website is faster and checks memory before it starts. It is the same model with the same results, and the same <code>thermal_comfort(...)</code> you called in Week 5, so your Week 5 scripts keep working. Everyone installs it once, into the <code>solweig-light</code> environment from Week 5. It replaces the old version there.</p>
+
+      <p>It is published as <strong><a href="https://github.com/Synn-Arch/VIP_2026Fall/releases/download/solweiglight/solweig-light-web.zip">solweig-light-web.zip</a></strong> (click this link if you want to download it) on our course GitHub, and pip can install it straight from that link:</p>
+
+      <figure class="code term" data-file="terminal">
+<pre><code>conda activate solweig-light
+pip install --force-reinstall --no-deps https://github.com/Synn-Arch/VIP_2026Fall/releases/download/solweiglight/solweig-light-web.zip
+python -c "import solweig_light.runtime_phases; print('website model ok')"</code></pre>
+      </figure>
+
+      <p>The last line must print <code>website model ok</code>. <code>--no-deps</code> keeps every other package exactly as it is, which matters for GDAL: pip must not try to rebuild it. If the download fails on your network, download the zip from the link above (do not unzip it) and give pip the file instead: <code>pip install --force-reinstall --no-deps ~/Downloads/solweig-light-web.zip</code>.</p>
+
+      <div class="note">
+        <span class="lbl">The first run is slower</span>
+        <p>Like in Week 5, the model compiles its numerical kernels the first time it runs after an install, which adds a minute or more. They are cached after that.</p>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="split">
+      <h2><span class="n">03</span> Who does what</h2>
+      <hr class="h2-rule">
+      <p>Two halves. Split them like last week, or build them in order together if there are only a few of you. Everything you need, including the code, is below.</p>
+
+      <table style="width:100%;border-collapse:collapse;font-size:0.96rem;margin:16px 0 22px">
+        <tr style="background:#E8EAED">
+          <th style="text-align:left;padding:9px 12px;border:1px solid #CBD8DC;font-family:var(--font-display);font-size:0.86rem">Piece</th>
+          <th style="text-align:left;padding:9px 12px;border:1px solid #CBD8DC;font-family:var(--font-display);font-size:0.86rem">Files</th>
+          <th style="text-align:left;padding:9px 12px;border:1px solid #CBD8DC;font-family:var(--font-display);font-size:0.86rem">Done when</th>
+        </tr>
+        <tr>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC"><strong>Backend</strong> · model, pictures, jobs</td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC"><code>backend/scene/</code>, <code>backend/app/model.py</code>, <code>render.py</code>, <code>baseline.py</code>, <code>jobs.py</code>, <code>main.py</code>, <code>requirements.txt</code></td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC"><code>python -m app.baseline</code> finishes, and in <code>/docs</code> a POST returns a job that reaches <code>done</code></td>
+        </tr>
+        <tr style="background:#F7F8F9">
+          <td style="padding:9px 12px;border:1px solid #CBD8DC"><strong>Frontend</strong> · the prototype's screen</td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC"><code>frontend/src/api.js</code>, <code>App.jsx</code>, <code>components/MapArea.jsx</code>, <code>components/Panel.jsx</code>, <code>index.css</code></td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC">The screen looks like the prototype, and Run analysis ends on the Difference layer with statistics</td>
+        </tr>
+      </table>
+
+      <p>The two halves meet at the API, so agree on it first: the conversation in section 01 is the contract. The frontend shows "Loading scene…" or an error until the backend answers, and that is fine while you build it.</p>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="backend">
+      <h2><span class="n">04</span> The backend</h2>
+      <hr class="h2-rule">
+
+      <h3>The scene folder</h3>
+      <p>The backend runs the model itself now, the baseline included, so it needs the inputs. Make a folder <code>backend/scene/</code> and copy four files into it from Track A's Week 5 folder: <code>Building_DSM.tif</code>, <code>DEM.tif</code> and <code>Trees.tif</code> from <code>Input_subset_light/</code>, and <code>ownmet_Forcing_data.txt</code>. Only those four, not <code>processed_inputs/</code> or <code>output_folder/</code>. Commit them: they are small, and everyone's backend needs them.</p>
+
+      <figure class="code" data-file="folder">
+<pre><code>cool-choices/
+├── backend/
+│   ├── app/
+│   │   ├── __init__.py
+│   │   ├── calc.py          ← Week 5, unchanged
+│   │   ├── model.py         ← copy the scene, plant trees, run SOLWEIG-light (new)
+│   │   ├── render.py        ← PNGs, differences, statistics (new)
+│   │   ├── baseline.py      ← computes the baseline once (new)
+│   │   ├── jobs.py          ← one run at a time, in the background (new)
+│   │   └── main.py          ← the API (replace)
+│   ├── scene/               ← the four input files (new, committed)
+│   ├── data/                ← baseline and runs, made by the backend (git-ignored)
+│   └── requirements.txt
+├── frontend/
+└── docs/</code></pre>
+      </figure>
+
+      <div class="note">
+        <span class="lbl">Week 5's overlays retire</span>
+        <p>The baseline PNGs now come from the backend, for both TMRT and UTCI, with the same colours as every run. <code>frontend/public/overlays/</code> from Week 5 is no longer used; you can delete it.</p>
+      </div>
+
+      <h3>model.py · running SOLWEIG-light (new)</h3>
+      <p>Week 5's <code>run_light.py</code>, cut into small functions that the baseline and every run share. <code>scene_info</code> works out the four corners in longitude/latitude for the map, <code>inside</code> checks a tree is within the scene, <code>plant_trees</code> raises the canopy to <code>TREE_HEIGHT</code> inside <code>CROWN_RADIUS</code> around each tree, and <code>run_solweig</code> is the same call as Week 5. The last two functions let the progress bar follow the model: it writes a file when the sky view step is done, and another after every hour.</p>
+      <figure class="code" data-file="backend/app/model.py">
+<pre><code>"""Running SOLWEIG-light on the scene: copy it, plant the trees, run the model.
+
+Exactly the steps you did by hand with Week 5's scripts. Used for the baseline
+(no trees added) and for every Run analysis.
+"""
+import json
+import os
+import shutil
+from pathlib import Path
+
+import numpy as np
+from osgeo import gdal, osr
+
+from solweig_light import RuntimeOptions, runtime_options, thermal_comfort
+
+gdal.UseExceptions()
+osr.UseExceptions()
+
+BACKEND = Path(__file__).resolve().parent.parent
+SCENE = BACKEND / "scene"                    <span class="cm"># the inputs: three rasters + the met file</span>
+DATA = BACKEND / "data"                      <span class="cm"># everything the backend makes (git-ignored)</span>
+BASELINE = DATA / "baseline"
+JOBS = DATA / "jobs"
+
+RASTERS = ["Building_DSM.tif", "DEM.tif", "Trees.tif"]
+MET = "ownmet_Forcing_data.txt"
+DATE = "2020-08-13"
+
+TREE_HEIGHT = 12.0                           <span class="cm"># metres; every tree is the same for now</span>
+CROWN_RADIUS = 4.0                           <span class="cm"># metres</span>
+MAX_TREES = 200
+THREADS = min(4, os.cpu_count() or 1)
+MEMORY_BUDGET = 6 * 1024**3                  <span class="cm"># SOLWEIG-light checks a run fits in this; plenty for 500 x 500</span>
+
+
+<span class="cm"># --- where the scene is --------------------------------------------------------</span>
+def _transform(ds, to_lonlat):
+    native = osr.SpatialReference()
+    native.ImportFromWkt(ds.GetProjection())
+    wgs84 = osr.SpatialReference()
+    wgs84.ImportFromEPSG(4326)
+    for srs in (native, wgs84):
+        srs.SetAxisMappingStrategy(osr.OAMS_TRADITIONAL_GIS_ORDER)     <span class="cm"># always x=lon, y=lat</span>
+    return osr.CoordinateTransformation(native, wgs84) if to_lonlat else osr.CoordinateTransformation(wgs84, native)
+
+
+def scene_info():
+    """Size, pixel size and the four corners in longitude/latitude (Mapbox order: TL, TR, BR, BL)."""
+    ds = gdal.Open(str(SCENE / "Building_DSM.tif"))
+    gt, rows, cols = ds.GetGeoTransform(), ds.RasterYSize, ds.RasterXSize
+    to_lonlat = _transform(ds, True)
+
+    def corner(col, row):
+        lon, lat, _ = to_lonlat.TransformPoint(gt[0] + col * gt[1], gt[3] + row * gt[5])
+        return [lon, lat]
+
+    corners = [corner(0, 0), corner(cols, 0), corner(cols, rows), corner(0, rows)]
+    return {"rows": rows, "cols": cols, "pixel_size_m": abs(gt[1]), "corners": corners,
+            "center": [sum(c[0] for c in corners) / 4, sum(c[1] for c in corners) / 4]}
+
+
+def to_pixel(ds, lng, lat):
+    """Longitude/latitude -&gt; (col, row) in the raster, or None if it is nowhere near."""
+    try:
+        x, y, _ = _transform(ds, False).TransformPoint(lng, lat)
+    except RuntimeError:                     <span class="cm"># outside the map projection's area altogether</span>
+        return None
+    gt = ds.GetGeoTransform()                <span class="cm"># north-up raster: no rotation terms</span>
+    return (x - gt[0]) / gt[1], (y - gt[3]) / gt[5]
+
+
+def inside(lng, lat):
+    ds = gdal.Open(str(SCENE / "Building_DSM.tif"))
+    pixel = to_pixel(ds, lng, lat)
+    return pixel is not None and 0 &lt;= pixel[0] &lt; ds.RasterXSize and 0 &lt;= pixel[1] &lt; ds.RasterYSize
+
+
+<span class="cm"># --- one run ---------------------------------------------------------------------</span>
+def copy_scene(work):
+    """A fresh copy for every run: the model caches sky view per folder, and trees change it."""
+    work.mkdir(parents=True)
+    for name in RASTERS + [MET]:
+        shutil.copy(SCENE / name, work / name)
+
+
+def plant_trees(work, trees):
+    """Raise the canopy to TREE_HEIGHT inside a disc around every tree. Returns pixels changed."""
+    ds = gdal.Open(str(work / "Trees.tif"), gdal.GA_Update)
+    band = ds.GetRasterBand(1)
+    canopy = band.ReadAsArray().astype("float32")
+    rows, cols = canopy.shape
+    row_idx, col_idx = np.mgrid[0:rows, 0:cols]
+    radius_px = CROWN_RADIUS / abs(ds.GetGeoTransform()[1])
+    before = canopy.copy()
+    for tree in trees:
+        col, row = to_pixel(ds, tree["lng"], tree["lat"])
+        disc = (col_idx + 0.5 - col) ** 2 + (row_idx + 0.5 - row) ** 2 &lt;= radius_px ** 2
+        canopy[disc] = np.maximum(canopy[disc], TREE_HEIGHT)
+    band.WriteArray(canopy)
+    ds = None                                <span class="cm"># closing the file writes it to disk</span>
+    return int((canopy != before).sum())
+
+
+def run_solweig(work):
+    """The same call as Week 5's run_light.py. Writes work/output_folder/0_0/TMRT_0_0.tif and UTCI_0_0.tif."""
+    options = RuntimeOptions(memory_budget_bytes=MEMORY_BUDGET, cpu_budget=THREADS,
+                             threads_per_worker=THREADS, block_pixels=1024)
+    with runtime_options(options):
+        thermal_comfort(
+            base_path=str(work),
+            selected_date_str=DATE,
+            building_dsm_filename="Building_DSM.tif",
+            dem_filename="DEM.tif",
+            trees_filename="Trees.tif",
+            landcover_filename=None,
+            tile_size=600,
+            overlap=20,
+            use_own_met=True,
+            own_met_file=str(work / MET),
+            save_tmrt=True,
+        )
+
+
+def output(work, var):
+    return work / "output_folder" / "0_0" / f"{var.upper()}_0_0.tif"
+
+
+<span class="cm"># --- progress ------------------------------------------------------------------------</span>
+def geometry_done(work):
+    """The sky view step is finished once its shadow file exists."""
+    return (work / "processed_inputs" / "SVF" / "shadowmats_0_0.npz").exists()
+
+
+def hours_done(work):
+    """SOLWEIG-light records each finished hour in a small JSON file; count them."""
+    best = 0
+    for record in (work / ".solweig-light" / "transactions").glob("*/transaction.json"):
+        try:
+            hashes = json.loads(record.read_text())["checkpoint"]["band_hashes"]
+            best = max([best] + [len(v) for v in hashes.values()])
+        except (OSError, KeyError, ValueError, TypeError):
+            continue                         <span class="cm"># being written right now; try again next time</span>
+    return best</code></pre>
+      </figure>
+
+      <h3>render.py · pictures and numbers (new)</h3>
+      <p>For each variable and hour it draws a PNG with a fixed colour range, so baseline and scenario can be compared picture to picture. With a baseline given, it also draws the difference (scenario minus baseline, green where it got cooler) and counts the pixels that changed by more than half a degree. Everything else the panel shows comes from <code>result.json</code>.</p>
+      <figure class="code" data-file="backend/app/render.py">
+<pre><code>"""Turn the 24-band TMRT and UTCI rasters into hourly PNGs, differences and statistics.
+
+Fixed colour ranges, so baseline and scenario pictures can be compared hour by hour.
+"""
+import json
+
+import numpy as np
+from osgeo import gdal
+from PIL import Image
+
+gdal.UseExceptions()
+
+VARIABLES = {
+    "tmrt": {"label": "Mean radiant temperature (°C)", "vmin": 20.0, "vmax": 75.0},
+    "utci": {"label": "UTCI (°C)", "vmin": 10.0, "vmax": 50.0},
+}
+DIFF_RANGE = 15.0                            <span class="cm"># ± °C for scenario minus baseline</span>
+CHANGE_THRESHOLD_C = 0.5                     <span class="cm"># |scenario - baseline| above this counts as a changed pixel</span>
+
+<span class="cm"># Sequential ramp (cool blue -&gt; warm red) and diverging ramp (green = cooler, purple = warmer).</span>
+SEQ = np.array([[59, 76, 192], [131, 178, 251], [221, 220, 219], [240, 140, 97], [180, 4, 38]], float)
+DIV = np.array([[0, 109, 44], [161, 217, 155], [247, 247, 247], [194, 165, 207], [118, 42, 131]], float)
+
+
+def ramp(stops, t):
+    """Colour each value 0..1 by blending between the two nearest colour stops."""
+    t = np.clip(t, 0.0, 1.0) * (len(stops) - 1)
+    i = np.clip(np.floor(t).astype(int), 0, len(stops) - 2)
+    f = (t - i)[..., None]
+    return (stops[i] * (1 - f) + stops[i + 1] * f).astype(np.uint8)
+
+
+def write_png(rgb, valid, path):
+    alpha = np.where(valid, 255, 0).astype(np.uint8)          <span class="cm"># buildings (no value) become transparent</span>
+    Image.fromarray(np.dstack([rgb, alpha]), "RGBA").save(path)
+
+
+def read_bands(path):
+    """(rows, cols, 24) array and the 'Time' of each band."""
+    ds = gdal.Open(str(path))
+    data = np.moveaxis(ds.ReadAsArray().astype(np.float32), 0, -1)
+    times = [ds.GetRasterBand(i + 1).GetMetadataItem("Time") or f"{i:02d}:00" for i in range(ds.RasterCount)]
+    return data, times
+
+
+def hourly_stats(data):
+    """Scene mean/min/max per hour, ignoring the empty building pixels."""
+    hours = range(data.shape[-1])
+    return {
+        "mean": [float(np.nanmean(data[..., h])) for h in hours],
+        "min": [float(np.nanmin(data[..., h])) for h in hours],
+        "max": [float(np.nanmax(data[..., h])) for h in hours],
+    }
+
+
+def render_run(outputs, out_dir, baseline_dir=None):
+    """PNGs for every variable and hour; with a baseline also the differences. Returns the summary.
+
+    outputs: {"tmrt": path to TMRT_0_0.tif, "utci": path to UTCI_0_0.tif}
+    """
+    out_dir.mkdir(parents=True, exist_ok=True)
+    summary = {"hours": None, "variables": {}}
+    for var, spec in VARIABLES.items():
+        data, summary["hours"] = read_bands(outputs[var])
+        for h in range(data.shape[-1]):
+            band = data[..., h]
+            t = (band - spec["vmin"]) / (spec["vmax"] - spec["vmin"])
+            write_png(ramp(SEQ, np.nan_to_num(t)), np.isfinite(band), out_dir / f"{var}_{h:02d}.png")
+        entry = {"stats": hourly_stats(data)}
+
+        if baseline_dir is None:
+            np.save(out_dir / f"{var}.npy", data)                <span class="cm"># kept so every run can be compared with it</span>
+        else:
+            diff = data - np.load(baseline_dir / f"{var}.npy")
+            for h in range(diff.shape[-1]):
+                band = diff[..., h]
+                t = (band + DIFF_RANGE) / (2 * DIFF_RANGE)
+                write_png(ramp(DIV, np.nan_to_num(t, nan=0.5)), np.isfinite(band), out_dir / f"{var}_diff_{h:02d}.png")
+            entry["diff_stats"] = hourly_stats(diff)
+            entry["changed_pixels"] = [int(np.sum(np.abs(diff[..., h]) &gt; CHANGE_THRESHOLD_C)) for h in range(diff.shape[-1])]
+        summary["variables"][var] = entry
+
+    (out_dir / "result.json").write_text(json.dumps(summary, indent=1))
+    return summary</code></pre>
+      </figure>
+
+      <h3>baseline.py · the baseline, once (new)</h3>
+      <figure class="code" data-file="backend/app/baseline.py">
+<pre><code>"""Compute the baseline (the scene as it is, no trees added). Run once, from backend/:
+
+    python -m app.baseline
+
+It takes as long as one Run analysis. Use --force to compute it again after
+changing the scene.
+"""
+import json
+import shutil
+import sys
+import time
+
+from . import model, render
+
+
+def main(force=False):
+    if (model.BASELINE / "result.json").exists() and not force:
+        print(f"baseline already there: {model.BASELINE}  (use --force to redo it)")
+        return
+    work = model.DATA / "baseline_scene"
+    shutil.rmtree(work, ignore_errors=True)
+    shutil.rmtree(model.BASELINE, ignore_errors=True)
+    model.copy_scene(work)
+
+    print("running SOLWEIG-light on the baseline scene ...")
+    started = time.perf_counter()
+    model.run_solweig(work)
+    seconds = time.perf_counter() - started
+
+    print(f"model finished in {seconds:.0f} s; drawing the PNGs")
+    render.render_run({var: model.output(work, var) for var in render.VARIABLES}, model.BASELINE)
+    (model.BASELINE / "meta.json").write_text(json.dumps({"model_seconds": seconds}))
+    shutil.rmtree(work)
+    print(f"done: {model.BASELINE}")
+
+
+if __name__ == "__main__":
+    main(force="--force" in sys.argv)</code></pre>
+      </figure>
+
+      <h3>jobs.py · one run at a time (new)</h3>
+      <p>A dictionary of jobs and a single worker thread that takes them off a queue. The thread is what lets <code>POST /api/jobs</code> answer immediately while the model carries on. There is only one, on purpose: the model uses every core it is given, so two runs at once would each take twice as long. The lock is there because the web server reads a job at the same moment the worker updates it.</p>
+      <figure class="code" data-file="backend/app/jobs.py">
+<pre><code>"""Job bookkeeping: a dictionary in memory and ONE worker thread.
+
+The model uses every core it is given, so runs go one at a time: a second Run
+waits in the queue until the first is finished.
+
+Everything here is lost when the server restarts, and `--reload` restarts it
+every time you save a backend .py file. Fine for now; the deployed site keeps jobs on disk.
+"""
+import json
+import queue
+import shutil
+import threading
+import time
+import uuid
+
+from . import model, render
+
+_jobs = {}                      <span class="cm"># job id -&gt; job dictionary</span>
+_lock = threading.Lock()        <span class="cm"># the web server and the worker thread both touch _jobs</span>
+_queue = queue.Queue()          <span class="cm"># job ids waiting for the worker</span>
+
+
+def submit(trees):
+    job_id = uuid.uuid4().hex[:12]
+    job = {
+        "id": job_id,
+        "status": "queued",     <span class="cm"># queued -&gt; running -&gt; done | failed</span>
+        "phase": "queued",      <span class="cm"># preparing -&gt; geometry -&gt; simulating -&gt; rendering -&gt; done</span>
+        "trees": trees,
+        "created": time.time(),
+        "started": None,
+        "finished": None,
+        "timesteps_done": 0,
+        "timesteps_total": 24,
+        "changed_pixels": 0,
+        "result": None,
+        "error": None,
+    }
+    with _lock:
+        _jobs[job_id] = job
+    _queue.put(job_id)          <span class="cm"># the request returns right away; the worker picks it up</span>
+    return get(job_id)
+
+
+def get(job_id):
+    """The job as the browser sees it: a copy, with times and queue position worked out."""
+    with _lock:
+        if job_id not in _jobs:
+            return None
+        job = dict(_jobs[job_id])
+        waiting = sorted((j["created"], j["id"]) for j in _jobs.values() if j["status"] == "queued")
+    job["queue_position"] = next((i for i, (_, jid) in enumerate(waiting) if jid == job_id), 0)
+    job["elapsed_seconds"] = round((job["finished"] or time.time()) - job["started"], 1) if job["started"] else 0.0
+    job["expected_seconds"] = expected_seconds()
+    return job
+
+
+def expected_seconds():
+    """How long the baseline took; a fair guess for one run."""
+    try:
+        return json.loads((model.BASELINE / "meta.json").read_text())["model_seconds"]
+    except (OSError, ValueError, KeyError):
+        return None
+
+
+def _update(job_id, **changes):
+    with _lock:
+        _jobs[job_id].update(changes)
+
+
+def _run(job_id):
+    folder = model.JOBS / job_id
+    work = folder / "scene"
+    _update(job_id, status="running", phase="preparing", started=time.time())
+    model.copy_scene(work)
+    changed = model.plant_trees(work, get(job_id)["trees"])
+    _update(job_id, phase="geometry", changed_pixels=changed)
+
+    <span class="cm"># The model gives no progress callback, so a helper thread looks at its files once a second.</span>
+    finished = threading.Event()
+
+    def watch():
+        while not finished.wait(1.0):
+            if model.geometry_done(work):
+                _update(job_id, phase="simulating", timesteps_done=model.hours_done(work))
+
+    threading.Thread(target=watch, daemon=True).start()
+    try:
+        model.run_solweig(work)
+    finally:
+        finished.set()
+
+    _update(job_id, phase="rendering", timesteps_done=24)
+    outputs = {var: model.output(work, var) for var in render.VARIABLES}
+    summary = render.render_run(outputs, folder / "result", model.BASELINE)
+    shutil.rmtree(work)                      <span class="cm"># the PNGs are all we keep; the rest is tens of MB</span>
+    _update(job_id, status="done", phase="done", finished=time.time(), result=summary)
+
+
+def _worker():
+    while True:
+        job_id = _queue.get()                <span class="cm"># sleeps until there is work</span>
+        try:
+            _run(job_id)
+        except Exception as error:           <span class="cm"># any crash becomes a readable "failed" job</span>
+            _update(job_id, status="failed", phase="failed", finished=time.time(),
+                    error=f"{type(error).__name__}: {error}")
+
+
+threading.Thread(target=_worker, daemon=True).start()</code></pre>
+      </figure>
+
+      <h3>main.py · the API (replace)</h3>
+      <p>The Week 5 routes stay at the top. Then: the scene, the baseline statistics, starting and checking a run, and the PNGs. The last two routes only hand out names like <code>tmrt_14.png</code> or <code>utci_diff_09.png</code>, so nobody can ask the server for any other file on your computer.</p>
+      <figure class="code" data-file="backend/app/main.py">
+<pre><code>"""FastAPI service. Start it from the backend/ folder:
+
+    python -m app.baseline                       <span class="cm"># once, before the first start</span>
+    uvicorn app.main:app --reload --port 8000
+
+Then open http://localhost:8000/docs - FastAPI writes the documentation and a
+"Try it out" form for every route from the type hints below.
+"""
+import json
+import re
+import time
+from typing import Literal
+
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
+from pydantic import BaseModel, Field
+
+from . import jobs, model, render
+from .calc import OPERATIONS
+
+app = FastAPI(title="Cool Choices API")
+SCENE = model.scene_info()                   <span class="cm"># read once at start-up: size and corners never change</span>
+
+
+<span class="cm"># ---- Week 5 ---------------------------------------------------------------------</span>
+class CalcRequest(BaseModel):
+    """What the browser must send. Anything else is rejected with a 422 before our code runs."""
+    a: float
+    b: float
+    op: Literal["add", "multiply"]
+
+
+@app.get("/api/health")
+def health():
+    return {"ok": True}
+
+
+@app.post("/api/calc")
+def calc(request: CalcRequest):
+    time.sleep(1.0)
+    return {"op": request.op, "a": request.a, "b": request.b,
+            "result": OPERATIONS[request.op](request.a, request.b)}
+
+
+<span class="cm"># ---- the scene and the baseline -----------------------------------------------------</span>
+def baseline_ready():
+    return (model.BASELINE / "result.json").exists()
+
+
+@app.get("/api/scene")
+def get_scene():
+    """Where the scene is, the colour ranges, and whether the baseline exists yet."""
+    return {
+        **SCENE,
+        "date": model.DATE,
+        "variables": render.VARIABLES,
+        "diff_range": render.DIFF_RANGE,
+        "change_threshold_c": render.CHANGE_THRESHOLD_C,
+        "baseline_ready": baseline_ready(),
+        "baseline_model_seconds": jobs.expected_seconds(),
+        "max_trees": model.MAX_TREES,
+        "crown_radius_m": model.CROWN_RADIUS,
+    }
+
+
+@app.get("/api/baseline")
+def get_baseline():
+    """Hour labels and hourly statistics of the baseline."""
+    if not baseline_ready():
+        raise HTTPException(503, "baseline not computed yet - run: python -m app.baseline")
+    return json.loads((model.BASELINE / "result.json").read_text())
+
+
+<span class="cm"># ---- runs ------------------------------------------------------------------------------</span>
+class Tree(BaseModel):
+    lng: float
+    lat: float
+
+
+class RunRequest(BaseModel):
+    trees: list[Tree] = Field(max_length=model.MAX_TREES)
+
+
+@app.post("/api/jobs", status_code=202)
+def create_job(request: RunRequest):
+    """Start an analysis. Answers at once with the job; the work continues in the background."""
+    if not baseline_ready():
+        raise HTTPException(503, "baseline not computed yet - run: python -m app.baseline")
+    if not request.trees:
+        raise HTTPException(400, "place at least one tree before running")
+    outside = [t for t in request.trees if not model.inside(t.lng, t.lat)]
+    if outside:
+        raise HTTPException(400, f"{len(outside)} tree(s) fall outside the scene extent")
+    return jobs.submit([t.model_dump() for t in request.trees])
+
+
+@app.get("/api/jobs/{job_id}")
+def get_job(job_id: str):
+    """How far along is it? The browser asks this every two seconds."""
+    job = jobs.get(job_id)
+    if job is None:
+        raise HTTPException(404, "unknown job - did the backend restart? Press Run analysis again.")
+    return job
+
+
+<span class="cm"># ---- pictures -----------------------------------------------------------------------------</span>
+PNG = re.compile(r"(tmrt|utci)(_diff)?_\d\d\.png")       <span class="cm"># only these names, so nobody can ask for other files</span>
+
+
+@app.get("/api/baseline/{name}")
+def baseline_png(name: str):
+    path = model.BASELINE / name
+    if not PNG.fullmatch(name) or not path.is_file():
+        raise HTTPException(404)
+    return FileResponse(path)
+
+
+@app.get("/api/jobs/{job_id}/{name}")
+def job_png(job_id: str, name: str):
+    path = model.JOBS / job_id / "result" / name
+    if not re.fullmatch(r"[0-9a-f]{12}", job_id) or not PNG.fullmatch(name) or not path.is_file():
+        raise HTTPException(404)
+    return FileResponse(path)</code></pre>
+      </figure>
+
+      <p>The PNGs are written with Pillow:</p>
+      <figure class="code" data-file="backend/requirements.txt">
+<pre><code>fastapi&gt;=0.115,&lt;1
+uvicorn[standard]&gt;=0.30,&lt;1
+pillow</code></pre>
+      </figure>
+
+      <h3>Try it</h3>
+      <figure class="code term" data-file="terminal">
+<pre><code>conda activate solweig-light
+cd backend
+pip install -r requirements.txt
+python -m app.baseline</code></pre>
+      </figure>
+      <p>The baseline takes as long as one run (the first time a bit longer, see section 02) and ends with <code>done: .../backend/data/baseline</code>. Then start the server, open <code>localhost:8000/docs</code>, and try <strong>POST /api/jobs</strong> with <code>{"trees": [{"lng": …, "lat": …}]}</code>, using the <code>center</code> from <strong>GET /api/scene</strong>. Then <strong>GET /api/jobs/{job_id}</strong> now and then: <code>phase</code> goes preparing → geometry → simulating (with <code>timesteps_done</code> counting to 24) → rendering → done. A tree far outside the scene, or no tree at all, gets a 400 with the reason.</p>
+
+      <div class="warn">
+        <span class="lbl">Saving a backend file stops a run</span>
+        <p>Jobs live in the server's memory, and <code>--reload</code> restarts the server whenever you save a <code>.py</code> file in <code>backend/</code>. A run that was going is then lost, and the app says "unknown job". Press Run again. While you are only testing runs and not editing the backend, you can start uvicorn without <code>--reload</code>.</p>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="frontend">
+      <h2><span class="n">05</span> The frontend</h2>
+      <hr class="h2-rule">
+      <p>Five files in <code>frontend/src/</code>, all replaced. <code>main.jsx</code> stays as Vite made it, and <code>config.js</code> and <code>components/ResultPanel.jsx</code> from Week 5 are no longer used: delete them.</p>
+
+      <h3>api.js · the backend's routes (replace)</h3>
+      <p>One function per route, and <code>overlayUrl</code>, which builds the name of the PNG for a variable, hour and layer. Baseline pictures come from <code>/api/baseline/</code>, a run's from <code>/api/jobs/&lt;id&gt;/</code>.</p>
+      <figure class="code" data-file="frontend/src/api.js">
+<pre><code><span class="cm">// Every fetch() in the app lives here. Components never build URLs themselves.</span>
+
+async function request(path, options) {
+  const response = await fetch(path, options);
+  if (!response.ok) {
+    let detail = response.statusText;
+    try {
+      const body = await response.json();          <span class="cm">// FastAPI explains what was wrong</span>
+      detail = typeof body.detail === "string" ? body.detail : JSON.stringify(body.detail);
+    } catch {
+      <span class="cm">// not JSON, keep the status text</span>
+    }
+    throw new Error(detail);
+  }
+  return response.json();
+}
+
+export const api = {
+  scene: () =&gt; request("/api/scene"),
+  baseline: () =&gt; request("/api/baseline"),
+
+  <span class="cm">// Start an analysis; the answer is a job with an id, not the result.</span>
+  submit: (trees) =&gt;
+    request("/api/jobs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ trees: trees.map(({ lng, lat }) =&gt; ({ lng, lat })) }),
+    }),
+
+  <span class="cm">// Ask how that job is doing. When it is done, job.result holds the statistics.</span>
+  job: (id) =&gt; request(`/api/jobs/${id}`),
+};
+
+<span class="cm">// The PNG for one variable and hour: /api/baseline/tmrt_14.png, /api/jobs/&lt;id&gt;/utci_diff_09.png</span>
+export function overlayUrl(folder, variable, hour, diff) {
+  const hh = String(hour).padStart(2, "0");
+  return `${folder}${variable}${diff ? "_diff" : ""}_${hh}.png`;
+}</code></pre>
+      </figure>
+
+      <h3>App.jsx · all the state, and the run (replace)</h3>
+      <p>As in Week 5, App owns every piece of state, because the map and the panel both need it. The new part is <code>run</code>. Read it top to bottom; it is the conversation from section 01 written as code: submit, then ask every two seconds with <code>await sleep(2000)</code> until the status is no longer queued or running, then keep the result and switch to the Difference layer. Every <code>setJob</code> redraws the progress bar.</p>
+      <figure class="code" data-file="frontend/src/App.jsx">
+<pre><code>import { useEffect, useRef, useState } from "react";
+import MapArea from "./components/MapArea";
+import Panel from "./components/Panel";
+import { api, overlayUrl } from "./api";
+
+const sleep = (ms) =&gt; new Promise((resolve) =&gt; setTimeout(resolve, ms));
+
+export default function App() {
+  const [scene, setScene] = useState(null);         <span class="cm">// GET /api/scene</span>
+  const [baseline, setBaseline] = useState(null);   <span class="cm">// GET /api/baseline: hour labels + statistics</span>
+  const [loadError, setLoadError] = useState(null);
+
+  <span class="cm">// --- what the map is showing -------------------------------------------</span>
+  const [variable, setVariable] = useState("tmrt"); <span class="cm">// "tmrt" | "utci"</span>
+  const [layer, setLayer] = useState("baseline");   <span class="cm">// "baseline" | "scenario" | "diff"</span>
+  const [hour, setHour] = useState(14);
+  const [opacity, setOpacity] = useState(0.65);
+  const [playing, setPlaying] = useState(false);
+
+  <span class="cm">// --- trees and the analysis ----------------------------------------------</span>
+  const [trees, setTrees] = useState([]);
+  const [placing, setPlacing] = useState(false);
+  const [job, setJob] = useState(null);             <span class="cm">// what GET /api/jobs/{id} last said</span>
+  const [scenario, setScenario] = useState(null);   <span class="cm">// { id, summary } once a run has finished</span>
+  const [error, setError] = useState(null);
+  const runNumber = useRef(0);                      <span class="cm">// a newer run makes an older one stop listening</span>
+
+  <span class="cm">// Load the scene and the baseline once, when the app starts.</span>
+  useEffect(() =&gt; {
+    api
+      .scene()
+      .then(async (sc) =&gt; {
+        setScene(sc);
+        if (sc.baseline_ready) setBaseline(await api.baseline());
+      })
+      .catch((e) =&gt; setLoadError(e.message));
+  }, []);
+
+  <span class="cm">// Advance the hour every 0.7 s while "playing"; stop the timer when it turns off.</span>
+  useEffect(() =&gt; {
+    if (!playing) return;
+    const timer = setInterval(() =&gt; setHour((h) =&gt; (h + 1) % 24), 700);
+    return () =&gt; clearInterval(timer);
+  }, [playing]);
+
+  function addTree(lng, lat) {
+    if (trees.length &gt;= scene.max_trees) return;
+    setTrees([...trees, { id: Date.now(), lng, lat }]);
+  }
+
+  function moveTree(id, lng, lat) {
+    setTrees(trees.map((t) =&gt; (t.id === id ? { ...t, lng, lat } : t)));
+  }
+
+  function removeTree(id) {
+    setTrees(trees.filter((t) =&gt; t.id !== id));
+  }
+
+  <span class="cm">// Run analysis: submit, then ask every 2 seconds until the job is finished.</span>
+  async function run() {
+    const mine = ++runNumber.current;
+    setPlacing(false);
+    setError(null);
+    setScenario(null);                              <span class="cm">// the old result no longer matches; show the baseline</span>
+    setJob(null);
+    try {
+      let current = await api.submit(trees);
+      setJob(current);
+      let failures = 0;
+      while (current.status === "queued" || current.status === "running") {
+        await sleep(2000);
+        if (runNumber.current !== mine) return;     <span class="cm">// a newer run took over</span>
+        try {
+          current = await api.job(current.id);
+          failures = 0;
+        } catch (e) {
+          if (++failures &gt;= 5) throw e;             <span class="cm">// one bad answer is not a reason to give up</span>
+          continue;
+        }
+        setJob(current);                            <span class="cm">// the progress bar follows this</span>
+      }
+      if (current.status === "done") {
+        setScenario({ id: current.id, summary: current.result });
+        setLayer("diff");                           <span class="cm">// show what changed</span>
+      }
+    } catch (e) {
+      if (runNumber.current !== mine) return;
+      setError(e.message);
+      setJob((last) =&gt; (last &amp;&amp; last.status === "done" ? last : null));   <span class="cm">// never stuck on "Running…"</span>
+    }
+  }
+
+  if (loadError) return &lt;div className="fullscreen-message"&gt;Failed to load: {loadError}&lt;/div&gt;;
+  if (!scene) return &lt;div className="fullscreen-message"&gt;Loading scene…&lt;/div&gt;;
+
+  <span class="cm">// Without a finished run, Scenario and Difference fall back to the baseline.</span>
+  const shownLayer = scenario ? layer : "baseline";
+  const folder = shownLayer === "baseline" ? "/api/baseline/" : `/api/jobs/${scenario.id}/`;
+  const overlay = scene.baseline_ready ? overlayUrl(folder, variable, hour, shownLayer === "diff") : null;
+
+  return (
+    &lt;div className="app"&gt;
+      &lt;MapArea
+        scene={scene}
+        overlay={overlay}
+        opacity={opacity}
+        trees={trees}
+        placing={placing}
+        onPlace={addTree}
+        onMove={moveTree}
+        onRemove={removeTree}
+      /&gt;
+      &lt;Panel
+        scene={scene}
+        baseline={baseline}
+        variable={variable}
+        onVariable={setVariable}
+        layer={shownLayer}
+        onLayer={setLayer}
+        hour={hour}
+        onHour={setHour}
+        playing={playing}
+        onTogglePlay={() =&gt; setPlaying((p) =&gt; !p)}
+        opacity={opacity}
+        onOpacity={setOpacity}
+        trees={trees}
+        placing={placing}
+        onTogglePlacing={() =&gt; setPlacing((p) =&gt; !p)}
+        onClear={() =&gt; setTrees([])}
+        onRemove={removeTree}
+        onRun={run}
+        job={job}
+        scenario={scenario}
+        error={error}
+      /&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+      </figure>
+
+      <p>Three choices in there worth noticing. The old result is cleared as soon as Run is pressed, so the map never shows a result that does not match the trees on it. One failed question does not end the run; five in a row do. And nothing is saved in the browser: <strong>reloading the page starts clean</strong>.</p>
+
+      <h3>MapArea.jsx · outline, overlay, trees (replace)</h3>
+      <p>Three things on the map. A dashed outline of the scene, drawn from its four corners, so people know where trees can go. The overlay, an image pinned to the same four corners and drawn underneath the outline (<code>beforeId</code>). And one round, draggable marker per tree; double-clicking it removes the tree.</p>
+      <p>One fix from Week 4 and 5, sorry! <code>initialViewState</code> wants <code>longitude</code> and <code>latitude</code>, not <code>lng</code> and <code>lat</code>; with the wrong names, react-map-gl quietly starts in the ocean at longitude 0, latitude 0.</p>
+      <figure class="code" data-file="frontend/src/components/MapArea.jsx">
+<pre><code>import "mapbox-gl/dist/mapbox-gl.css";
+import Map, { Marker, NavigationControl, Source, Layer } from "react-map-gl/mapbox";
+
+const TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
+
+export default function MapArea({ scene, overlay, opacity, trees, placing, onPlace, onMove, onRemove }) {
+  <span class="cm">// The dashed outline shows where trees can go: the four corners, closed back to the first.</span>
+  const outline = {
+    type: "Feature",
+    geometry: { type: "Polygon", coordinates: [[...scene.corners, scene.corners[0]]] },
+  };
+  const size = Math.max(14, Math.round(scene.crown_radius_m * 4));      <span class="cm">// marker diameter in screen pixels</span>
+
+  return (
+    &lt;main className="map-area"&gt;
+      &lt;Map
+        mapboxAccessToken={TOKEN}
+        initialViewState={{ longitude: scene.center[0], latitude: scene.center[1], zoom: 15.2 }}
+        style={{ width: "100%", height: "100%" }}
+        mapStyle="mapbox://styles/mapbox/light-v11"
+        cursor={placing ? "crosshair" : "grab"}
+        onClick={(event) =&gt; {
+          if (!placing) return;                                       <span class="cm">// clicks only place trees in placing mode</span>
+          onPlace(event.lngLat.lng, event.lngLat.lat);
+        }}
+      &gt;
+        &lt;NavigationControl position="top-right" /&gt;
+
+        &lt;Source id="scene-extent" type="geojson" data={outline}&gt;
+          &lt;Layer
+            id="scene-extent-line"
+            type="line"
+            paint={{ "line-color": "#1f4e79", "line-width": 2, "line-dasharray": [2, 2] }}
+          /&gt;
+        &lt;/Source&gt;
+
+        {overlay &amp;&amp; (
+          &lt;Source id="overlay" type="image" url={overlay} coordinates={scene.corners}&gt;
+            &lt;Layer
+              id="overlay-layer"
+              type="raster"
+              beforeId="scene-extent-line"
+              paint={{ "raster-opacity": opacity, "raster-fade-duration": 0, "raster-resampling": "nearest" }}
+            /&gt;
+          &lt;/Source&gt;
+        )}
+
+        {trees.map((t) =&gt; (
+          &lt;Marker
+            key={t.id}
+            longitude={t.lng}
+            latitude={t.lat}
+            anchor="center"
+            draggable
+            onDragEnd={(event) =&gt; onMove(t.id, event.lngLat.lng, event.lngLat.lat)}
+          &gt;
+            &lt;div
+              className="tree-marker"
+              style={{ width: size, height: size }}
+              title="Drag to move, double-click to remove"
+              onDoubleClick={(event) =&gt; {
+                event.stopPropagation();                              <span class="cm">// don't also zoom the map</span>
+                onRemove(t.id);
+              }}
+            /&gt;
+          &lt;/Marker&gt;
+        ))}
+      &lt;/Map&gt;
+    &lt;/main&gt;
+  );
+}</code></pre>
+      </figure>
+
+      <h3>Panel.jsx · the prototype's panel (replace)</h3>
+      <p>Markup and props, top to bottom like the prototype: the Overlay section (Variable, Layer, opacity, hour, legend, statistics), Trees (add, clear, the list), and Run. Scenario and Difference stay disabled until a run has finished. The progress bar is worked out from <code>phase</code> and <code>timesteps_done</code>: the sky view step is roughly the first 45 %, the 24 hours the rest.</p>
+      <figure class="code" data-file="frontend/src/components/Panel.jsx">
+<pre><code>const HOURS = Array.from({ length: 24 }, (_, i) =&gt; i);
+
+function fmt(value, digits = 1) {
+  return value == null || Number.isNaN(value) ? "–" : value.toFixed(digits);
+}
+
+export default function Panel({
+  scene, baseline, variable, onVariable, layer, onLayer, hour, onHour, playing, onTogglePlay,
+  opacity, onOpacity, trees, placing, onTogglePlacing, onClear, onRemove, onRun, job, scenario, error,
+}) {
+  const spec = scene.variables[variable];
+  const hourLabel = baseline ? baseline.hours[hour].replace("T", " ") : `${String(hour).padStart(2, "0")}:00`;
+  const busy = job !== null &amp;&amp; (job.status === "queued" || job.status === "running");
+
+  <span class="cm">// The numbers under the legend, for the chosen variable and hour.</span>
+  const base = baseline?.variables[variable].stats;
+  const scen = scenario?.summary.variables[variable];
+  const stats = {
+    baseMean: base?.mean[hour],
+    scenMean: scen?.stats.mean[hour],
+    diffMin: scen?.diff_stats.min[hour],
+    changed: scen?.changed_pixels[hour],
+  };
+
+  <span class="cm">// How far the run is, from 0 to 1: the sky view step is about 45 %, the 24 hours the rest.</span>
+  let progress = 0;
+  if (job) {
+    if (job.status === "done") progress = 1;
+    else if (job.phase === "simulating") progress = 0.45 + 0.5 * (job.timesteps_done / job.timesteps_total);
+    else if (job.phase === "rendering") progress = 0.97;
+    else if (job.expected_seconds) progress = Math.min(0.42, (job.elapsed_seconds / job.expected_seconds) * 0.9);
+    else progress = 0.05;
+  }
+
+  return (
+    &lt;aside className="panel"&gt;
+      &lt;header&gt;
+        &lt;h1&gt;Cool Choices&lt;/h1&gt;
+        &lt;p className="muted"&gt;
+          {scene.cols}×{scene.rows} px at {scene.pixel_size_m} m · {scene.date}
+          {!scene.baseline_ready &amp;&amp; " · baseline not computed yet"}
+        &lt;/p&gt;
+      &lt;/header&gt;
+
+      &lt;section&gt;
+        &lt;h2&gt;Overlay&lt;/h2&gt;
+        &lt;div className="row"&gt;
+          &lt;label&gt;
+            Variable
+            &lt;select value={variable} onChange={(e) =&gt; onVariable(e.target.value)}&gt;
+              &lt;option value="tmrt"&gt;TMRT&lt;/option&gt;
+              &lt;option value="utci"&gt;UTCI&lt;/option&gt;
+            &lt;/select&gt;
+          &lt;/label&gt;
+          &lt;label&gt;
+            Layer
+            &lt;select value={layer} onChange={(e) =&gt; onLayer(e.target.value)}&gt;
+              &lt;option value="baseline"&gt;Baseline&lt;/option&gt;
+              &lt;option value="scenario" disabled={!scenario}&gt;Scenario&lt;/option&gt;
+              &lt;option value="diff" disabled={!scenario}&gt;Difference&lt;/option&gt;
+            &lt;/select&gt;
+          &lt;/label&gt;
+        &lt;/div&gt;
+        &lt;label&gt;
+          Opacity {Math.round(opacity * 100)}%
+          &lt;input type="range" min={0} max={1} step={0.05} value={opacity} onChange={(e) =&gt; onOpacity(Number(e.target.value))} /&gt;
+        &lt;/label&gt;
+        &lt;label&gt;
+          Hour · {hourLabel}
+          &lt;div className="row"&gt;
+            &lt;button className="icon" onClick={onTogglePlay} title={playing ? "Pause" : "Play"}&gt;
+              {playing ? "❚❚" : "▶"}
+            &lt;/button&gt;
+            &lt;input type="range" min={0} max={23} step={1} value={hour} onChange={(e) =&gt; onHour(Number(e.target.value))} list="hours" /&gt;
+          &lt;/div&gt;
+          &lt;datalist id="hours"&gt;
+            {HOURS.map((h) =&gt; (
+              &lt;option key={h} value={h} /&gt;
+            ))}
+          &lt;/datalist&gt;
+        &lt;/label&gt;
+        &lt;Legend
+          title={layer === "diff" ? `Δ ${spec.label} (scenario − baseline)` : spec.label}
+          diverging={layer === "diff"}
+          min={layer === "diff" ? -scene.diff_range : spec.vmin}
+          max={layer === "diff" ? scene.diff_range : spec.vmax}
+        /&gt;
+        &lt;dl className="stats"&gt;
+          &lt;dt&gt;Baseline mean&lt;/dt&gt;
+          &lt;dd&gt;{fmt(stats.baseMean)} °C&lt;/dd&gt;
+          {scenario &amp;&amp; (
+            &lt;&gt;
+              &lt;dt&gt;Scenario mean&lt;/dt&gt;
+              &lt;dd&gt;{fmt(stats.scenMean)} °C&lt;/dd&gt;
+              &lt;dt&gt;Largest cooling&lt;/dt&gt;
+              &lt;dd&gt;{fmt(stats.diffMin)} °C&lt;/dd&gt;
+              &lt;dt&gt;Pixels changed (&amp;gt;{scene.change_threshold_c} °C)&lt;/dt&gt;
+              &lt;dd&gt;{stats.changed ?? "–"}&lt;/dd&gt;
+            &lt;/&gt;
+          )}
+        &lt;/dl&gt;
+      &lt;/section&gt;
+
+      &lt;section&gt;
+        &lt;h2&gt;Trees ({trees.length})&lt;/h2&gt;
+        &lt;div className="row"&gt;
+          &lt;button className={placing ? "primary" : ""} onClick={onTogglePlacing} disabled={busy}&gt;
+            {placing ? "Click map to place · done" : "Add trees"}
+          &lt;/button&gt;
+          &lt;button onClick={onClear} disabled={busy || trees.length === 0}&gt;
+            Clear
+          &lt;/button&gt;
+        &lt;/div&gt;
+        {trees.length &gt; 0 &amp;&amp; (
+          &lt;ul className="tree-list"&gt;
+            {trees.map((t, i) =&gt; (
+              &lt;li key={t.id}&gt;
+                &lt;span&gt;#{i + 1}&lt;/span&gt;
+                &lt;span className="muted"&gt;{t.lng.toFixed(5)}, {t.lat.toFixed(5)}&lt;/span&gt;
+                &lt;button className="icon" onClick={() =&gt; onRemove(t.id)} title="Remove" disabled={busy}&gt;
+                  ×
+                &lt;/button&gt;
+              &lt;/li&gt;
+            ))}
+          &lt;/ul&gt;
+        )}
+        &lt;p className="muted small"&gt;Every tree is 12 m tall with a 4 m crown radius. Drag a marker to move it, double-click to remove.&lt;/p&gt;
+      &lt;/section&gt;
+
+      &lt;section&gt;
+        &lt;button className="primary wide" onClick={onRun} disabled={busy || trees.length === 0 || !scene.baseline_ready}&gt;
+          {busy ? "Running…" : "Run analysis"}
+        &lt;/button&gt;
+        {job &amp;&amp; (
+          &lt;div className="job"&gt;
+            &lt;div className="progress"&gt;
+              &lt;div style={{ width: `${Math.round(progress * 100)}%` }} /&gt;
+            &lt;/div&gt;
+            &lt;p className="small"&gt;
+              {job.status === "queued" &amp;&amp; `Queued (position ${job.queue_position + 1})`}
+              {job.status === "running" &amp;&amp; `${job.phase} · ${Math.round(job.elapsed_seconds)}s`}
+              {job.status === "running" &amp;&amp; job.phase === "simulating" &amp;&amp; ` · ${job.timesteps_done}/${job.timesteps_total} h`}
+              {job.status === "running" &amp;&amp; job.expected_seconds &amp;&amp; ` · ~${Math.max(1, Math.round(job.expected_seconds / 60))} min expected`}
+              {job.status === "done" &amp;&amp; `Done in ${Math.round(job.elapsed_seconds)}s · ${job.changed_pixels} canopy pixels changed`}
+              {job.status === "failed" &amp;&amp; `Failed: ${job.error}`}
+            &lt;/p&gt;
+          &lt;/div&gt;
+        )}
+        {error &amp;&amp; &lt;p className="error small"&gt;{error}&lt;/p&gt;}
+        &lt;p className="muted small"&gt;
+          Each run recomputes sky view factors and 24 hourly timesteps for the whole scene
+          {scene.baseline_model_seconds ? ` (baseline took ${Math.max(1, Math.round(scene.baseline_model_seconds / 60))} min)` : ""}.
+        &lt;/p&gt;
+      &lt;/section&gt;
+    &lt;/aside&gt;
+  );
+}
+
+function Legend({ title, diverging, min, max }) {
+  return (
+    &lt;div className="legend"&gt;
+      &lt;div className={`legend-bar ${diverging ? "diverging" : "sequential"}`} /&gt;
+      &lt;div className="legend-labels"&gt;
+        &lt;span&gt;{min}&lt;/span&gt;
+        &lt;span&gt;{title}&lt;/span&gt;
+        &lt;span&gt;{max}&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+      </figure>
+
+      <h3>index.css · the prototype's styles (replace)</h3>
+      <figure class="code" data-file="frontend/src/index.css">
+<pre><code>:root {
+  --panel-bg: rgba(255, 255, 255, 0.96);
+  --text: #1c1c1c;
+  --muted: #666;
+  --accent: #1f4e79;
+  --border: #d9d9d9;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color: var(--text);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+}
+
+.app {
+  position: relative;
+  height: 100%;
+}
+
+.map-area {
+  position: absolute;
+  inset: 0;
+}
+
+.panel {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  bottom: 12px;
+  width: 340px;
+  overflow-y: auto;
+  background: var(--panel-bg);
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.panel header h1 {
+  font-size: 17px;
+  margin: 0 0 2px;
+}
+
+.panel h2 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin: 0 0 8px;
+}
+
+.panel section {
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+}
+
+label {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+label &gt; select,
+label &gt; input[type='number'] {
+  display: block;
+  width: 100%;
+  margin-top: 3px;
+  padding: 5px 6px;
+  font-size: 13px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+input[type='range'] {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.row &gt; label,
+.row &gt; input[type='range'] {
+  flex: 1;
+}
+
+button {
+  font: inherit;
+  font-size: 13px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: #fff;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+button.wide {
+  width: 100%;
+  padding: 10px;
+  font-weight: 600;
+}
+
+button.icon {
+  padding: 4px 9px;
+  line-height: 1;
+}
+
+.muted {
+  color: var(--muted);
+  margin: 0;
+}
+
+.small {
+  font-size: 12px;
+}
+
+.error {
+  color: #b00020;
+}
+
+.legend-bar {
+  height: 10px;
+  border-radius: 3px;
+}
+
+.legend-bar.sequential {
+  background: linear-gradient(to right, rgb(59, 76, 192), rgb(131, 178, 251), rgb(221, 220, 219), rgb(240, 140, 97), rgb(180, 4, 38));
+}
+
+.legend-bar.diverging {
+  background: linear-gradient(to right, rgb(0, 109, 44), rgb(161, 217, 155), rgb(247, 247, 247), rgb(194, 165, 207), rgb(118, 42, 131));
+}
+
+.legend-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 10px;
+  font-size: 13px;
+  margin: 10px 0 0;
+}
+
+.stats dt {
+  color: var(--muted);
+}
+
+.stats dd {
+  margin: 0;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.tree-list {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+  max-height: 180px;
+  overflow-y: auto;
+  font-size: 12px;
+}
+
+.tree-list li {
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.progress {
+  height: 6px;
+  background: #e6e6e6;
+  border-radius: 3px;
+  overflow: hidden;
+  margin: 8px 0 4px;
+}
+
+.progress &gt; div {
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.4s;
+}
+
+.tree-marker {
+  border-radius: 50%;
+  background: rgba(34, 139, 34, 0.55);
+  border: 2px solid #145214;
+  cursor: grab;
+}
+
+.fullscreen-message {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  font-size: 15px;
+  color: var(--muted);
+  padding: 24px;
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  .panel {
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: auto;
+    max-height: 55%;
+    border-radius: 12px 12px 0 0;
+  }
+}</code></pre>
+      </figure>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="local">
+      <h2><span class="n">06</span> Run it on your laptop</h2>
+      <hr class="h2-rule">
+      <p>The site needs <strong>two programs running at the same time</strong>, so you need two terminals. In VS Code, open the <code>cool-choices</code> folder and use <strong>Terminal → New Terminal</strong> twice (or the split button in the terminal panel).</p>
+
+      <h3>Terminal 1 · the backend</h3>
+      <figure class="code term" data-file="terminal 1 · backend">
+<pre><code>conda activate solweig-light
+cd backend
+python -m app.baseline
+uvicorn app.main:app --reload --port 8000</code></pre>
+      </figure>
+      <p><code>python -m app.baseline</code> only does work the first time (or with <code>--force</code> after the scene changes); afterwards it just says the baseline is already there. The server is ready when it prints <code>Uvicorn running on http://127.0.0.1:8000</code>. Leave it running.</p>
+
+      <h3>Terminal 2 · the frontend</h3>
+      <figure class="code term" data-file="terminal 2 · frontend">
+<pre><code>cd frontend
+npm install
+npm run dev</code></pre>
+      </figure>
+      <p><code>npm install</code> is needed the first time on each computer, and again whenever <code>package.json</code> changes after a pull. <code>npm run dev</code> starts Vite and prints the address of your site:</p>
+
+      <figure class="code term" data-file="what npm run dev prints">
+<pre><code>  VITE v8.3.2  ready in 282 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose</code></pre>
+      </figure>
+      <p>(Your version number and time will differ.) <strong>Open the <code>Local</code> address in your browser.</strong> In VS Code you can hold <strong>Cmd</strong> (macOS) or <strong>Ctrl</strong> (Windows) and click it. That is your site. Keep both terminals open while you work; <strong>Ctrl+C</strong> in a terminal stops that program.</p>
+
+      <table style="width:100%;border-collapse:collapse;font-size:0.96rem;margin:16px 0 22px">
+        <tr style="background:#E8EAED">
+          <th style="text-align:left;padding:9px 12px;border:1px solid #CBD8DC;font-family:var(--font-display);font-size:0.86rem">Address</th>
+          <th style="text-align:left;padding:9px 12px;border:1px solid #CBD8DC;font-family:var(--font-display);font-size:0.86rem">What is there</th>
+        </tr>
+        <tr>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC"><code>http://localhost:5173</code></td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC"><strong>The site.</strong> This is the only address you open to use it. Vite forwards anything starting with <code>/api</code> to the backend for you (the proxy from Week 5).</td>
+        </tr>
+        <tr style="background:#F7F8F9">
+          <td style="padding:9px 12px;border:1px solid #CBD8DC"><code>http://localhost:8000/docs</code></td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC">The backend's own documentation page, for trying routes by hand. Not the site.</td>
+        </tr>
+      </table>
+
+      <div class="note">
+        <span class="lbl">localhost means "this computer"</span>
+        <p>Nobody else can open your <code>localhost:5173</code>, and you cannot open theirs. Each of you runs your own copy. That is why there is nothing to deploy this week, and why every person's <code>.env</code> with their own Mapbox token is enough.</p>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="together">
+      <h2><span class="n">07</span> Put it together</h2>
+      <hr class="h2-rule">
+      <p>Pull everyone's pieces, start both terminals from section 06, open the <code>Local</code> address, and try all of this:</p>
+      <ul>
+        <li>The map opens on your scene with its dashed outline and the baseline TMRT at 14:00. Variable switches between TMRT and UTCI, the legend and Baseline mean follow, and ▶ plays through the day.</li>
+        <li>Press <strong>Add trees</strong> and click inside the outline two or three times, on open ground (streets and plazas show the biggest change). Drag a marker: its coordinates in the list change. Double-click one: it is gone.</li>
+        <li>Press <strong>Run analysis</strong>. The button says Running…, and the line under the bar goes geometry → simulating · 9/24 h → rendering.</li>
+        <li>When it is done, the Layer is <strong>Difference</strong>: green around your trees. The statistics now show Scenario mean, Largest cooling and Pixels changed. Switch to Scenario and Baseline and compare; try 10:00 and 14:00.</li>
+        <li>Move a tree and press Run again: the map goes back to the baseline while it runs, then shows the new result.</li>
+        <li>Reload the page: everything is back to the start.</li>
+      </ul>
+
+      <p>Add two lines to <code>.gitignore</code> at the top of <code>cool-choices/</code> (create the file if it is not there), so nobody commits the backend's results or Python's cache files:</p>
+      <figure class="code" data-file="cool-choices/.gitignore">
+<pre><code>backend/data/
+__pycache__/</code></pre>
+      </figure>
+
+      <figure class="code term" data-file="terminal">
+<pre><code>git add .
+git commit -m "Week 6: run analysis with SOLWEIG-light behind a job API"
+git push</code></pre>
+      </figure>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="sizes">
+      <h2><span class="n">08</span> New · Choose tree sizes</h2>
+      <hr class="h2-rule">
+      <p>Until now every tree was 12 m tall with a 4 m crown. This week people choose: two boxes set the size of the <em>next</em> tree they place, and every tree in the list can be changed afterwards. That is exactly how the prototype works, and with it your site matches the prototype feature for feature.</p>
+
+      <p>The size travels the whole way: the panel keeps it with each tree, <code>api.js</code> sends it, <code>main.py</code> checks it is in a sensible range, and <code>model.py</code> paints each tree with its own height and radius. Seven files change, all small; they are shown in full so you can replace each file as it is.</p>
+
+      <table style="width:100%;border-collapse:collapse;font-size:0.96rem;margin:16px 0 22px">
+        <tr style="background:#E8EAED">
+          <th style="text-align:left;padding:9px 12px;border:1px solid #CBD8DC;font-family:var(--font-display);font-size:0.86rem">File</th>
+          <th style="text-align:left;padding:9px 12px;border:1px solid #CBD8DC;font-family:var(--font-display);font-size:0.86rem">What changes</th>
+        </tr>
+        <tr><td style="padding:9px 12px;border:1px solid #CBD8DC"><code>backend/app/model.py</code></td><td style="padding:9px 12px;border:1px solid #CBD8DC"><code>TREE_HEIGHT</code> and <code>CROWN_RADIUS</code> become a default and a range; <code>plant_trees</code> uses each tree's own size</td></tr>
+        <tr style="background:#F7F8F9"><td style="padding:9px 12px;border:1px solid #CBD8DC"><code>backend/app/main.py</code></td><td style="padding:9px 12px;border:1px solid #CBD8DC"><code>Tree</code> gets <code>height</code> and <code>crown_radius</code> with limits; <code>/api/scene</code> tells the browser the limits</td></tr>
+        <tr><td style="padding:9px 12px;border:1px solid #CBD8DC"><code>frontend/src/api.js</code></td><td style="padding:9px 12px;border:1px solid #CBD8DC">sends the two sizes with every tree</td></tr>
+        <tr style="background:#F7F8F9"><td style="padding:9px 12px;border:1px solid #CBD8DC"><code>frontend/src/App.jsx</code></td><td style="padding:9px 12px;border:1px solid #CBD8DC">remembers the size for the next tree; <code>updateTree</code> changes one tree</td></tr>
+        <tr><td style="padding:9px 12px;border:1px solid #CBD8DC"><code>components/Panel.jsx</code></td><td style="padding:9px 12px;border:1px solid #CBD8DC">Height and Crown radius boxes; two boxes on every row of the tree list</td></tr>
+        <tr style="background:#F7F8F9"><td style="padding:9px 12px;border:1px solid #CBD8DC"><code>components/MapArea.jsx</code></td><td style="padding:9px 12px;border:1px solid #CBD8DC">each marker is drawn as big as its crown</td></tr>
+        <tr><td style="padding:9px 12px;border:1px solid #CBD8DC"><code>frontend/src/index.css</code></td><td style="padding:9px 12px;border:1px solid #CBD8DC">room for the two boxes in each list row</td></tr>
+      </table>
+
+      <h3>Backend</h3>
+      <p>The limits live in one place, <code>model.py</code>. <code>main.py</code> uses them twice: to refuse a tree that is too big or too small (a 422, as in Week 5, before any of our code runs), and to tell the browser what the boxes may accept.</p>
+      <figure class="code" data-file="backend/app/model.py (Week 7)">
+<pre><code>"""Running SOLWEIG-light on the scene: copy it, plant the trees, run the model.
+
+Exactly the steps you did by hand with Week 5's scripts. Used for the baseline
+(no trees added) and for every Run analysis.
+"""
+import json
+import os
+import shutil
+from pathlib import Path
+
+import numpy as np
+from osgeo import gdal, osr
+
+from solweig_light import RuntimeOptions, runtime_options, thermal_comfort
+
+gdal.UseExceptions()
+osr.UseExceptions()
+
+BACKEND = Path(__file__).resolve().parent.parent
+SCENE = BACKEND / "scene"                    <span class="cm"># the inputs: three rasters + the met file</span>
+DATA = BACKEND / "data"                      <span class="cm"># everything the backend makes (git-ignored)</span>
+BASELINE = DATA / "baseline"
+JOBS = DATA / "jobs"
+
+RASTERS = ["Building_DSM.tif", "DEM.tif", "Trees.tif"]
+MET = "ownmet_Forcing_data.txt"
+DATE = "2020-08-13"
+
+<span class="cm"># Tree sizes in metres: what a new tree starts with, and the range people may choose from.</span>
+TREE_HEIGHT = {"default": 12.0, "min": 2.0, "max": 40.0}
+CROWN_RADIUS = {"default": 4.0, "min": 1.0, "max": 15.0}
+MAX_TREES = 200
+THREADS = min(4, os.cpu_count() or 1)
+MEMORY_BUDGET = 6 * 1024**3                  <span class="cm"># SOLWEIG-light checks a run fits in this; plenty for 500 x 500</span>
+
+
+<span class="cm"># --- where the scene is --------------------------------------------------------</span>
+def _transform(ds, to_lonlat):
+    native = osr.SpatialReference()
+    native.ImportFromWkt(ds.GetProjection())
+    wgs84 = osr.SpatialReference()
+    wgs84.ImportFromEPSG(4326)
+    for srs in (native, wgs84):
+        srs.SetAxisMappingStrategy(osr.OAMS_TRADITIONAL_GIS_ORDER)     <span class="cm"># always x=lon, y=lat</span>
+    return osr.CoordinateTransformation(native, wgs84) if to_lonlat else osr.CoordinateTransformation(wgs84, native)
+
+
+def scene_info():
+    """Size, pixel size and the four corners in longitude/latitude (Mapbox order: TL, TR, BR, BL)."""
+    ds = gdal.Open(str(SCENE / "Building_DSM.tif"))
+    gt, rows, cols = ds.GetGeoTransform(), ds.RasterYSize, ds.RasterXSize
+    to_lonlat = _transform(ds, True)
+
+    def corner(col, row):
+        lon, lat, _ = to_lonlat.TransformPoint(gt[0] + col * gt[1], gt[3] + row * gt[5])
+        return [lon, lat]
+
+    corners = [corner(0, 0), corner(cols, 0), corner(cols, rows), corner(0, rows)]
+    return {"rows": rows, "cols": cols, "pixel_size_m": abs(gt[1]), "corners": corners,
+            "center": [sum(c[0] for c in corners) / 4, sum(c[1] for c in corners) / 4]}
+
+
+def to_pixel(ds, lng, lat):
+    """Longitude/latitude -&gt; (col, row) in the raster, or None if it is nowhere near."""
+    try:
+        x, y, _ = _transform(ds, False).TransformPoint(lng, lat)
+    except RuntimeError:                     <span class="cm"># outside the map projection's area altogether</span>
+        return None
+    gt = ds.GetGeoTransform()                <span class="cm"># north-up raster: no rotation terms</span>
+    return (x - gt[0]) / gt[1], (y - gt[3]) / gt[5]
+
+
+def inside(lng, lat):
+    ds = gdal.Open(str(SCENE / "Building_DSM.tif"))
+    pixel = to_pixel(ds, lng, lat)
+    return pixel is not None and 0 &lt;= pixel[0] &lt; ds.RasterXSize and 0 &lt;= pixel[1] &lt; ds.RasterYSize
+
+
+<span class="cm"># --- one run ---------------------------------------------------------------------</span>
+def copy_scene(work):
+    """A fresh copy for every run: the model caches sky view per folder, and trees change it."""
+    work.mkdir(parents=True)
+    for name in RASTERS + [MET]:
+        shutil.copy(SCENE / name, work / name)
+
+
+def plant_trees(work, trees):
+    """Raise the canopy to each tree's height inside a disc of its crown radius. Returns pixels changed."""
+    ds = gdal.Open(str(work / "Trees.tif"), gdal.GA_Update)
+    band = ds.GetRasterBand(1)
+    canopy = band.ReadAsArray().astype("float32")
+    rows, cols = canopy.shape
+    row_idx, col_idx = np.mgrid[0:rows, 0:cols]
+    pixel_size = abs(ds.GetGeoTransform()[1])
+    before = canopy.copy()
+    for tree in trees:
+        col, row = to_pixel(ds, tree["lng"], tree["lat"])
+        radius_px = tree["crown_radius"] / pixel_size
+        disc = (col_idx + 0.5 - col) ** 2 + (row_idx + 0.5 - row) ** 2 &lt;= radius_px ** 2
+        canopy[disc] = np.maximum(canopy[disc], tree["height"])
+    band.WriteArray(canopy)
+    ds = None                                <span class="cm"># closing the file writes it to disk</span>
+    return int((canopy != before).sum())
+
+
+def run_solweig(work):
+    """The same call as Week 5's run_light.py. Writes work/output_folder/0_0/TMRT_0_0.tif and UTCI_0_0.tif."""
+    options = RuntimeOptions(memory_budget_bytes=MEMORY_BUDGET, cpu_budget=THREADS,
+                             threads_per_worker=THREADS, block_pixels=1024)
+    with runtime_options(options):
+        thermal_comfort(
+            base_path=str(work),
+            selected_date_str=DATE,
+            building_dsm_filename="Building_DSM.tif",
+            dem_filename="DEM.tif",
+            trees_filename="Trees.tif",
+            landcover_filename=None,
+            tile_size=600,
+            overlap=20,
+            use_own_met=True,
+            own_met_file=str(work / MET),
+            save_tmrt=True,
+        )
+
+
+def output(work, var):
+    return work / "output_folder" / "0_0" / f"{var.upper()}_0_0.tif"
+
+
+<span class="cm"># --- progress ------------------------------------------------------------------------</span>
+def geometry_done(work):
+    """The sky view step is finished once its shadow file exists."""
+    return (work / "processed_inputs" / "SVF" / "shadowmats_0_0.npz").exists()
+
+
+def hours_done(work):
+    """SOLWEIG-light records each finished hour in a small JSON file; count them."""
+    best = 0
+    for record in (work / ".solweig-light" / "transactions").glob("*/transaction.json"):
+        try:
+            hashes = json.loads(record.read_text())["checkpoint"]["band_hashes"]
+            best = max([best] + [len(v) for v in hashes.values()])
+        except (OSError, KeyError, ValueError, TypeError):
+            continue                         <span class="cm"># being written right now; try again next time</span>
+    return best</code></pre>
+      </figure>
+      <figure class="code" data-file="backend/app/main.py (Week 7)">
+<pre><code>"""FastAPI service. Start it from the backend/ folder:
+
+    python -m app.baseline                       <span class="cm"># once, before the first start</span>
+    uvicorn app.main:app --reload --port 8000
+
+Then open http://localhost:8000/docs - FastAPI writes the documentation and a
+"Try it out" form for every route from the type hints below.
+"""
+import json
+import re
+import time
+from typing import Literal
+
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
+from pydantic import BaseModel, Field
+
+from . import jobs, model, render
+from .calc import OPERATIONS
+
+app = FastAPI(title="Cool Choices API")
+SCENE = model.scene_info()                   <span class="cm"># read once at start-up: size and corners never change</span>
+
+
+<span class="cm"># ---- Week 5 ---------------------------------------------------------------------</span>
+class CalcRequest(BaseModel):
+    """What the browser must send. Anything else is rejected with a 422 before our code runs."""
+    a: float
+    b: float
+    op: Literal["add", "multiply"]
+
+
+@app.get("/api/health")
+def health():
+    return {"ok": True}
+
+
+@app.post("/api/calc")
+def calc(request: CalcRequest):
+    time.sleep(1.0)
+    return {"op": request.op, "a": request.a, "b": request.b,
+            "result": OPERATIONS[request.op](request.a, request.b)}
+
+
+<span class="cm"># ---- the scene and the baseline -----------------------------------------------------</span>
+def baseline_ready():
+    return (model.BASELINE / "result.json").exists()
+
+
+@app.get("/api/scene")
+def get_scene():
+    """Where the scene is, the colour ranges, and whether the baseline exists yet."""
+    return {
+        **SCENE,
+        "date": model.DATE,
+        "variables": render.VARIABLES,
+        "diff_range": render.DIFF_RANGE,
+        "change_threshold_c": render.CHANGE_THRESHOLD_C,
+        "baseline_ready": baseline_ready(),
+        "baseline_model_seconds": jobs.expected_seconds(),
+        "limits": {
+            "max_trees": model.MAX_TREES,
+            "height": model.TREE_HEIGHT,
+            "crown_radius": model.CROWN_RADIUS,
+        },
+    }
+
+
+@app.get("/api/baseline")
+def get_baseline():
+    """Hour labels and hourly statistics of the baseline."""
+    if not baseline_ready():
+        raise HTTPException(503, "baseline not computed yet - run: python -m app.baseline")
+    return json.loads((model.BASELINE / "result.json").read_text())
+
+
+<span class="cm"># ---- runs ------------------------------------------------------------------------------</span>
+class Tree(BaseModel):
+    lng: float
+    lat: float
+    <span class="cm"># Outside these ranges the request is refused with a 422 before our code runs.</span>
+    height: float = Field(model.TREE_HEIGHT["default"], ge=model.TREE_HEIGHT["min"], le=model.TREE_HEIGHT["max"])
+    crown_radius: float = Field(model.CROWN_RADIUS["default"], ge=model.CROWN_RADIUS["min"], le=model.CROWN_RADIUS["max"])
+
+
+class RunRequest(BaseModel):
+    trees: list[Tree] = Field(max_length=model.MAX_TREES)
+
+
+@app.post("/api/jobs", status_code=202)
+def create_job(request: RunRequest):
+    """Start an analysis. Answers at once with the job; the work continues in the background."""
+    if not baseline_ready():
+        raise HTTPException(503, "baseline not computed yet - run: python -m app.baseline")
+    if not request.trees:
+        raise HTTPException(400, "place at least one tree before running")
+    outside = [t for t in request.trees if not model.inside(t.lng, t.lat)]
+    if outside:
+        raise HTTPException(400, f"{len(outside)} tree(s) fall outside the scene extent")
+    return jobs.submit([t.model_dump() for t in request.trees])
+
+
+@app.get("/api/jobs/{job_id}")
+def get_job(job_id: str):
+    """How far along is it? The browser asks this every two seconds."""
+    job = jobs.get(job_id)
+    if job is None:
+        raise HTTPException(404, "unknown job - did the backend restart? Press Run analysis again.")
+    return job
+
+
+<span class="cm"># ---- pictures -----------------------------------------------------------------------------</span>
+PNG = re.compile(r"(tmrt|utci)(_diff)?_\d\d\.png")       <span class="cm"># only these names, so nobody can ask for other files</span>
+
+
+@app.get("/api/baseline/{name}")
+def baseline_png(name: str):
+    path = model.BASELINE / name
+    if not PNG.fullmatch(name) or not path.is_file():
+        raise HTTPException(404)
+    return FileResponse(path)
+
+
+@app.get("/api/jobs/{job_id}/{name}")
+def job_png(job_id: str, name: str):
+    path = model.JOBS / job_id / "result" / name
+    if not re.fullmatch(r"[0-9a-f]{12}", job_id) or not PNG.fullmatch(name) or not path.is_file():
+        raise HTTPException(404)
+    return FileResponse(path)</code></pre>
+      </figure>
+
+      <h3>Frontend</h3>
+      <figure class="code" data-file="frontend/src/api.js (Week 7)">
+<pre><code><span class="cm">// Every fetch() in the app lives here. Components never build URLs themselves.</span>
+
+async function request(path, options) {
+  const response = await fetch(path, options);
+  if (!response.ok) {
+    let detail = response.statusText;
+    try {
+      const body = await response.json();          <span class="cm">// FastAPI explains what was wrong</span>
+      detail = typeof body.detail === "string" ? body.detail : JSON.stringify(body.detail);
+    } catch {
+      <span class="cm">// not JSON, keep the status text</span>
+    }
+    throw new Error(detail);
+  }
+  return response.json();
+}
+
+export const api = {
+  scene: () =&gt; request("/api/scene"),
+  baseline: () =&gt; request("/api/baseline"),
+
+  <span class="cm">// Start an analysis; the answer is a job with an id, not the result.</span>
+  submit: (trees) =&gt;
+    request("/api/jobs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        trees: trees.map(({ lng, lat, height, crown_radius }) =&gt; ({ lng, lat, height, crown_radius })),
+      }),
+    }),
+
+  <span class="cm">// Ask how that job is doing. When it is done, job.result holds the statistics.</span>
+  job: (id) =&gt; request(`/api/jobs/${id}`),
+};
+
+<span class="cm">// The PNG for one variable and hour: /api/baseline/tmrt_14.png, /api/jobs/&lt;id&gt;/utci_diff_09.png</span>
+export function overlayUrl(folder, variable, hour, diff) {
+  const hh = String(hour).padStart(2, "0");
+  return `${folder}${variable}${diff ? "_diff" : ""}_${hh}.png`;
+}</code></pre>
+      </figure>
+      <p>In <code>App.jsx</code> two new pieces of state hold the size for the next tree, and <code>updateTree</code> changes one tree, the same pattern as <code>moveTree</code>.</p>
+      <figure class="code" data-file="frontend/src/App.jsx (Week 7)">
+<pre><code>import { useEffect, useRef, useState } from "react";
+import MapArea from "./components/MapArea";
+import Panel from "./components/Panel";
+import { api, overlayUrl } from "./api";
+
+const sleep = (ms) =&gt; new Promise((resolve) =&gt; setTimeout(resolve, ms));
+
+export default function App() {
+  const [scene, setScene] = useState(null);         <span class="cm">// GET /api/scene</span>
+  const [baseline, setBaseline] = useState(null);   <span class="cm">// GET /api/baseline: hour labels + statistics</span>
+  const [loadError, setLoadError] = useState(null);
+
+  <span class="cm">// --- what the map is showing -------------------------------------------</span>
+  const [variable, setVariable] = useState("tmrt"); <span class="cm">// "tmrt" | "utci"</span>
+  const [layer, setLayer] = useState("baseline");   <span class="cm">// "baseline" | "scenario" | "diff"</span>
+  const [hour, setHour] = useState(14);
+  const [opacity, setOpacity] = useState(0.65);
+  const [playing, setPlaying] = useState(false);
+
+  <span class="cm">// --- trees and the analysis ----------------------------------------------</span>
+  const [trees, setTrees] = useState([]);
+  const [placing, setPlacing] = useState(false);
+  const [height, setHeight] = useState(12);         <span class="cm">// the size the next tree gets</span>
+  const [radius, setRadius] = useState(4);
+  const [job, setJob] = useState(null);             <span class="cm">// what GET /api/jobs/{id} last said</span>
+  const [scenario, setScenario] = useState(null);   <span class="cm">// { id, summary } once a run has finished</span>
+  const [error, setError] = useState(null);
+  const runNumber = useRef(0);                      <span class="cm">// a newer run makes an older one stop listening</span>
+
+  <span class="cm">// Load the scene and the baseline once, when the app starts.</span>
+  useEffect(() =&gt; {
+    api
+      .scene()
+      .then(async (sc) =&gt; {
+        setScene(sc);
+        if (sc.baseline_ready) setBaseline(await api.baseline());
+      })
+      .catch((e) =&gt; setLoadError(e.message));
+  }, []);
+
+  <span class="cm">// Advance the hour every 0.7 s while "playing"; stop the timer when it turns off.</span>
+  useEffect(() =&gt; {
+    if (!playing) return;
+    const timer = setInterval(() =&gt; setHour((h) =&gt; (h + 1) % 24), 700);
+    return () =&gt; clearInterval(timer);
+  }, [playing]);
+
+  function addTree(lng, lat) {
+    if (trees.length &gt;= scene.limits.max_trees) return;
+    setTrees([...trees, { id: Date.now(), lng, lat, height, crown_radius: radius }]);
+  }
+
+  function updateTree(id, change) {
+    setTrees(trees.map((t) =&gt; (t.id === id ? { ...t, ...change } : t)));
+  }
+
+  function moveTree(id, lng, lat) {
+    setTrees(trees.map((t) =&gt; (t.id === id ? { ...t, lng, lat } : t)));
+  }
+
+  function removeTree(id) {
+    setTrees(trees.filter((t) =&gt; t.id !== id));
+  }
+
+  <span class="cm">// Run analysis: submit, then ask every 2 seconds until the job is finished.</span>
+  async function run() {
+    const mine = ++runNumber.current;
+    setPlacing(false);
+    setError(null);
+    setScenario(null);                              <span class="cm">// the old result no longer matches; show the baseline</span>
+    setJob(null);
+    try {
+      let current = await api.submit(trees);
+      setJob(current);
+      let failures = 0;
+      while (current.status === "queued" || current.status === "running") {
+        await sleep(2000);
+        if (runNumber.current !== mine) return;     <span class="cm">// a newer run took over</span>
+        try {
+          current = await api.job(current.id);
+          failures = 0;
+        } catch (e) {
+          if (++failures &gt;= 5) throw e;             <span class="cm">// one bad answer is not a reason to give up</span>
+          continue;
+        }
+        setJob(current);                            <span class="cm">// the progress bar follows this</span>
+      }
+      if (current.status === "done") {
+        setScenario({ id: current.id, summary: current.result });
+        setLayer("diff");                           <span class="cm">// show what changed</span>
+      }
+    } catch (e) {
+      if (runNumber.current !== mine) return;
+      setError(e.message);
+      setJob((last) =&gt; (last &amp;&amp; last.status === "done" ? last : null));   <span class="cm">// never stuck on "Running…"</span>
+    }
+  }
+
+  if (loadError) return &lt;div className="fullscreen-message"&gt;Failed to load: {loadError}&lt;/div&gt;;
+  if (!scene) return &lt;div className="fullscreen-message"&gt;Loading scene…&lt;/div&gt;;
+
+  <span class="cm">// Without a finished run, Scenario and Difference fall back to the baseline.</span>
+  const shownLayer = scenario ? layer : "baseline";
+  const folder = shownLayer === "baseline" ? "/api/baseline/" : `/api/jobs/${scenario.id}/`;
+  const overlay = scene.baseline_ready ? overlayUrl(folder, variable, hour, shownLayer === "diff") : null;
+
+  return (
+    &lt;div className="app"&gt;
+      &lt;MapArea
+        scene={scene}
+        overlay={overlay}
+        opacity={opacity}
+        trees={trees}
+        placing={placing}
+        onPlace={addTree}
+        onMove={moveTree}
+        onRemove={removeTree}
+      /&gt;
+      &lt;Panel
+        scene={scene}
+        baseline={baseline}
+        variable={variable}
+        onVariable={setVariable}
+        layer={shownLayer}
+        onLayer={setLayer}
+        hour={hour}
+        onHour={setHour}
+        playing={playing}
+        onTogglePlay={() =&gt; setPlaying((p) =&gt; !p)}
+        opacity={opacity}
+        onOpacity={setOpacity}
+        trees={trees}
+        height={height}
+        onHeight={setHeight}
+        radius={radius}
+        onRadius={setRadius}
+        placing={placing}
+        onTogglePlacing={() =&gt; setPlacing((p) =&gt; !p)}
+        onClear={() =&gt; setTrees([])}
+        onUpdate={updateTree}
+        onRemove={removeTree}
+        onRun={run}
+        job={job}
+        scenario={scenario}
+        error={error}
+      /&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+      </figure>
+      <p>In <code>Panel.jsx</code> the Trees section gets the two boxes on top, and each row of the list gets its own pair. The <code>min</code> and <code>max</code> come from the backend's limits, so the two ends always agree.</p>
+      <figure class="code" data-file="frontend/src/components/Panel.jsx (Week 7)">
+<pre><code>const HOURS = Array.from({ length: 24 }, (_, i) =&gt; i);
+
+function fmt(value, digits = 1) {
+  return value == null || Number.isNaN(value) ? "–" : value.toFixed(digits);
+}
+
+export default function Panel({
+  scene, baseline, variable, onVariable, layer, onLayer, hour, onHour, playing, onTogglePlay,
+  opacity, onOpacity, trees, height, onHeight, radius, onRadius, placing, onTogglePlacing, onClear,
+  onUpdate, onRemove, onRun, job, scenario, error,
+}) {
+  const { height: hLimits, crown_radius: rLimits } = scene.limits;
+  const spec = scene.variables[variable];
+  const hourLabel = baseline ? baseline.hours[hour].replace("T", " ") : `${String(hour).padStart(2, "0")}:00`;
+  const busy = job !== null &amp;&amp; (job.status === "queued" || job.status === "running");
+
+  <span class="cm">// The numbers under the legend, for the chosen variable and hour.</span>
+  const base = baseline?.variables[variable].stats;
+  const scen = scenario?.summary.variables[variable];
+  const stats = {
+    baseMean: base?.mean[hour],
+    scenMean: scen?.stats.mean[hour],
+    diffMin: scen?.diff_stats.min[hour],
+    changed: scen?.changed_pixels[hour],
+  };
+
+  <span class="cm">// How far the run is, from 0 to 1: the sky view step is about 45 %, the 24 hours the rest.</span>
+  let progress = 0;
+  if (job) {
+    if (job.status === "done") progress = 1;
+    else if (job.phase === "simulating") progress = 0.45 + 0.5 * (job.timesteps_done / job.timesteps_total);
+    else if (job.phase === "rendering") progress = 0.97;
+    else if (job.expected_seconds) progress = Math.min(0.42, (job.elapsed_seconds / job.expected_seconds) * 0.9);
+    else progress = 0.05;
+  }
+
+  return (
+    &lt;aside className="panel"&gt;
+      &lt;header&gt;
+        &lt;h1&gt;Cool Choices&lt;/h1&gt;
+        &lt;p className="muted"&gt;
+          {scene.cols}×{scene.rows} px at {scene.pixel_size_m} m · {scene.date}
+          {!scene.baseline_ready &amp;&amp; " · baseline not computed yet"}
+        &lt;/p&gt;
+      &lt;/header&gt;
+
+      &lt;section&gt;
+        &lt;h2&gt;Overlay&lt;/h2&gt;
+        &lt;div className="row"&gt;
+          &lt;label&gt;
+            Variable
+            &lt;select value={variable} onChange={(e) =&gt; onVariable(e.target.value)}&gt;
+              &lt;option value="tmrt"&gt;TMRT&lt;/option&gt;
+              &lt;option value="utci"&gt;UTCI&lt;/option&gt;
+            &lt;/select&gt;
+          &lt;/label&gt;
+          &lt;label&gt;
+            Layer
+            &lt;select value={layer} onChange={(e) =&gt; onLayer(e.target.value)}&gt;
+              &lt;option value="baseline"&gt;Baseline&lt;/option&gt;
+              &lt;option value="scenario" disabled={!scenario}&gt;Scenario&lt;/option&gt;
+              &lt;option value="diff" disabled={!scenario}&gt;Difference&lt;/option&gt;
+            &lt;/select&gt;
+          &lt;/label&gt;
+        &lt;/div&gt;
+        &lt;label&gt;
+          Opacity {Math.round(opacity * 100)}%
+          &lt;input type="range" min={0} max={1} step={0.05} value={opacity} onChange={(e) =&gt; onOpacity(Number(e.target.value))} /&gt;
+        &lt;/label&gt;
+        &lt;label&gt;
+          Hour · {hourLabel}
+          &lt;div className="row"&gt;
+            &lt;button className="icon" onClick={onTogglePlay} title={playing ? "Pause" : "Play"}&gt;
+              {playing ? "❚❚" : "▶"}
+            &lt;/button&gt;
+            &lt;input type="range" min={0} max={23} step={1} value={hour} onChange={(e) =&gt; onHour(Number(e.target.value))} list="hours" /&gt;
+          &lt;/div&gt;
+          &lt;datalist id="hours"&gt;
+            {HOURS.map((h) =&gt; (
+              &lt;option key={h} value={h} /&gt;
+            ))}
+          &lt;/datalist&gt;
+        &lt;/label&gt;
+        &lt;Legend
+          title={layer === "diff" ? `Δ ${spec.label} (scenario − baseline)` : spec.label}
+          diverging={layer === "diff"}
+          min={layer === "diff" ? -scene.diff_range : spec.vmin}
+          max={layer === "diff" ? scene.diff_range : spec.vmax}
+        /&gt;
+        &lt;dl className="stats"&gt;
+          &lt;dt&gt;Baseline mean&lt;/dt&gt;
+          &lt;dd&gt;{fmt(stats.baseMean)} °C&lt;/dd&gt;
+          {scenario &amp;&amp; (
+            &lt;&gt;
+              &lt;dt&gt;Scenario mean&lt;/dt&gt;
+              &lt;dd&gt;{fmt(stats.scenMean)} °C&lt;/dd&gt;
+              &lt;dt&gt;Largest cooling&lt;/dt&gt;
+              &lt;dd&gt;{fmt(stats.diffMin)} °C&lt;/dd&gt;
+              &lt;dt&gt;Pixels changed (&amp;gt;{scene.change_threshold_c} °C)&lt;/dt&gt;
+              &lt;dd&gt;{stats.changed ?? "–"}&lt;/dd&gt;
+            &lt;/&gt;
+          )}
+        &lt;/dl&gt;
+      &lt;/section&gt;
+
+      &lt;section&gt;
+        &lt;h2&gt;Trees ({trees.length})&lt;/h2&gt;
+        &lt;div className="row"&gt;
+          &lt;label&gt;
+            Height (m)
+            &lt;input type="number" min={hLimits.min} max={hLimits.max} step={1} value={height} onChange={(e) =&gt; onHeight(Number(e.target.value))} /&gt;
+          &lt;/label&gt;
+          &lt;label&gt;
+            Crown radius (m)
+            &lt;input type="number" min={rLimits.min} max={rLimits.max} step={0.5} value={radius} onChange={(e) =&gt; onRadius(Number(e.target.value))} /&gt;
+          &lt;/label&gt;
+        &lt;/div&gt;
+        &lt;div className="row"&gt;
+          &lt;button className={placing ? "primary" : ""} onClick={onTogglePlacing} disabled={busy}&gt;
+            {placing ? "Click map to place · done" : "Add trees"}
+          &lt;/button&gt;
+          &lt;button onClick={onClear} disabled={busy || trees.length === 0}&gt;
+            Clear
+          &lt;/button&gt;
+        &lt;/div&gt;
+        {trees.length &gt; 0 &amp;&amp; (
+          &lt;ul className="tree-list"&gt;
+            {trees.map((t, i) =&gt; (
+              &lt;li key={t.id}&gt;
+                &lt;span&gt;#{i + 1}&lt;/span&gt;
+                &lt;input type="number" min={hLimits.min} max={hLimits.max} step={1} value={t.height} onChange={(e) =&gt; onUpdate(t.id, { height: Number(e.target.value) })} title="Height (m)" /&gt;
+                &lt;input type="number" min={rLimits.min} max={rLimits.max} step={0.5} value={t.crown_radius} onChange={(e) =&gt; onUpdate(t.id, { crown_radius: Number(e.target.value) })} title="Crown radius (m)" /&gt;
+                &lt;button className="icon" onClick={() =&gt; onRemove(t.id)} title="Remove" disabled={busy}&gt;
+                  ×
+                &lt;/button&gt;
+              &lt;/li&gt;
+            ))}
+          &lt;/ul&gt;
+        )}
+        &lt;p className="muted small"&gt;New trees get the size above; change any tree in the list. Drag a marker to move it, double-click to remove.&lt;/p&gt;
+      &lt;/section&gt;
+
+      &lt;section&gt;
+        &lt;button className="primary wide" onClick={onRun} disabled={busy || trees.length === 0 || !scene.baseline_ready}&gt;
+          {busy ? "Running…" : "Run analysis"}
+        &lt;/button&gt;
+        {job &amp;&amp; (
+          &lt;div className="job"&gt;
+            &lt;div className="progress"&gt;
+              &lt;div style={{ width: `${Math.round(progress * 100)}%` }} /&gt;
+            &lt;/div&gt;
+            &lt;p className="small"&gt;
+              {job.status === "queued" &amp;&amp; `Queued (position ${job.queue_position + 1})`}
+              {job.status === "running" &amp;&amp; `${job.phase} · ${Math.round(job.elapsed_seconds)}s`}
+              {job.status === "running" &amp;&amp; job.phase === "simulating" &amp;&amp; ` · ${job.timesteps_done}/${job.timesteps_total} h`}
+              {job.status === "running" &amp;&amp; job.expected_seconds &amp;&amp; ` · ~${Math.max(1, Math.round(job.expected_seconds / 60))} min expected`}
+              {job.status === "done" &amp;&amp; `Done in ${Math.round(job.elapsed_seconds)}s · ${job.changed_pixels} canopy pixels changed`}
+              {job.status === "failed" &amp;&amp; `Failed: ${job.error}`}
+            &lt;/p&gt;
+          &lt;/div&gt;
+        )}
+        {error &amp;&amp; &lt;p className="error small"&gt;{error}&lt;/p&gt;}
+        &lt;p className="muted small"&gt;
+          Each run recomputes sky view factors and 24 hourly timesteps for the whole scene
+          {scene.baseline_model_seconds ? ` (baseline took ${Math.max(1, Math.round(scene.baseline_model_seconds / 60))} min)` : ""}.
+        &lt;/p&gt;
+      &lt;/section&gt;
+    &lt;/aside&gt;
+  );
+}
+
+function Legend({ title, diverging, min, max }) {
+  return (
+    &lt;div className="legend"&gt;
+      &lt;div className={`legend-bar ${diverging ? "diverging" : "sequential"}`} /&gt;
+      &lt;div className="legend-labels"&gt;
+        &lt;span&gt;{min}&lt;/span&gt;
+        &lt;span&gt;{title}&lt;/span&gt;
+        &lt;span&gt;{max}&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+      </figure>
+      <figure class="code" data-file="frontend/src/components/MapArea.jsx (Week 7)">
+<pre><code>import "mapbox-gl/dist/mapbox-gl.css";
+import Map, { Marker, NavigationControl, Source, Layer } from "react-map-gl/mapbox";
+
+const TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
+
+export default function MapArea({ scene, overlay, opacity, trees, placing, onPlace, onMove, onRemove }) {
+  <span class="cm">// The dashed outline shows where trees can go: the four corners, closed back to the first.</span>
+  const outline = {
+    type: "Feature",
+    geometry: { type: "Polygon", coordinates: [[...scene.corners, scene.corners[0]]] },
+  };
+
+  return (
+    &lt;main className="map-area"&gt;
+      &lt;Map
+        mapboxAccessToken={TOKEN}
+        initialViewState={{ longitude: scene.center[0], latitude: scene.center[1], zoom: 15.2 }}
+        style={{ width: "100%", height: "100%" }}
+        mapStyle="mapbox://styles/mapbox/light-v11"
+        cursor={placing ? "crosshair" : "grab"}
+        onClick={(event) =&gt; {
+          if (!placing) return;                                       <span class="cm">// clicks only place trees in placing mode</span>
+          onPlace(event.lngLat.lng, event.lngLat.lat);
+        }}
+      &gt;
+        &lt;NavigationControl position="top-right" /&gt;
+
+        &lt;Source id="scene-extent" type="geojson" data={outline}&gt;
+          &lt;Layer
+            id="scene-extent-line"
+            type="line"
+            paint={{ "line-color": "#1f4e79", "line-width": 2, "line-dasharray": [2, 2] }}
+          /&gt;
+        &lt;/Source&gt;
+
+        {overlay &amp;&amp; (
+          &lt;Source id="overlay" type="image" url={overlay} coordinates={scene.corners}&gt;
+            &lt;Layer
+              id="overlay-layer"
+              type="raster"
+              beforeId="scene-extent-line"
+              paint={{ "raster-opacity": opacity, "raster-fade-duration": 0, "raster-resampling": "nearest" }}
+            /&gt;
+          &lt;/Source&gt;
+        )}
+
+        {trees.map((t) =&gt; {
+          const size = Math.max(14, Math.round(t.crown_radius * 4));     <span class="cm">// marker diameter in screen pixels</span>
+          return (
+            &lt;Marker
+              key={t.id}
+              longitude={t.lng}
+              latitude={t.lat}
+              anchor="center"
+              draggable
+              onDragEnd={(event) =&gt; onMove(t.id, event.lngLat.lng, event.lngLat.lat)}
+            &gt;
+              &lt;div
+                className="tree-marker"
+                style={{ width: size, height: size }}
+                title="Drag to move, double-click to remove"
+                onDoubleClick={(event) =&gt; {
+                  event.stopPropagation();                            <span class="cm">// don't also zoom the map</span>
+                  onRemove(t.id);
+                }}
+              /&gt;
+            &lt;/Marker&gt;
+          );
+        })}
+      &lt;/Map&gt;
+    &lt;/main&gt;
+  );
+}</code></pre>
+      </figure>
+      <figure class="code" data-file="frontend/src/index.css (Week 7)">
+<pre><code>:root {
+  --panel-bg: rgba(255, 255, 255, 0.96);
+  --text: #1c1c1c;
+  --muted: #666;
+  --accent: #1f4e79;
+  --border: #d9d9d9;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color: var(--text);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+}
+
+.app {
+  position: relative;
+  height: 100%;
+}
+
+.map-area {
+  position: absolute;
+  inset: 0;
+}
+
+.panel {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  bottom: 12px;
+  width: 340px;
+  overflow-y: auto;
+  background: var(--panel-bg);
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.panel header h1 {
+  font-size: 17px;
+  margin: 0 0 2px;
+}
+
+.panel h2 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin: 0 0 8px;
+}
+
+.panel section {
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+}
+
+label {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+label &gt; select,
+label &gt; input[type='number'] {
+  display: block;
+  width: 100%;
+  margin-top: 3px;
+  padding: 5px 6px;
+  font-size: 13px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+input[type='range'] {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.row &gt; label,
+.row &gt; input[type='range'] {
+  flex: 1;
+}
+
+button {
+  font: inherit;
+  font-size: 13px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: #fff;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+button.wide {
+  width: 100%;
+  padding: 10px;
+  font-weight: 600;
+}
+
+button.icon {
+  padding: 4px 9px;
+  line-height: 1;
+}
+
+.muted {
+  color: var(--muted);
+  margin: 0;
+}
+
+.small {
+  font-size: 12px;
+}
+
+.error {
+  color: #b00020;
+}
+
+.legend-bar {
+  height: 10px;
+  border-radius: 3px;
+}
+
+.legend-bar.sequential {
+  background: linear-gradient(to right, rgb(59, 76, 192), rgb(131, 178, 251), rgb(221, 220, 219), rgb(240, 140, 97), rgb(180, 4, 38));
+}
+
+.legend-bar.diverging {
+  background: linear-gradient(to right, rgb(0, 109, 44), rgb(161, 217, 155), rgb(247, 247, 247), rgb(194, 165, 207), rgb(118, 42, 131));
+}
+
+.legend-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 10px;
+  font-size: 13px;
+  margin: 10px 0 0;
+}
+
+.stats dt {
+  color: var(--muted);
+}
+
+.stats dd {
+  margin: 0;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.tree-list {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+  max-height: 180px;
+  overflow-y: auto;
+  font-size: 12px;
+}
+
+.tree-list li {
+  display: grid;
+  grid-template-columns: 28px 1fr 1fr auto;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.tree-list input {
+  width: 100%;
+  padding: 3px 5px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  font-size: 12px;
+}
+
+.progress {
+  height: 6px;
+  background: #e6e6e6;
+  border-radius: 3px;
+  overflow: hidden;
+  margin: 8px 0 4px;
+}
+
+.progress &gt; div {
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.4s;
+}
+
+.tree-marker {
+  border-radius: 50%;
+  background: rgba(34, 139, 34, 0.55);
+  border: 2px solid #145214;
+  cursor: grab;
+}
+
+.fullscreen-message {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  font-size: 15px;
+  color: var(--muted);
+  padding: 24px;
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  .panel {
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: auto;
+    max-height: 55%;
+    border-radius: 12px 12px 0 0;
+  }
+}</code></pre>
+      </figure>
+
+      <h3>Try it</h3>
+      <ul>
+        <li>Set Height 20 and Crown radius 8, add a tree; set them back to 12 and 4, add another. The first marker is twice as wide.</li>
+        <li>Change the second tree's crown radius in the list: its marker grows as you type.</li>
+        <li>Run analysis. "canopy pixels changed" is larger than with two default trees, and the Difference layer shows a bigger, darker green patch under the big tree.</li>
+        <li>Type 100 into a height box and run: the backend answers with a 422 that names the field.</li>
+      </ul>
+      <p>Run a few experiments while you are here. Same spot, one tree at 6 m and one at 20 m: how much does height matter, compared with crown size? At which hours? You will want those numbers in section 09.</p>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="features">
+      <h2><span class="n">09</span> New · Features and layout, for the midterm</h2>
+      <hr class="h2-rule">
+      <p>With section 08, the prototype is rebuilt. From here on the site becomes <strong>yours</strong>. Two weeks ago Track D answered the big questions, and many of you sent ideas. This section turns them into a plan you can show at the midterm (Oct 20).</p>
+
+      <h3>Where you are</h3>
+      <div class="note">
+        <span class="lbl">Your answers from Week 5</span>
+        <p><strong>User:</strong> a campus planner who wants to evaluate where heat-mitigation strategies would be most useful. <strong>Decision:</strong> where interventions should go for the greatest cooling benefit. <strong>Interventions:</strong> trees, shade shelters and buildings, placed only where land use and the site allow. <strong>Output:</strong> a thermal or shade map showing the impact. <strong>Area:</strong> Georgia Tech and Atlanta.</p>
+      </div>
+
+      <h3>Your task: pick, then specify</h3>
+      <p>As a team, pick features you believe you can really finish this semester. A mix works well: one small, one bigger. Then, for each one, write a short strategy to implement. This time go further than "what should the site have": decide the details.</p>
+
+      <p>The question that matters most: <strong>what can people adjust, and how much freedom do they get?</strong> Free numbers are flexible but invite odd inputs; a few well-chosen options are easier to use and easier to explain to a planner. Either is fine, as long as you chose it on purpose. And remember every run takes minutes: a feature that needs ten runs to answer one question will feel slow.</p>
+
+      <h3>Then sketch the screen</h3>
+      <p>Draw how your features look, in PowerPoint or Google Slides. Ideally, start from a screenshot of your own Week 7 site and draw on top of it. But you can draw it on blank slides. (If you are curious about Figma, this is a good excuse to try it, but it is not required.)</p>
+
+      <h3>Bring to class (Oct 13)</h3>
+      <ul>
+        <li>Your feature strategies slides</li>
+        <li>The sketch slide</li>
+        <li>Screenshot of the prototype website</li>
+      </ul>
+      <p>These slides are the core of your midterm presentation, so this is a head start: the midterm shows what you built (the prototype, rebuilt), and what you plan to build next and why.</p>
+    </section>
+
+
+    <nav class="weeknav">
+      <a href="week06.html"><span class="dir">Previous</span><span class="ttl">Run analysis, end to end</span></a>
+      <a class="next" href="index.html"><span class="dir">Next</span><span class="ttl">Week 8</span></a>
+    </nav>
+
+  </main>
+</div>
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>
