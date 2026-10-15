@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Week 8 - Midterm Presentation: From ideas to plans</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">Cool Choices · Tutorials</a>
+    <div class="ticks">
+      <span class="tick done"></span><span class="tick done"></span><span class="tick done"></span><span class="tick done"></span>
+      <span class="tick done"></span><span class="tick done"></span><span class="tick done"></span><span class="tick now"></span>
+      <span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
+      <span class="tick"></span><span class="tick"></span>
+    </div>
+    <span class="ticks-label">Week 8 of 14</span>
+  </div>
+</header>
+
+<div class="shell">
+<div class="layout">
+
+  <nav class="spine" aria-label="On this page">
+    <p class="spine-title">This week</p>
+    <ol>
+      <li><a href="#ideas">Your ideas</a></li>
+      <li><a href="#tiles">My idea: a map of tiles</a></li>
+      <li><a href="#bring">Bring to the midterm</a></li>
+    </ol>
+  </nav>
+
+  <main class="content">
+
+    <div class="page-head">
+      <p class="eyebrow">Week 8 · Oct 13 – Oct 19</p>
+      <h1>From ideas to plans</h1>
+      <p class="dek">You proposed four features; now think them through. A high-level plan is enough, but make it more concrete than your first bullet points: what exactly can the user do, what data does it need, and where does that data come from? Bring your answers and your Figma draft to the midterm on Oct 20.</p>
+    </div>
+
+    <section id="bring" class="submit">
+      <h2>Bring to the midterm presentation (Oct 20)</h2>
+      <hr class="h2-rule">
+      <ul>
+        <li><strong>Your Figma draft, developed further:</strong> where each feature lives on the screen, and what the user sees</li>
+        <li><strong>A strategy for each feature:</strong> your answers to the points in the table, at a high level, and whether you go ahead with it or cancel it</li>
+      </ul>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="ideas">
+      <h2><span class="n">01</span> Your ideas</h2>
+      <hr class="h2-rule">
+      <p>Your Figma draft is a good start: it keeps the prototype's layout and adds new interventions and a cooling score. Now each feature needs a plan. Here are some points I'd like you to think about.</p>
+
+      <figure style="margin:18px 0 8px">
+        <img src="assets/img/week08-figma-draft.png" alt="The team's Figma draft over a screenshot of the prototype: the panel has a More info button, Add Trees, Add Bus Shelter and Add Roofing/Sidewalk Cover buttons and three empty Add buttons, and a Cooling Score of 86 is shown in the top right corner of the map" style="width:100%;border:1px solid #CBD8DC;border-radius:6px">
+        <figcaption style="font-size:0.86rem;color:#3B5866;margin-top:8px">Your Figma draft.</figcaption>
+      </figure>
+
+      <table style="width:100%;border-collapse:collapse;font-size:0.93rem;margin:16px 0 22px">
+        <tr style="background:#E8EAED">
+          <th style="text-align:left;padding:9px 12px;border:1px solid #CBD8DC;font-family:var(--font-display);font-size:0.86rem;width:26%">Your idea</th>
+          <th style="text-align:left;padding:9px 12px;border:1px solid #CBD8DC;font-family:var(--font-display);font-size:0.86rem">Things to think about</th>
+        </tr>
+        <tr>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC;vertical-align:top"><strong>Placement rules</strong><br><span style="font-size:0.88rem;color:#3B5866">A precomputed no-go mask, so things can't be placed where they don't belong</span></td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC;vertical-align:top">
+            <ul style="margin:0;padding-left:18px">
+              <li>Where is it not allowed (buildings, roads, water, existing trees)? Where is it allowed: only sidewalks?</li>
+              <li>Where does that data come from? Buildings and Sidewalks: OpenStreetMap? The city's open data?</li>
+              <li>What does the user see when they click a no-go spot? Or just users cannot place items there without seeing a warning?</li>
+            </ul>
+          </td>
+        </tr>
+        <tr style="background:#F7F8F9">
+          <td style="padding:9px 12px;border:1px solid #CBD8DC;vertical-align:top"><strong>Before/after view and Cooling Score</strong><br><span style="font-size:0.88rem;color:#3B5866">Compare the changed map with the baseline, and turn the difference into a score</span></td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC;vertical-align:top">
+            <ul style="margin:0;padding-left:18px">
+              <li>The Layer menu already switches between Baseline, Scenario and Difference. What would your view add: a swipe slider, two maps side by side?</li>
+              <li>What is the score calculated from? Describe roughly how you would compute it.</li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC;vertical-align:top"><strong>Other interventions</strong><br><span style="font-size:0.88rem;color:#3B5866">Shading and shelters: placed like trees, with their own properties from research</span></td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC;vertical-align:top">
+            <ul style="margin:0;padding-left:18px">
+              <li>Which ones exactly (bus shelter, sidewalk cover, ...)? Find a real example of each.</li>
+              <li>For trees, the user sets the height and crown radius. What can other interventions set for each new one: size, height?</li>
+              <li>How do you handle the analysis process? You can think about high-level strategy referring tree intervention calculation process of our current backend code.</li>
+            </ul>
+          </td>
+        </tr>
+        <tr style="background:#F7F8F9">
+          <td style="padding:9px 12px;border:1px solid #CBD8DC;vertical-align:top"><strong>Choosing the date</strong><br><span style="font-size:0.88rem;color:#3B5866">Let the user pick the exact day</span></td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC;vertical-align:top">
+            <ul style="margin:0;padding-left:18px">
+              <li>Every date needs its own baseline. Compute them ahead of time (Then we will need to store them in somewhere), or while the user waits?</li>
+              <li>Any date from a calendar, or a few prepared days (a typical summer day, a heat wave)?</li>
+            </ul>
+          </td>
+        </tr>
+      </table>
+
+      <div class="note">
+        <span class="lbl">More ideas, or too hard?</span>
+        <p>Have another idea? Think it through the same way and bring it along. And if an idea turns out to be too hard (no data for Atlanta area that we want to implement, the model can't represent it, it takes too long to compute), cancel it and tell us why. Finding that out is a good result too.</p>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="tiles">
+      <h2><span class="n">02</span> My idea: a map of tiles</h2>
+      <hr class="h2-rule">
+      <p>Here's one of mine, for the same exercise. I want to keep every analysis at 500 × 500 px (1 km × 1 km), so a run takes a few minutes instead of the 48 minutes the whole area takes. But the map should still cover the whole area. It's divided into tiles: the user clicks one, the map zooms in, and they plan interventions for that tile.</p>
+
+      <figure style="margin:18px 0 8px">
+        <!-- PLACEHOLDER: when the picture is ready, replace the <div> below with:
+        <img src="assets/img/week08-tiles.webp" alt="The whole area divided into tiles on the map, with one tile selected and zoomed in" style="width:100%;border:1px solid #CBD8DC;border-radius:6px">
+        -->
+        <div style="border:2px dashed #CBD8DC;border-radius:6px;background:#F7F8F9;min-height:240px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;padding:24px;font-family:var(--font-display);color:#3B5866">
+          <span style="font-size:1.05rem;font-weight:600">Picture coming soon</span>
+          <span style="font-size:0.9rem">The whole area divided into tiles, one tile selected and zoomed in</span>
+        </div>
+        <figcaption style="font-size:0.86rem;color:#3B5866;margin-top:8px">Tiles over the whole area. Click one to zoom in and plan for it.</figcaption>
+      </figure>
+
+      <h3>What it needs</h3>
+      <ul>
+        <li>A grid over the whole area (Probably city of Atlanta area)</li>
+        <li>A baseline for every tile, computed once, ahead of time.</li>
+        <li>A tile index (an outline and an id for each tile) that the map draws. Clicking a tile zooms to it and loads its baseline.</li>
+        <li>In the backend, each tile's rasters in their own folder, and every job says which tile it's for.</li>
+      </ul>
+
+      <div class="note">
+        <span class="lbl">Want to build it?</span>
+        <p>If anyone wants to take this on, go for it! If not, I'll build it myself (Your TA), so don't worry about it. But I will still need one student who will work with me to make several baseline rasters. Either way, plan your features for one 500 × 500 scene: whatever works for one tile will work for every tile.</p>
+      </div>
+    </section>
+
+    <nav class="weeknav">
+      <a href="week07.html"><span class="dir">Previous</span><span class="ttl">Tree sizes and your own features</span></a>
+      <a class="next" href="index.html"><span class="dir">Next</span><span class="ttl">Week 9: Coming soon</span></a>
+    </nav>
+
+  </main>
+</div>
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>
