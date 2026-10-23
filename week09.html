@@ -47,7 +47,7 @@
         <p>This page is late because I was finalizing the feature list with Dr. Basu (and it's exam season for me too, sorry!). The good news: the features are decided, and they're in task 3.</p>
         <p>One more sorry: I found that SOLWEIG-Lite did not install or run on Windows. That's fixed now. If the model wouldn't run on your Windows laptop in Week 6 or 7, that was the reason, and task 1 fixes it.</p>
       </div>
-      <p class="dek">Four tasks this week. Please finish <strong>tasks 1 and 2</strong> this week: the new SOLWEIG-Lite, and the Georgia Tech campus on your site. <strong>Task 3</strong>: pick a feature and start on it; you don't have to finish it, and a concrete plan or a first try is enough. <strong>Task 4</strong>: write a small Python script that runs SOLWEIG-Lite on one Atlanta tile.</p>
+      <p class="dek">Four tasks this week. Please finish <strong>tasks 1 and 2</strong> this week: the new SOLWEIG-Lite, and the Georgia Tech campus on your site. <strong>Task 3</strong>: pick a feature and start on it; you don't have to finish it, and a concrete plan or a first try is enough. <strong>Task 4</strong>: run SOLWEIG-Lite on one Atlanta tile, step by step in a Jupyter notebook.</p>
     </div>
 
     <div class="goals">
@@ -56,7 +56,7 @@
         <li><strong>Please finish:</strong> replace last week's model with the new SOLWEIG-Lite</li>
         <li><strong>Please finish:</strong> put the Georgia Tech campus tile on your website</li>
         <li><strong>Start:</strong> pick a feature from the final list and plan it, or try a first piece</li>
-        <li><strong>Start:</strong> write a small script that runs SOLWEIG-Lite on one Atlanta tile</li>
+        <li><strong>Start:</strong> run SOLWEIG-Lite on one Atlanta tile in the Week 9 notebook</li>
       </ul>
     </div>
 
@@ -150,93 +150,35 @@ Trees.tif</code></pre>
     <section id="tiles">
       <h2><span class="n">04</span> Run SOLWEIG-Lite on a tile</h2>
       <hr class="h2-rule">
-      <p>This one is for the last feature, the city-wide prototype: every tile of the city will need its baseline computed ahead of time, by a script like the one you write here. This time you run SOLWEIG-Lite directly from Python, outside the website. One tile is enough for this week.</p>
+      <p>This one is for the last feature, the city-wide prototype: every tile of the city will need its baseline computed ahead of time, by code like the one you write here. This time you run SOLWEIG-Lite directly from Python, outside the website, in a Jupyter notebook. One tile is enough for this week.</p>
 
-      <h3>Step 1 · Pick a tile and look at it</h3>
-      <p>Download the whole <code>SmallSample_800px</code> folder and pick any tile except <code>r1c1_C</code> (that one is already on your site). Inside: four rasters and one weather file. Open the weather file in a text editor. Each row is one hour, and the first two numbers are the year and the day of the year. Which date is it? Write it down; you'll need it in step 3.</p>
-
-      <h3>Step 2 · Find the weather file</h3>
-      <p>Make a new file, <code>run_tile.py</code>, anywhere outside <code>cool-choices</code> (for example in <code>Documents/week09/</code>), and start from this. The <code>run()</code> function, the part you can't guess, is done; the <code>TODO</code>s are yours. Set <code>SAMPLE</code> and <code>TILE_NAME</code> first.</p>
-
-      <figure class="code" data-file="run_tile.py">
-<pre><code>import os
-from pathlib import Path
-
-from solweig_light import RuntimeOptions, runtime_options, thermal_comfort
-
-<span class="cm"># The folder you downloaded, as a full path.</span>
-<span class="cm"># On a Mac, for example: Path("/Users/you/Downloads/SmallSample_800px")</span>
-SAMPLE = Path(r"C:\Users\you\Downloads\SmallSample_800px")
-TILE_NAME = "r0c1_N"            <span class="cm"># any tile except r1c1_C, which is already on your site</span>
-
-
-def find_met(tile):
-    """Return the path of the weather file (the one .txt file) in a tile folder."""
-    <span class="cm"># TODO step 2</span>
-
-
-def date_of(met):
-    """Return the date the weather file covers, as "YYYY-MM-DD"."""
-    <span class="cm"># TODO step 3</span>
-
-
-def run(tile, met, date):
-    """Run SOLWEIG-Lite on one tile folder. The results go to tile/output_folder/0_0/."""
-    threads = max(1, os.cpu_count() - 1)        <span class="cm"># every core but one</span>
-    options = RuntimeOptions(memory_budget_bytes=6 * 1024**3, cpu_budget=threads,
-                             workers=1, threads_per_worker=threads, block_pixels=1024)
-    with runtime_options(options):
-        thermal_comfort(
-            base_path=str(tile),
-            selected_date_str=date,
-            own_met_file=str(met),
-            landcover_filename="Landcover.tif",
-            ERA_5_z0_find=False,                 <span class="cm"># we bring our own weather file</span>
-        )
-
-
-if __name__ == "__main__":                       <span class="cm"># Windows and macOS need this line</span>
-    tile = SAMPLE / TILE_NAME
-    met = find_met(tile)
-    date = date_of(met)
-    print("weather file:", met.name, "| date:", date)
-    run(tile, met, date)                         <span class="cm"># TODO step 4: time this line</span>
-    <span class="cm"># TODO step 5: print the mean TMRT of every hour</span></code></pre>
-      </figure>
-
-      <p>Write <code>find_met(tile)</code>: it gets the tile folder and returns the path of its weather file. Hints:</p>
-      <ul>
-        <li><code>tile</code> is a <code>Path</code>. <code>tile.glob("*.txt")</code> finds every <code>.txt</code> file in it, and <code>next(...)</code> takes the first one. There is only one.</li>
-        <li>Or loop over <code>tile.iterdir()</code> and keep the file whose <code>.suffix</code> is <code>".txt"</code>.</li>
-      </ul>
-      <p>Test as you go: put a <code>#</code> in front of the <code>run(...)</code> line for now, and run <code>python run_tile.py</code>. The print line shows what your functions return.</p>
-
-      <h3>Step 3 · Read the date</h3>
-      <p>Write <code>date_of(met)</code>: it returns the date of the weather file as text, like <code>"2023-06-25"</code>. The model needs it to get the time zone right. Hints:</p>
-      <ul>
-        <li><code>with open(met) as f:</code> opens the file, and <code>f.readline()</code> reads one line. The first line is the header; the second is the first hour.</li>
-        <li><code>.split()</code> turns a line into a list of words; <code>int(...)</code> turns a word into a number.</li>
-        <li><code>import datetime</code>, then <code>datetime.date(year, 1, 1) + datetime.timedelta(days=day - 1)</code> is day number <code>day</code> of that year, and <code>.isoformat()</code> writes it as <code>"YYYY-MM-DD"</code>.</li>
-      </ul>
-      <p>Does it print the same date you found in step 1?</p>
-
-      <h3>Step 4 · Run it, and time it</h3>
-      <p>Remove the <code>#</code> in front of <code>run(...)</code> and run the script. Then print how many seconds the run takes: <code>import time</code>, and <code>time.perf_counter()</code> gives the current time in seconds, so call it just before and just after <code>run(...)</code>. The very first run is slower, because the model compiles itself once.</p>
+      <h3>Get the notebook and open it</h3>
+      <p>Download <code>week09_run_tile.ipynb</code> from the same <a href="https://www.dropbox.com/scl/fo/pu9v9p3laoqrmkuqvmos0/AH_zxvy59U7BusWsrPG6fgI?rlkey=gy4eyqqbzrqmjculp4zqrl1vl&amp;st=q90veciz&amp;dl=0" target="_blank" rel="noopener">Dropbox</a> folder, together with the whole <code>SmallSample_800px</code> folder, and put the notebook in a folder of its own, for example <code>Documents/week09/</code>. Then install Jupyter into your <code>solweig-light</code> environment (once) and start it from there:</p>
 
       <figure class="code term" data-file="terminal">
 <pre><code>conda activate solweig-light
+conda install -c conda-forge jupyterlab
 cd Documents/week09
-python run_tile.py</code></pre>
+jupyter lab</code></pre>
       </figure>
 
-      <h3>Step 5 · Look at the result</h3>
-      <p>The results are in the tile's <code>output_folder/0_0/</code>: <code>TMRT_0_0.tif</code> and <code>UTCI_0_0.tif</code>, one band per hour. Print the mean TMRT of every hour. Hints:</p>
-      <ul>
-        <li><code>from osgeo import gdal</code>, and call <code>gdal.UseExceptions()</code> once (otherwise GDAL prints a warning).</li>
-        <li><code>gdal.Open(str(path)).ReadAsArray()</code> gives a NumPy array shaped (hours, rows, columns).</li>
-        <li>A <code>for</code> loop over that array gives one hour at a time (<code>enumerate</code> adds the number), and <code>numpy.nanmean()</code> averages it, skipping empty pixels.</li>
-      </ul>
-      <p>When is it hottest?</p>
+      <p>Your browser opens; double-click <code>week09_run_tile.ipynb</code> on the left. Start Jupyter from the activated <code>solweig-light</code> environment like this; otherwise the notebook can't find SOLWEIG-Lite. (If you use VS Code, you can open the notebook there instead and pick <code>solweig-light</code> as the kernel.)</p>
+
+      <div class="note">
+        <span class="lbl">Never used Jupyter?</span>
+        <p>A notebook is a list of cells: text cells and code cells. Click a code cell and press <strong>Shift+Enter</strong> to run it and move to the next one (<strong>Ctrl+Enter</strong>, or <strong>Cmd+Enter</strong> on a Mac, runs it and stays). Run the cells from top to bottom. <code>[*]</code> next to a cell means it's still running. If things get weird, <strong>Kernel → Restart Kernel</strong> and run from the top again. If it still doesn't make sense, send me a Teams message!</p>
+      </div>
+
+      <h3>The steps</h3>
+      <p>The notebook walks you through these. The model call itself is written for you; the parts marked <code>TODO</code> are yours, with hints right above each one.</p>
+      <ol>
+        <li><strong>Pick a tile and look at it.</strong> Any tile except <code>r1c1_C</code> (that one is already on your site). Open its weather file and find the date by hand.</li>
+        <li><strong>Find the weather file.</strong> Write a small function that finds the <code>.txt</code> file in a tile folder.</li>
+        <li><strong>Read the date.</strong> Write a function that reads the date from the weather file, and check it against the one you found by hand.</li>
+        <li><strong>Run SOLWEIG-Lite, and time it.</strong> Run the model on your tile and print how many seconds it took.</li>
+        <li><strong>Look at the result.</strong> Open the TMRT output and print the mean TMRT of every hour. When is it hottest?</li>
+      </ol>
+      <p>There's also an optional extra at the end: draw the TMRT map of the hottest hour.</p>
     </section>
 
     <nav class="weeknav">
