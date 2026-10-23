@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Week 9 — New model, Atlanta data, first features</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">Cool Choices · Tutorials</a>
+    <div class="ticks">
+      <span class="tick done"></span><span class="tick done"></span><span class="tick done"></span><span class="tick done"></span>
+      <span class="tick done"></span><span class="tick done"></span><span class="tick done"></span><span class="tick done"></span>
+      <span class="tick now"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
+      <span class="tick"></span><span class="tick"></span>
+    </div>
+    <span class="ticks-label">Week 9 of 14</span>
+  </div>
+</header>
+
+<div class="shell">
+<div class="layout">
+
+  <nav class="spine" aria-label="On this page">
+    <p class="spine-title">This week</p>
+    <ol>
+      <li><a href="#model">1 · Replace the model</a></li>
+      <li><a href="#atlanta">2 · Atlanta on your site</a></li>
+      <li><a href="#features">3 · Start a feature</a></li>
+      <li><a href="#tiles">4 · Run SOLWEIG-Lite on a tile</a></li>
+    </ol>
+  </nav>
+
+  <main class="content">
+
+    <div class="page-head">
+      <p class="eyebrow">Week 9 · Oct 20 – Oct 26</p>
+      <h1>New model, Atlanta data, first features</h1>
+      <div class="note">
+        <span class="lbl">Sorry for the delay!</span>
+        <p>This page is late because I was finalizing the feature list with Dr. Basu (and it's exam season for me too, sorry!). The good news: the features are decided, and they're in task 3.</p>
+        <p>One more sorry: I found that SOLWEIG-Lite did not install or run on Windows. That's fixed now. If the model wouldn't run on your Windows laptop in Week 6 or 7, that was the reason, and task 1 fixes it.</p>
+      </div>
+      <p class="dek">Four tasks this week. Please finish <strong>tasks 1 and 2</strong> this week: the new SOLWEIG-Lite, and the Georgia Tech campus on your site. <strong>Task 3</strong>: pick a feature and start on it; you don't have to finish it, and a concrete plan or a first try is enough. <strong>Task 4</strong>: write a small Python script that runs SOLWEIG-Lite on one Atlanta tile.</p>
+    </div>
+
+    <div class="goals">
+      <h2>Week 9 Tasks</h2>
+      <ul>
+        <li><strong>Please finish:</strong> replace last week's model with the new SOLWEIG-Lite</li>
+        <li><strong>Please finish:</strong> put the Georgia Tech campus tile on your website</li>
+        <li><strong>Start:</strong> pick a feature from the final list and plan it, or try a first piece</li>
+        <li><strong>Start:</strong> write a small script that runs SOLWEIG-Lite on one Atlanta tile</li>
+      </ul>
+    </div>
+
+    <!-- ============================================ -->
+    <section id="model">
+      <h2><span class="n">01</span> Replace the model</h2>
+      <hr class="h2-rule">
+      <p>SOLWEIG-Lite has been updated and now has its own repository: <a href="https://github.com/Synn-Arch/Solweig-Lite" target="_blank" rel="noopener">github.com/Synn-Arch/Solweig-Lite</a>. It replaces the <code>solweig-light-web.zip</code> you installed in Week 6. Both are the same package (<code>solweig_light</code>), so one command swaps them. In your <code>solweig-light</code> environment (on Windows, in the Anaconda Prompt):</p>
+
+      <figure class="code term" data-file="terminal">
+<pre><code>conda activate solweig-light
+pip install --force-reinstall --no-deps https://github.com/Synn-Arch/Solweig-Lite/archive/refs/heads/master.zip
+python -c "import solweig_light._portable; print('new model ok')"</code></pre>
+      </figure>
+
+      <p>The last line must print <code>new model ok</code>. <code>--force-reinstall</code> removes last week's version first; <code>--no-deps</code> leaves GDAL and the other packages exactly as they are. If the download fails, open the repository page, choose <strong>Code → Download ZIP</strong>, and give pip that file instead (don't unzip it).</p>
+      <p>Nothing in your code changes: your Week 7 site runs on the new model as it is. Restart the backend, and expect the first run to be slower, because the model compiles itself once after an install.</p>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="atlanta">
+      <h2><span class="n">02</span> Atlanta on your site</h2>
+      <hr class="h2-rule">
+      <p>From now on we work on Atlanta. I downsampled the data and put it on <a href="https://www.dropbox.com/scl/fo/pu9v9p3laoqrmkuqvmos0/AH_zxvy59U7BusWsrPG6fgI?rlkey=gy4eyqqbzrqmjculp4zqrl1vl&amp;st=q90veciz&amp;dl=0" target="_blank" rel="noopener">Dropbox</a>. <code>SmallSample_800px</code> holds nine tiles of 800 × 800 px around campus, plus <code>tiles_index.csv</code>. The Georgia Tech campus is the middle one, <code>r1c1_C</code>:</p>
+
+      <figure class="code" data-file="SmallSample_800px/r1c1_C">
+<pre><code>Atlanta_..._UTC-4.txt         <span class="cm">← the weather file</span>
+Building_DSM.tif
+DEM.tif
+Landcover.tif
+Trees.tif</code></pre>
+      </figure>
+
+      <h3>Where it goes</h3>
+      <ol>
+        <li>Empty <code>cool-choices/backend/scene/</code> (the Austin rasters and <code>ownmet_Forcing_data.txt</code>; keep a copy somewhere else if you like) and copy the files of <code>r1c1_C</code> into it.</li>
+        <li>In <code>backend/app/model.py</code>, change three things:
+          <ul>
+            <li><code>MET</code>: the name of the Atlanta weather file.</li>
+            <li><code>DATE</code>: the date in that file. The first two numbers of every row are the year and the day of the year.</li>
+            <li><code>tile_size=600</code> → <code>tile_size=1000</code>. The model cuts anything bigger than <code>tile_size</code> into several tiles, and your site only shows the first one (<code>0_0</code>). At 800 × 800 px, 600 is too small.</li>
+          </ul>
+        </li>
+        <li>In <code>backend/</code>: <code>python -m app.baseline --force</code> (without <code>--force</code> it keeps the Austin baseline), then restart uvicorn and reload the page.</li>
+      </ol>
+      <p>No coordinates to change: the backend reads where the tile is from the rasters themselves, so the outline, the overlay and the map's starting point move to Atlanta on their own. The tile is bigger than the Austin subset, though, so if it doesn't fit on screen, lower <code>zoom: 15.2</code> in <code>MapArea.jsx</code> (try 14.5).</p>
+
+      <div class="warn">
+        <span class="lbl">How many hours?</span>
+        <p>Count the rows in the weather file. The site assumes 24 hours: the slider (0–23) in <code>Panel.jsx</code>, the play loop in <code>App.jsx</code> and <code>timesteps_total</code> in <code>jobs.py</code>. If the file has fewer, those have to follow the real number (the run's <code>result.json</code> lists the hours).</p>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="features">
+      <h2><span class="n">03</span> Start a feature</h2>
+      <hr class="h2-rule">
+      <p>Thanks for the ideas at the midterm! Dr. Basu and I went through them, and this is the final list for Fall 2026:</p>
+
+      <table style="width:100%;border-collapse:collapse;font-size:0.93rem;margin:16px 0 22px">
+        <tr style="background:#E8EAED">
+          <th style="text-align:left;padding:9px 12px;border:1px solid #CBD8DC;font-family:var(--font-display);font-size:0.86rem;width:30%">Feature</th>
+          <th style="text-align:left;padding:9px 12px;border:1px solid #CBD8DC;font-family:var(--font-display);font-size:0.86rem">Details</th>
+        </tr>
+        <tr>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC;vertical-align:top"><strong>Trees and shelters</strong></td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC;vertical-align:top">Implement trees and shelters as intervention types, including possible constraints on where they can go</td>
+        </tr>
+        <tr style="background:#F7F8F9">
+          <td style="padding:9px 12px;border:1px solid #CBD8DC;vertical-align:top"><strong>Two representative days</strong></td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC;vertical-align:top">From summer 2026: (1) a typical summer day and (2) an extremely hot summer day. Only the ERA5 weather data changes; all other inputs stay the same. SVF has to be computed separately, since shade depends on the weather data, along with everything else that depends on SVF (e.g., TMRT).</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC;vertical-align:top"><strong>Hyper-localized recalculation</strong></td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC;vertical-align:top">Recalculate only around the changes, for computational efficiency</td>
+        </tr>
+        <tr style="background:#F7F8F9">
+          <td style="padding:9px 12px;border:1px solid #CBD8DC;vertical-align:top"><strong>Tutorial</strong></td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC;vertical-align:top">Show a new user how to use the site</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC;vertical-align:top"><strong>A large study area (city)</strong></td>
+          <td style="padding:9px 12px;border:1px solid #CBD8DC;vertical-align:top">A working prototype for a whole city: the user selects a tile, and that tile becomes the study area for the localized analysis</td>
+        </tr>
+      </table>
+
+      <p>Pick the one you like (alone or in pairs) and start. You don't have to finish it this week: a concrete plan is enough (what changes in the backend, what changes on the screen, what data it needs), and trying a first piece is even better.</p>
+    </section>
+
+    <!-- ============================================ -->
+    <section id="tiles">
+      <h2><span class="n">04</span> Run SOLWEIG-Lite on a tile</h2>
+      <hr class="h2-rule">
+      <p>This one is for the last feature, the city-wide prototype: every tile of the city will need its baseline computed ahead of time, by a script like the one you write here. This time you run SOLWEIG-Lite directly from Python, outside the website. One tile is enough for this week.</p>
+
+      <h3>Step 1 · Pick a tile and look at it</h3>
+      <p>Download the whole <code>SmallSample_800px</code> folder and pick any tile except <code>r1c1_C</code> (that one is already on your site). Inside: four rasters and one weather file. Open the weather file in a text editor. Each row is one hour, and the first two numbers are the year and the day of the year. Which date is it? Write it down; you'll need it in step 3.</p>
+
+      <h3>Step 2 · Find the weather file</h3>
+      <p>Make a new file, <code>run_tile.py</code>, anywhere outside <code>cool-choices</code> (for example in <code>Documents/week09/</code>), and start from this. The <code>run()</code> function, the part you can't guess, is done; the <code>TODO</code>s are yours. Set <code>SAMPLE</code> and <code>TILE_NAME</code> first.</p>
+
+      <figure class="code" data-file="run_tile.py">
+<pre><code>import os
+from pathlib import Path
+
+from solweig_light import RuntimeOptions, runtime_options, thermal_comfort
+
+<span class="cm"># The folder you downloaded, as a full path.</span>
+<span class="cm"># On a Mac, for example: Path("/Users/you/Downloads/SmallSample_800px")</span>
+SAMPLE = Path(r"C:\Users\you\Downloads\SmallSample_800px")
+TILE_NAME = "r0c1_N"            <span class="cm"># any tile except r1c1_C, which is already on your site</span>
+
+
+def find_met(tile):
+    """Return the path of the weather file (the one .txt file) in a tile folder."""
+    <span class="cm"># TODO step 2</span>
+
+
+def date_of(met):
+    """Return the date the weather file covers, as "YYYY-MM-DD"."""
+    <span class="cm"># TODO step 3</span>
+
+
+def run(tile, met, date):
+    """Run SOLWEIG-Lite on one tile folder. The results go to tile/output_folder/0_0/."""
+    threads = max(1, os.cpu_count() - 1)        <span class="cm"># every core but one</span>
+    options = RuntimeOptions(memory_budget_bytes=6 * 1024**3, cpu_budget=threads,
+                             workers=1, threads_per_worker=threads, block_pixels=1024)
+    with runtime_options(options):
+        thermal_comfort(
+            base_path=str(tile),
+            selected_date_str=date,
+            own_met_file=str(met),
+            landcover_filename="Landcover.tif",
+            ERA_5_z0_find=False,                 <span class="cm"># we bring our own weather file</span>
+        )
+
+
+if __name__ == "__main__":                       <span class="cm"># Windows and macOS need this line</span>
+    tile = SAMPLE / TILE_NAME
+    met = find_met(tile)
+    date = date_of(met)
+    print("weather file:", met.name, "| date:", date)
+    run(tile, met, date)                         <span class="cm"># TODO step 4: time this line</span>
+    <span class="cm"># TODO step 5: print the mean TMRT of every hour</span></code></pre>
+      </figure>
+
+      <p>Write <code>find_met(tile)</code>: it gets the tile folder and returns the path of its weather file. Hints:</p>
+      <ul>
+        <li><code>tile</code> is a <code>Path</code>. <code>tile.glob("*.txt")</code> finds every <code>.txt</code> file in it, and <code>next(...)</code> takes the first one. There is only one.</li>
+        <li>Or loop over <code>tile.iterdir()</code> and keep the file whose <code>.suffix</code> is <code>".txt"</code>.</li>
+      </ul>
+      <p>Test as you go: put a <code>#</code> in front of the <code>run(...)</code> line for now, and run <code>python run_tile.py</code>. The print line shows what your functions return.</p>
+
+      <h3>Step 3 · Read the date</h3>
+      <p>Write <code>date_of(met)</code>: it returns the date of the weather file as text, like <code>"2023-06-25"</code>. The model needs it to get the time zone right. Hints:</p>
+      <ul>
+        <li><code>with open(met) as f:</code> opens the file, and <code>f.readline()</code> reads one line. The first line is the header; the second is the first hour.</li>
+        <li><code>.split()</code> turns a line into a list of words; <code>int(...)</code> turns a word into a number.</li>
+        <li><code>import datetime</code>, then <code>datetime.date(year, 1, 1) + datetime.timedelta(days=day - 1)</code> is day number <code>day</code> of that year, and <code>.isoformat()</code> writes it as <code>"YYYY-MM-DD"</code>.</li>
+      </ul>
+      <p>Does it print the same date you found in step 1?</p>
+
+      <h3>Step 4 · Run it, and time it</h3>
+      <p>Remove the <code>#</code> in front of <code>run(...)</code> and run the script. Then print how many seconds the run takes: <code>import time</code>, and <code>time.perf_counter()</code> gives the current time in seconds, so call it just before and just after <code>run(...)</code>. The very first run is slower, because the model compiles itself once.</p>
+
+      <figure class="code term" data-file="terminal">
+<pre><code>conda activate solweig-light
+cd Documents/week09
+python run_tile.py</code></pre>
+      </figure>
+
+      <h3>Step 5 · Look at the result</h3>
+      <p>The results are in the tile's <code>output_folder/0_0/</code>: <code>TMRT_0_0.tif</code> and <code>UTCI_0_0.tif</code>, one band per hour. Print the mean TMRT of every hour. Hints:</p>
+      <ul>
+        <li><code>from osgeo import gdal</code>, and call <code>gdal.UseExceptions()</code> once (otherwise GDAL prints a warning).</li>
+        <li><code>gdal.Open(str(path)).ReadAsArray()</code> gives a NumPy array shaped (hours, rows, columns).</li>
+        <li>A <code>for</code> loop over that array gives one hour at a time (<code>enumerate</code> adds the number), and <code>numpy.nanmean()</code> averages it, skipping empty pixels.</li>
+      </ul>
+      <p>When is it hottest?</p>
+    </section>
+
+    <nav class="weeknav">
+      <a href="week08.html"><span class="dir">Previous</span><span class="ttl">From ideas to plans</span></a>
+      <a class="next" href="index.html"><span class="dir">Next</span><span class="ttl">Week 10: Coming soon</span></a>
+    </nav>
+
+  </main>
+</div>
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>
